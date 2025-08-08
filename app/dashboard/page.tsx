@@ -73,7 +73,7 @@ export default function DashboardPage() {
   }
 
   const { user, estadisticas } = profile
-  const currency = user.monedaDefecto
+  const currency = user.moneda
 
   return (
     <div className="space-y-6">

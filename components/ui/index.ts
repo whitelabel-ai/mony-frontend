@@ -1,18 +1,13 @@
-// Exportación de todos los componentes UI
-export { Button } from './button'
-export { Input } from './input'
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './card'
-export { Label } from './label'
 export { Avatar, AvatarImage, AvatarFallback } from './avatar'
-export {
-  Select,
-  SelectGroup,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-  SelectLabel,
-  SelectItem,
-  SelectSeparator,
-  SelectScrollUpButton,
-  SelectScrollDownButton,
-} from './select'
+export { Badge, badgeVariants } from './badge'
+export { Button, buttonVariants } from './button'
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './card'
+export { Command, CommandDialog, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandShortcut, CommandSeparator } from './command'
+export { CountryPhoneInput } from './country-phone-input'
+export { Dialog, DialogPortal, DialogOverlay, DialogClose, DialogTrigger, DialogContent, DialogHeader, DialogFooter, DialogTitle, DialogDescription } from './dialog'
+export { Input } from './input'
+export { Label } from './label'
+export { Popover, PopoverTrigger, PopoverContent } from './popover'
+export { Select, SelectGroup, SelectValue, SelectTrigger, SelectContent, SelectLabel, SelectItem, SelectSeparator, SelectScrollUpButton, SelectScrollDownButton } from './select'
+export { SubscriptionPlans } from './subscription-plans'
+export { WorkInProgressModal } from './work-in-progress-modal'
