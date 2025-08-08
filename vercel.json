@@ -18,8 +18,8 @@
   },
   "rewrites": [
     {
-      "source": "/api/:path*",
-      "destination": "https://mony.whitelabel.lat/api/:path*"
+      "source": "/api/v1/:path*",
+      "destination": "https://mony-backend.vercel.app/api/v1/:path*"
     }
   ],
   "headers": [
