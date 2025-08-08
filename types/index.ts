@@ -29,7 +29,7 @@ export interface RegisterData {
   numeroWhatsapp: string
   password: string
   confirmPassword: string
-  monedaDefecto: string
+  moneda: string
   planSeleccionado: string
 }
 
@@ -90,14 +90,22 @@ export interface Suscripcion {
 
 // Tipos de perfil de usuario
 export interface UserProfile {
-  user: User
-  categorias: Categoria[]
-  suscripciones: Suscripcion[]
-  metasAhorro: MetaAhorro[]
+  id: string
+  nombreCompleto: string
+  email: string
+  numeroWhatsapp: string
+  moneda: string
+  estadoSuscripcion: string
+  fechaRegistro: string
+  categorias: any[]
+  suscripcionMony: any[]
+  metasDeAhorro: any[]
+  suscripciones: any[]
   estadisticas: {
     ingresosMes: number
     gastosMes: number
     balanceMes: number
+    totalTransaccionesMes: number
     totalTransacciones: number
     metasActivas: number
     suscripcionesActivas: number
@@ -296,7 +304,7 @@ export interface RegisterStepData {
   // Paso 2: Configuración regional
   countryCode?: string
   phoneNumber?: string
-  monedaDefecto?: string
+  moneda?: string
   
   // Paso 3: Plan de suscripción
   selectedPlan?: string

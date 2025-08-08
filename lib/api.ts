@@ -101,7 +101,6 @@ class ApiService {
       const response = await this.api.post<AuthResponse>('/auth/register', data)
       const { token } = response.data
       this.setToken(token)
-      toast.success('¡Registro exitoso! Bienvenido a Mony')
       return response.data
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Error en el registro')
@@ -116,7 +115,6 @@ class ApiService {
       const response = await this.api.post<AuthResponse>('/auth/login', data)
       const { token } = response.data
       this.setToken(token)
-      toast.success('¡Inicio de sesión exitoso!')
       return response.data
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Error en el inicio de sesión')

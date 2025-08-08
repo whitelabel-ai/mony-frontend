@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Link from 'next/link'
 import { Eye, EyeOff, Wallet, ArrowLeft, ArrowRight, Check, User, Globe, CreditCard } from 'lucide-react'
-import { useGuestGuard } from '@/hooks'
+import { useGuestGuard, useAuth } from '@/hooks'
 import { 
   Button, 
   Input, 
@@ -83,6 +83,7 @@ export default function RegisterPage() {
   })
   
   const { loading: authLoading } = useGuestGuard()
+  const { register } = useAuth()
 
   // Formularios para cada paso
   const step1Form = useForm<Step1Data>({
@@ -173,10 +174,10 @@ export default function RegisterPage() {
         planSeleccionado: finalData.selectedPlan!,
       }
       
-      await apiService.register(registerData)
-      // La redirección se maneja en el hook useAuth
+      await register(registerData)
+      // La redirección se maneja automáticamente en el hook useAuth
     } catch (error) {
-      // El error se maneja en el servicio de API
+      // El error se maneja en el hook useAuth
     } finally {
       setIsLoading(false)
     }

@@ -21,7 +21,7 @@ import {
   CardTitle,
   Button,
 } from '@/components/ui'
-import { formatCurrency, formatDate } from '@/lib/utils'
+import { formatCurrency, formatDate, getGreeting } from '@/lib/utils'
 import type { UserProfile } from '@/types'
 
 /**
@@ -29,18 +29,7 @@ import type { UserProfile } from '@/types'
  */
 export default function DashboardPage() {
   const { profile, loading, error, refreshProfile } = useUserProfile()
-  const [greeting, setGreeting] = useState('')
-
-  useEffect(() => {
-    const hour = new Date().getHours()
-    if (hour < 12) {
-      setGreeting('Buenos días')
-    } else if (hour < 18) {
-      setGreeting('Buenas tardes')
-    } else {
-      setGreeting('Buenas noches')
-    }
-  }, [])
+  const greeting = getGreeting()
 
   if (loading) {
     return (
@@ -72,8 +61,17 @@ export default function DashboardPage() {
     )
   }
 
-  const { user, estadisticas } = profile
-  const currency = user.moneda
+  const user = {
+    id: profile.id,
+    nombreCompleto: profile.nombreCompleto,
+    email: profile.email,
+    numeroWhatsapp: profile.numeroWhatsapp,
+    moneda: profile.moneda,
+    estadoSuscripcion: profile.estadoSuscripcion,
+    fechaRegistro: profile.fechaRegistro
+  }
+  const estadisticas = profile.estadisticas
+  const currency = profile.moneda
 
   return (
     <div className="space-y-6">
@@ -227,9 +225,9 @@ export default function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {profile.metasAhorro.length > 0 ? (
+            {profile.metasDeAhorro.length > 0 ? (
               <div className="space-y-4">
-                {profile.metasAhorro.slice(0, 3).map((meta) => {
+                {profile.metasDeAhorro.slice(0, 3).map((meta) => {
                   const progreso = (meta.montoActual / meta.montoObjetivo) * 100
                   return (
                     <div key={meta.id} className="space-y-2">
@@ -252,7 +250,7 @@ export default function DashboardPage() {
                     </div>
                   )
                 })}
-                {profile.metasAhorro.length > 3 && (
+                {profile.metasDeAhorro.length > 3 && (
                   <Button variant="ghost" className="w-full mt-4">
                     Ver todas las metas
                   </Button>

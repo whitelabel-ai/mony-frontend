@@ -21,7 +21,17 @@ export function useAuth() {
       try {
         if (apiService.isAuthenticated()) {
           const profile = await apiService.getUserProfile()
-          setUser(profile.user)
+          // Convertir UserProfile a User para el estado
+          const user: User = {
+            id: profile.id,
+            nombreCompleto: profile.nombreCompleto,
+            email: profile.email,
+            numeroWhatsapp: profile.numeroWhatsapp,
+            moneda: profile.moneda,
+            fechaRegistro: profile.fechaRegistro,
+            activo: true
+          }
+          setUser(user)
           setIsAuthenticated(true)
         }
       } catch (error) {
@@ -46,6 +56,7 @@ export function useAuth() {
       const response = await apiService.login(data)
       setUser(response.user)
       setIsAuthenticated(true)
+      toast.success('¡Inicio de sesión exitoso!')
       router.push('/dashboard')
       return response
     } catch (error: any) {
@@ -65,6 +76,7 @@ export function useAuth() {
       const response = await apiService.register(data)
       setUser(response.user)
       setIsAuthenticated(true)
+      toast.success('¡Registro exitoso! Bienvenido a Mony')
       router.push('/dashboard')
       return response
     } catch (error: any) {
@@ -92,7 +104,17 @@ export function useAuth() {
     try {
       if (isAuthenticated) {
         const profile = await apiService.getUserProfile()
-        setUser(profile.user)
+        // Convertir UserProfile a User para el estado
+        const user: User = {
+          id: profile.id,
+          nombreCompleto: profile.nombreCompleto,
+          email: profile.email,
+          numeroWhatsapp: profile.numeroWhatsapp,
+          moneda: profile.moneda,
+          fechaRegistro: profile.fechaRegistro,
+          activo: true
+        }
+        setUser(user)
       }
     } catch (error: any) {
       toast.error('Error al actualizar el perfil')

@@ -6,9 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Link from 'next/link'
 import { Eye, EyeOff, Wallet, ArrowLeft } from 'lucide-react'
-import { useGuestGuard } from '@/hooks'
+import { useGuestGuard, useAuth } from '@/hooks'
 import { Button, Input, Label, Card, CardHeader, CardContent } from '@/components/ui'
-import { apiService } from '@/lib/api'
 import { isValidEmail } from '@/lib/utils'
 
 /**
@@ -33,6 +32,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const { loading: authLoading } = useGuestGuard()
+  const { login } = useAuth()
 
   const {
     register,
@@ -48,10 +48,10 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       setIsLoading(true)
-      await apiService.login(data)
-      // La redirección se maneja en el hook useAuth
+      await login(data)
+      // La redirección se maneja automáticamente en el hook useAuth
     } catch (error) {
-      // El error se maneja en el servicio de API
+      // El error se maneja en el hook useAuth
     } finally {
       setIsLoading(false)
     }
