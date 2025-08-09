@@ -156,16 +156,23 @@ body {
   }
 }
 
-/* Forzar fondo en SelectContent y modales */
-[data-radix-popper-content-wrapper] {
-  background-color: hsl(var(--popover)) !important;
-}
-
+/* Fondo elegante para Select, Dialog y Popover */
+[data-radix-popper-content-wrapper],
 .SelectContent,
 .DialogContent,
 .PopoverContent {
   background-color: hsl(var(--popover)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 0.75rem; /* bordes redondeados */
+  box-shadow:
+    0 4px 24px hsl(var(--foreground) / 0.08),
+    0 2px 8px hsl(var(--foreground) / 0.06) !important; /* sombras suaves y profundas */
+  backdrop-filter: blur(8px); /* efecto sutil de vidrio esmerilado */
+  -webkit-backdrop-filter: blur(8px);
+  padding: 0.5rem; /* espacio interno */
 }
+
 
 @layer utilities {
   .text-destructive {

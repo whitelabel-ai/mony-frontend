@@ -70,19 +70,28 @@ function PlanCard({ plan, isSelected, onSelect }: PlanCardProps) {
 
   return (
     <Card
-      className={`relative cursor-pointer transition-all duration-300 transform hover:scale-105 ${
-        isSelected
-          ? 'ring-2 ring-primary shadow-lg'
-          : 'hover:shadow-md'
-      } ${plan.popular ? 'border-primary' : ''}`}
-      style={{
-        borderColor: isSelected ? plan.color : undefined,
-        boxShadow: isSelected ? `0 0 20px ${plan.color}20` : undefined
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={onSelect}
-    >
+  className={`relative cursor-pointer transition-all duration-300 transform hover:scale-105 ${
+    isSelected
+      ? 'ring-2 ring-primary shadow-lg'
+      : 'hover:shadow-md'
+  } ${
+    plan.popular
+      ? 'border-2 border-primary shadow-lg shadow-primary/30 animate-popularGlow'
+      : ''
+  }`}
+  style={{
+    borderColor: plan.popular ? plan.color : isSelected ? plan.color : undefined,
+    boxShadow: plan.popular
+      ? `0 0 20px ${plan.color}40, 0 0 40px ${plan.color}20`
+      : isSelected
+      ? `0 0 20px ${plan.color}20`
+      : undefined
+  }}
+  onMouseEnter={() => setIsHovered(true)}
+  onMouseLeave={() => setIsHovered(false)}
+  onClick={onSelect}
+>
+
       {plan.popular && (
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
           <Badge className="bg-primary text-primary-foreground px-3 py-1 flex items-center gap-1">

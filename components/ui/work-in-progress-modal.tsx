@@ -33,7 +33,8 @@ export function WorkInProgressModal({ isOpen, onClose, planName, onSelectFree }:
       />
       
       {/* Modal */}
-      <Card className="relative w-full max-w-md mx-auto bg-background border shadow-xl">
+      <Card className="relative w-full max-w-md mx-auto border shadow-xl" style={{ backgroundColor: 'hsl(var(--popover))' }}>
+
         {/* Header */}
         <CardHeader className="text-center pb-4">
           <div className="flex justify-between items-start mb-4">
