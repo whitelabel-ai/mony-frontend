@@ -155,3 +155,21 @@ body {
     border-color: hsl(var(--border));
   }
 }
+
+/* Forzar fondo en SelectContent y modales */
+[data-radix-popper-content-wrapper] {
+  background-color: hsl(var(--popover)) !important;
+}
+
+.SelectContent,
+.DialogContent,
+.PopoverContent {
+  background-color: hsl(var(--popover)) !important;
+}
+
+@layer utilities {
+  .text-destructive {
+    @apply text-red-600 font-semibold bg-red-50 border border-red-200 rounded px-2 py-1
+           dark:text-red-400 dark:bg-red-950 dark:border-red-800;
+  }
+}
