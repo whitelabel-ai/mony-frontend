@@ -77,7 +77,11 @@ export function useAuth() {
       setUser(response.user)
       setIsAuthenticated(true)
       toast.success('¡Registro exitoso! Bienvenido a Mony')
-      router.push('/dashboard')
+
+      // 🔽 Redirigir a WhatsApp en lugar de dashboard
+      window.location.href = "https://wa.me/573143400476?text=Hola,%20ya%20active%20mi%20cuenta";
+
+      // router.push('/dashboard')
       return response
     } catch (error: any) {
       toast.error(error.message || 'Error al registrarse')
@@ -85,7 +89,8 @@ export function useAuth() {
     } finally {
       setLoading(false)
     }
-  }, [router])
+  }, [])
+
 
   /**
    * Función para cerrar sesión
