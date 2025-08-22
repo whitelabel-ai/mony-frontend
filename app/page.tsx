@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/hooks'
 import { Button } from '@/components/ui'
+import Image from 'next/image'
 import { Wallet, TrendingUp, Shield, Smartphone } from 'lucide-react'
 
 /**
@@ -33,7 +34,13 @@ export default function HomePage() {
       <header className="container mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Wallet className="h-8 w-8 text-primary" />
+            <Image
+              src="/logo mony.png"
+              alt="Mony Logo"
+              width={120}
+              height={40}
+              className="h-10 w-auto"
+            />
             <span className="text-2xl font-bold text-primary">Mony</span>
           </div>
           <div className="flex items-center space-x-4">

@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Eye, EyeOff, Wallet, ArrowLeft } from 'lucide-react'
 import { useGuestGuard, useAuth } from '@/hooks'
 import { Button, Input, Label, Card, CardHeader, CardContent } from '@/components/ui'
@@ -77,9 +78,14 @@ export default function LoginPage() {
             <ArrowLeft className="h-4 w-4 mr-1" />
             Volver al inicio
           </Link>
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Wallet className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-primary">Mony</span>
+          <div className="flex items-center justify-center mb-4">
+            <Image
+              src="/logo mony.png"
+              alt="Mony Logo"
+              width={120}
+              height={40}
+              className="h-10 w-auto"
+            />
           </div>
           <h1 className="text-2xl font-bold text-foreground">Bienvenido de vuelta</h1>
           <p className="text-muted-foreground mt-2">

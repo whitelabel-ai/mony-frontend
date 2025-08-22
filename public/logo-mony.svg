@@ -1,0 +1,20 @@
+<svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fondo del logo -->
+  <rect width="120" height="40" rx="8" fill="#10B981"/>
+  
+  <!-- Icono de moneda -->
+  <circle cx="16" cy="20" r="8" fill="#FFFFFF" opacity="0.2"/>
+  <circle cx="16" cy="20" r="6" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+  <text x="16" y="24" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="8" font-weight="bold">$</text>
+  
+  <!-- Texto MONY -->
+  <text x="32" y="26" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="16" font-weight="bold">MONY</text>
+  
+  <!-- Línea decorativa -->
+  <line x1="32" y1="30" x2="80" y2="30" stroke="#FFFFFF" stroke-width="2" opacity="0.6"/>
+  
+  <!-- Puntos decorativos -->
+  <circle cx="85" cy="15" r="2" fill="#FFFFFF" opacity="0.8"/>
+  <circle cx="92" cy="18" r="1.5" fill="#FFFFFF" opacity="0.6"/>
+  <circle cx="98" cy="22" r="1" fill="#FFFFFF" opacity="0.4"/>
+</svg>

@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Eye, EyeOff, Wallet, ArrowLeft, ArrowRight, Check, User, Globe, CreditCard, Bell } from 'lucide-react'
 import { useGuestGuard, useAuth } from '@/hooks'
 import { 
@@ -246,9 +247,14 @@ export default function RegisterPage() {
             <ArrowLeft className="h-4 w-4 mr-1" />
             Volver al inicio
           </Link>
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <Wallet className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold text-primary">Mony</span>
+          <div className="flex items-center justify-center mb-4">
+            <Image
+              src="/logo mony.png"
+              alt="Mony Logo"
+              width={120}
+              height={40}
+              className="h-10 w-auto"
+            />
           </div>
           <h1 className="text-3xl font-bold text-foreground">Crear tu cuenta</h1>
           <p className="text-muted-foreground mt-2">

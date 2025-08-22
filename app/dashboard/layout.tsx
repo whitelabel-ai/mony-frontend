@@ -21,6 +21,7 @@ import {
 import { useAuth, useAuthGuard } from '@/hooks'
 import { Button, Avatar, AvatarFallback, AvatarImage } from '@/components/ui'
 import { cn, getGreeting } from '@/lib/utils'
+import Image from 'next/image'
 
 // ✅ Tipo para los ítems de navegación
 type NavigationItem = {
@@ -186,7 +187,13 @@ function SidebarContent({
     <>
       <div className="flex h-16 items-center justify-between px-6 border-b">
         <div className="flex items-center space-x-2">
-          <Wallet className="h-8 w-8 text-primary" />
+          <Image
+            src="/logo mony.png"
+            alt="Mony Logo"
+            width={120}
+            height={40}
+            className="h-10 w-auto"
+          />
           <span className="text-xl font-bold text-primary">Mony</span>
         </div>
         {onClose && (
