@@ -160,7 +160,7 @@ body {
 [data-radix-popper-content-wrapper],
 .SelectContent,
 .DialogContent,
-.PopoverContent {
+.PopoverContents {
   background-color: hsl(var(--popover)) !important;
   color: hsl(var(--popover-foreground)) !important;
   border: 1px solid hsl(var(--border)) !important;

@@ -31,6 +31,8 @@ export interface RegisterData {
   confirmPassword: string
   moneda: string
   planSeleccionado: string
+  frecuenciaRecordatorios?: 'nunca' | 'diario' | 'semanal' | 'mensual'
+  frecuenciaInformes?: 'nunca' | 'diario' | 'semanal' | 'mensual'
 }
 
 // Tipos de categorías
@@ -308,6 +310,24 @@ export interface RegisterStepData {
   
   // Paso 3: Plan de suscripción
   selectedPlan?: string
+  
+  // Paso 4: Preferencias de notificación
+  frecuenciaRecordatorios?: 'nunca' | 'diario' | 'semanal' | 'mensual'
+  frecuenciaInformes?: 'nunca' | 'diario' | 'semanal' | 'mensual'
 }
 
-export type RegisterStep = 1 | 2 | 3
+export type RegisterStep = 1 | 2 | 3 | 4
+
+// Tipos para las preferencias de notificación
+export type FrecuenciaNotificacion = 'nunca' | 'diario' | 'semanal' | 'mensual'
+
+export interface NotificationPreferences {
+  frecuenciaRecordatorios: FrecuenciaNotificacion
+  frecuenciaInformes: FrecuenciaNotificacion
+}
+
+// Tipo para la respuesta del contador de usuarios
+export interface UsersCountResponse {
+  totalUsers: number
+  message: string
+}

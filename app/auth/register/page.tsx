@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Link from 'next/link'
-import { Eye, EyeOff, Wallet, ArrowLeft, ArrowRight, Check, User, Globe, CreditCard } from 'lucide-react'
+import { Eye, EyeOff, Wallet, ArrowLeft, ArrowRight, Check, User, Globe, CreditCard, Bell } from 'lucide-react'
 import { useGuestGuard, useAuth } from '@/hooks'
 import { 
   Button, 
@@ -22,6 +22,7 @@ import {
   CountryPhoneInput,
   SubscriptionPlans
 } from '@/components/ui'
+import { WelcomeModal } from '@/components/ui/welcome-modal'
 import { apiService } from '@/lib/api'
 import { CURRENCIES, COUNTRY_CODES, type RegisterStepData, type RegisterStep } from '@/types'
 import { isValidEmail } from '@/lib/utils'
@@ -59,27 +60,36 @@ const step2Schema = z.object({
     .regex(/^\d+$/, 'Solo se permiten números'),
   moneda: z.string().min(1, 'Selecciona una moneda'),
 })
-
 const step3Schema = z.object({
+  frecuenciaRecordatorios: z.enum(['nunca', 'diario', 'semanal', 'mensual']),
+  frecuenciaInformes: z.enum(['nunca', 'diario', 'semanal', 'mensual']),
+})
+
+const step4Schema = z.object({
   selectedPlan: z.string().min(1, 'Selecciona un plan'),
 })
 
 type Step1Data = z.infer<typeof step1Schema>
 type Step2Data = z.infer<typeof step2Schema>
 type Step3Data = z.infer<typeof step3Schema>
+type Step4Data = z.infer<typeof step4Schema>
 
 /**
  * Página de registro con flujo por pasos
  */
 export default function RegisterPage() {
   const [currentStep, setCurrentStep] = useState<RegisterStep>(1)
+  const [isLoading, setIsLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false)
+  const [registeredUserName, setRegisteredUserName] = useState('')
   const [formData, setFormData] = useState<RegisterStepData>({
     countryCode: 'CO',
     moneda: 'COP',
-    selectedPlan: 'free'
+    selectedPlan: 'free',
+    frecuenciaRecordatorios: 'nunca',
+    frecuenciaInformes: 'nunca'
   })
   
   const { loading: authLoading } = useGuestGuard()
@@ -104,9 +114,16 @@ export default function RegisterPage() {
       moneda: formData.moneda || 'COP',
     }
   })
-
-  const step3Form = useForm<Step3Data>({
+    const step3Form = useForm<Step3Data>({
     resolver: zodResolver(step3Schema),
+    defaultValues: {
+      frecuenciaRecordatorios: formData.frecuenciaRecordatorios || 'nunca',
+      frecuenciaInformes: formData.frecuenciaInformes || 'nunca',
+    }
+  })
+
+  const step4Form = useForm<Step4Data>({
+    resolver: zodResolver(step4Schema),
     defaultValues: {
       selectedPlan: formData.selectedPlan || 'free',
     }
@@ -130,9 +147,15 @@ export default function RegisterPage() {
         const data = step2Form.getValues()
         setFormData(prev => ({ ...prev, ...data }))
       }
+    } else if (currentStep === 3) {
+      isValid = await step3Form.trigger()
+      if (isValid) {
+        const data = step3Form.getValues()
+        setFormData(prev => ({ ...prev, ...data }))
+      }
     }
     
-    if (isValid && currentStep < 3) {
+    if (isValid && currentStep < 4) {
       setCurrentStep((prev) => (prev + 1) as RegisterStep)
     }
   }
@@ -147,14 +170,23 @@ export default function RegisterPage() {
   }
 
   /**
+   * Manejar cierre del modal de bienvenida
+   */
+  const handleWelcomeModalClose = () => {
+    setShowWelcomeModal(false)
+    // Redirigir al dashboard después de cerrar el modal
+    window.location.href = '/dashboard'
+  }
+
+  /**
    * Enviar formulario final
    */
   const handleSubmit = async () => {
-    const isStep3Valid = await step3Form.trigger()
-    if (!isStep3Valid) return
+    const isStep4Valid = await step4Form.trigger()
+    if (!isStep4Valid) return
 
-    const step3Data = step3Form.getValues()
-    const finalData = { ...formData, ...step3Data }
+    const step4Data = step4Form.getValues()
+    const finalData = { ...formData, ...step4Data }
 
     try {
       setIsLoading(true)
@@ -172,10 +204,14 @@ export default function RegisterPage() {
         confirmPassword: finalData.confirmPassword!,
         moneda: finalData.moneda!,
         planSeleccionado: finalData.selectedPlan!,
+        frecuenciaRecordatorios: finalData.frecuenciaRecordatorios!,
+        frecuenciaInformes: finalData.frecuenciaInformes!,
       }
       
       await register(registerData)
-      // La redirección se maneja automáticamente en el hook useAuth
+      // Mostrar modal de bienvenida en lugar de redirigir inmediatamente
+      setRegisteredUserName(finalData.nombreCompleto!)
+      setShowWelcomeModal(true)
     } catch (error) {
       // El error se maneja en el hook useAuth
     } finally {
@@ -194,7 +230,8 @@ export default function RegisterPage() {
   const steps = [
     { number: 1, title: 'Información Personal', icon: User, completed: currentStep > 1 },
     { number: 2, title: 'Configuración Regional', icon: Globe, completed: currentStep > 2 },
-    { number: 3, title: 'Plan de Suscripción', icon: CreditCard, completed: false },
+    { number: 3, title: 'Preferencias de Notificación', icon: Bell, completed: currentStep > 3 },
+    { number: 4, title: 'Plan de Suscripción', icon: CreditCard, completed: false },
   ]
 
   return (
@@ -270,12 +307,14 @@ export default function RegisterPage() {
             <h2 className="text-xl font-semibold">
               {currentStep === 1 && 'Información Personal'}
               {currentStep === 2 && 'Configuración Regional'}
-              {currentStep === 3 && 'Elige tu Plan'}
+              {/* {currentStep === 3 && 'Preferencias de Notificación'} */}
+              {currentStep === 4 && 'Plan de Suscripción'}
             </h2>
             <p className="text-muted-foreground text-sm">
               {currentStep === 1 && 'Ingresa tus datos básicos para crear tu cuenta'}
               {currentStep === 2 && 'Configura tu región y moneda preferida'}
-              {currentStep === 3 && 'Selecciona el plan que mejor se adapte a tus necesidades'}
+              {/* {currentStep === 3 && 'Aquí puedes elegir cada cuánto tiempo Mony te enviará recordatorios para registrar tus gastos y la frecuencia con la que recibirás informes de análisis financiero y reportes personalizados.'} */}
+              {currentStep === 4 && 'Selecciona el plan que mejor se adapte a tus necesidades'}
             </p>
           </CardHeader>
           <CardContent>
@@ -407,16 +446,75 @@ export default function RegisterPage() {
               </form>
             )}
 
-            {/* Paso 3: Plan de Suscripción */}
+            {/* Paso 3: Preferencias de Notificación */}
             {currentStep === 3 && (
+              <form className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-lg font-semibold mb-2">Configura tus notificaciones</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Aquí puedes elegir cada cuánto tiempo Mony te enviará recordatorios para registrar tus gastos y la frecuencia con la que recibirás informes de análisis financiero y reportes personalizados.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="frecuenciaRecordatorios">Recordatorios de gastos</Label>
+                    <Select
+                      value={step3Form.watch('frecuenciaRecordatorios')}
+                      onValueChange={(value) => step3Form.setValue('frecuenciaRecordatorios', value as any)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona la frecuencia" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="nunca">Nunca</SelectItem>
+                        <SelectItem value="diario">Diario</SelectItem>
+                        <SelectItem value="semanal">Semanal</SelectItem>
+                        <SelectItem value="mensual">Mensual</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {step3Form.formState.errors.frecuenciaRecordatorios && (
+                      <p className="text-sm text-destructive">
+                        {step3Form.formState.errors.frecuenciaRecordatorios.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <Label htmlFor="frecuenciaInformes">Informes financieros</Label>
+                    <Select
+                      value={step3Form.watch('frecuenciaInformes')}
+                      onValueChange={(value) => step3Form.setValue('frecuenciaInformes', value as any)}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona la frecuencia" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="nunca">Nunca</SelectItem>
+                        <SelectItem value="diario">Diario</SelectItem>
+                        <SelectItem value="semanal">Semanal</SelectItem>
+                        <SelectItem value="mensual">Mensual</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {step3Form.formState.errors.frecuenciaInformes && (
+                      <p className="text-sm text-destructive">
+                        {step3Form.formState.errors.frecuenciaInformes.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </form>
+            )}
+            {/* Paso 4: Plan de Suscripción */}
+            {currentStep === 4 && (
               <div className="space-y-6">
                 <SubscriptionPlans
-                  selectedPlan={step3Form.watch('selectedPlan')}
-                  onPlanSelect={(planId) => step3Form.setValue('selectedPlan', planId)}
+                  selectedPlan={step4Form.watch('selectedPlan')}
+                  onPlanSelect={(planId) => step4Form.setValue('selectedPlan', planId)}
                 />
-                {step3Form.formState.errors.selectedPlan && (
+                {step4Form.formState.errors.selectedPlan && (
                   <p className="text-sm text-destructive text-center">
-                    {step3Form.formState.errors.selectedPlan.message}
+                    {step4Form.formState.errors.selectedPlan.message}
                   </p>
                 )}
               </div>
@@ -435,7 +533,7 @@ export default function RegisterPage() {
                 Anterior
               </Button>
 
-              {currentStep < 3 ? (
+              {currentStep < 4 ? (
                 <Button type="button" onClick={handleNextStep}>
                   Siguiente
                   <ArrowRight className="h-4 w-4 ml-2" />
@@ -462,6 +560,13 @@ export default function RegisterPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal de bienvenida */}
+      <WelcomeModal
+        isOpen={showWelcomeModal}
+        onClose={handleWelcomeModalClose}
+        userName={registeredUserName}
+      />
     </div>
   )
 }

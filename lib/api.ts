@@ -6,6 +6,7 @@ import type {
   LoginData,
   RegisterData,
   UserProfile,
+  UsersCountResponse,
 } from '@/types'
 
 /**
@@ -133,7 +134,7 @@ class ApiService {
   }
 
   /**
-   * Obtener perfil del usuario
+   * Obtener perfil del usuario autenticado
    */
   public async getUserProfile(): Promise<UserProfile> {
     try {
@@ -141,6 +142,18 @@ class ApiService {
       return response.data
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Error al obtener el perfil')
+    }
+  }
+
+  /**
+   * Obtener contador total de usuarios registrados
+   */
+  public async getUsersCount(): Promise<UsersCountResponse> {
+    try {
+      const response = await this.api.get<UsersCountResponse>('/auth/users-count')
+      return response.data
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Error al obtener el contador de usuarios')
     }
   }
 
@@ -202,6 +215,7 @@ export const {
   login,
   logout,
   getUserProfile,
+  getUsersCount,
   isAuthenticated,
   get,
   post,
