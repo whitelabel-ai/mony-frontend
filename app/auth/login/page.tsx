@@ -80,7 +80,7 @@ export default function LoginPage() {
           </Link>
           <div className="flex items-center justify-center mb-4">
             <Image
-              src="/logo mony.png"
+              src="/logo-mony.svg"
               alt="Mony Logo"
               width={120}
               height={40}

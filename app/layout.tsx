@@ -36,8 +36,8 @@ export default function RootLayout({
   return (
     <html lang="es" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/logo mony.png" />
-        <link rel="apple-touch-icon" href="/logo mony.png" />
+        <link rel="icon" href="/logo-mony.svg" />
+        <link rel="apple-touch-icon" href="/logo-mony.svg" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
       </head>

@@ -61,6 +61,102 @@ export interface Transaccion {
   fechaCreacion: string
 }
 
+// Tipos para el backend de transacciones
+export interface Transaction {
+  id: string
+  descripcion: string
+  monto: number
+  moneda: string
+  tipo: 'INGRESO' | 'GASTO'
+  fechaTransaccion: string
+  fechaCreacion: string
+  notas?: string
+  createdAt: string
+  updatedAt: string
+  categoria?: {
+    id: string
+    nombre: string
+    icono: string
+    color: string
+    tipo: 'INGRESO' | 'GASTO'
+  }
+  fuenteRegistro?: {
+    id: string
+    nombre: string
+    descripcion?: string
+  }
+}
+
+export interface CreateTransactionDto {
+  descripcion: string
+  monto: number
+  moneda: string
+  tipo: 'INGRESO' | 'GASTO'
+  fechaTransaccion?: string
+  idCategoria: string
+  idFuente?: string
+  notas?: string
+}
+
+export interface UpdateTransactionDto {
+  descripcion?: string
+  monto?: number
+  moneda?: string
+  tipo?: 'INGRESO' | 'GASTO'
+  fechaTransaccion?: string
+  idCategoria?: string
+  idFuente?: string
+  notas?: string
+}
+
+export interface FilterTransactionsDto {
+  fechaInicio?: string
+  fechaFin?: string
+  tipo?: 'INGRESO' | 'GASTO'
+  idCategoria?: string
+  busqueda?: string
+  pagina?: number
+  limite?: number
+  ordenarPor?: 'fechaTransaccion' | 'monto' | 'descripcion'
+  direccion?: 'asc' | 'desc'
+}
+
+export interface PaginatedTransactionsResponse {
+  transacciones: Transaction[]
+  paginacion: {
+    paginaActual: number
+    totalPaginas: number
+    totalElementos: number
+    elementosPorPagina: number
+    tieneAnterior: boolean
+    tieneSiguiente: boolean
+  }
+}
+
+export interface TransactionAnalytics {
+  resumen: {
+    totalIngresos: number
+    totalGastos: number
+    balanceNeto: number
+    transaccionesTotales: number
+    promedioIngresos: number
+    promedioGastos: number
+  }
+  desglosePorCategorias: {
+    categoria: string
+    totalMonto: number
+    cantidadTransacciones: number
+    porcentajeDelTotal: number
+    tipo: 'INGRESO' | 'GASTO'
+  }[]
+  seriesTiempo: {
+    fecha: string
+    ingresos: number
+    gastos: number
+    balance: number
+  }[]
+}
+
 // Tipos de metas de ahorro
 export interface MetaAhorro {
   id: string
