@@ -57,7 +57,8 @@ export function useAuth() {
       setUser(response.user)
       setIsAuthenticated(true)
       toast.success('¡Inicio de sesión exitoso!')
-      router.push('/dashboard')
+      window.location.href = "https://wa.me/573143400476?text=Hola,%20ya%20active%20mi%20cuenta";
+      // router.push('/dashboard')
       return response
     } catch (error: any) {
       toast.error(error.message || 'Error al iniciar sesión')
@@ -65,7 +66,7 @@ export function useAuth() {
     } finally {
       setLoading(false)
     }
-  }, [router])
+  }, [])
 
   /**
    * Función para registrarse

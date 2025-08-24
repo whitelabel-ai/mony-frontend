@@ -305,48 +305,49 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       'Incluye publicidad'
     ],
     color: '#64748b'
-  },
-  {
-    id: 'premium',
-    name: 'Plan Premium',
-    price: 9.99,
-    currency: 'USD',
-    interval: 'month',
-    description: 'Para usuarios comprometidos que quieren control total de sus finanzas',
-    features: [
-      '✅ Todo lo del Plan Free',
-      '🧠 Coach de IA completo',
-      '🎯 Metas de ahorro',
-      '💰 Gestión de presupuestos',
-      '📈 Dashboard avanzado',
-      '🎙️ Registro por voz y fotos',
-      '✨ Categorías personalizadas',
-      '🗓️ Gestión de suscripciones'
-    ],
-    limitations: [
-      'Solo un perfil financiero',
-      'Sin herramientas para contabilidad'
-    ],
-    popular: true,
-    color: '#3b82f6'
-  },
-  {
-    id: 'pro',
-    name: 'Plan Pro Empresarial',
-    price: 49.99,
-    currency: 'USD',
-    interval: 'month',
-    description: 'Para freelancers y emprendedores que necesitan gestión empresarial',
-    features: [
-      '👑 Todo lo del Plan Premium',
-      '📁 Hasta 3 perfiles financieros',
-      '📤 Exportación a PDF y Excel',
-      '✉️ Envío directo a contador',
-      '🔍 Filtros y búsqueda avanzada',
-      '⭐ Soporte prioritario'
-    ],
-    color: '#8b5cf6'
   }
+  // ,
+  // {
+  //   id: 'premium',
+  //   name: 'Plan Premium',
+  //   price: 9.99,
+  //   currency: 'USD',
+  //   interval: 'month',
+  //   description: 'Para usuarios comprometidos que quieren control total de sus finanzas',
+  //   features: [
+  //     '✅ Todo lo del Plan Free',
+  //     '🧠 Coach de IA completo',
+  //     '🎯 Metas de ahorro',
+  //     '💰 Gestión de presupuestos',
+  //     '📈 Dashboard avanzado',
+  //     '🎙️ Registro por voz y fotos',
+  //     '✨ Categorías personalizadas',
+  //     '🗓️ Gestión de suscripciones'
+  //   ],
+  //   limitations: [
+  //     'Solo un perfil financiero',
+  //     'Sin herramientas para contabilidad'
+  //   ],
+  //   popular: true,
+  //   color: '#3b82f6'
+  // },
+  // {
+  //   id: 'pro',
+  //   name: 'Plan Pro Empresarial',
+  //   price: 49.99,
+  //   currency: 'USD',
+  //   interval: 'month',
+  //   description: 'Para freelancers y emprendedores que necesitan gestión empresarial',
+  //   features: [
+  //     '👑 Todo lo del Plan Premium',
+  //     '📁 Hasta 3 perfiles financieros',
+  //     '📤 Exportación a PDF y Excel',
+  //     '✉️ Envío directo a contador',
+  //     '🔍 Filtros y búsqueda avanzada',
+  //     '⭐ Soporte prioritario'
+  //   ],
+  //   color: '#8b5cf6'
+  // }
 ]
 
 // Tipos de iconos para categorías
