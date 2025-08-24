@@ -17,7 +17,7 @@ import {
 import { Line, Bar, Scatter } from 'react-chartjs-2'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { TrendingUp, TrendingDown, DollarSign, Calendar, Target } from 'lucide-react'
+import { TrendingUp, TrendingDown, DollarSign, Calendar, Target, BarChart3 } from 'lucide-react'
 
 // Registrar componentes adicionales
 ChartJS.register(

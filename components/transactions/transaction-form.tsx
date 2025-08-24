@@ -41,7 +41,7 @@ interface TransactionFormProps {
   transaction?: Transaction
   onSuccess?: () => void
   onCancel?: () => void
-  mode?: 'create' | 'edit'
+  mode?: 'create' | 'edit' | 'view'
 }
 
 export function TransactionForm({ 

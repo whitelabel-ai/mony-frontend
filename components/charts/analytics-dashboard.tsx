@@ -11,7 +11,7 @@ import {
   TrendingUp,
   TrendingDown,
   DollarSign,
-  PieChart,
+  PieChart as PieChartIcon,
   BarChart3,
   Target,
   AlertCircle,
@@ -19,7 +19,7 @@ import {
   Clock
 } from 'lucide-react'
 import { AreaChart, ComparisonBarChart, AdvancedMetricCard, FinancialSummary } from './advanced-charts'
-import { PieChart as BasePieChart, LineChart } from './index'
+import { PieChart, LineChart } from './index'
 import { Transaction } from '@/types'
 
 interface AnalyticsDashboardProps {
@@ -296,7 +296,7 @@ export function AnalyticsDashboard({ transactions, period, className }: Analytic
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <PieChart className="h-5 w-5" />
+                <PieChartIcon className="h-5 w-5" />
                 Análisis por Categorías
               </CardTitle>
               <CardDescription>

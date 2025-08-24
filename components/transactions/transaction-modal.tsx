@@ -142,7 +142,7 @@ export function TransactionModal({
         </DialogHeader>
         
         <TransactionForm
-          transaction={transaction}
+          transaction={transaction || undefined}
           mode={mode}
           onSuccess={handleSuccess}
           onCancel={handleCancel}
