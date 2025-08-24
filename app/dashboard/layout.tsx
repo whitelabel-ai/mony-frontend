@@ -188,7 +188,7 @@ function SidebarContent({
       <div className="flex h-16 items-center justify-between px-6 border-b">
         <div className="flex items-center space-x-2">
           <Image
-            src="/logo mony.png"
+            src="/logo-mony.png"
             alt="Mony Logo"
             width={120}
             height={40}

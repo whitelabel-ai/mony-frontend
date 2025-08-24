@@ -36,7 +36,7 @@ export default function HomePage() {
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Image
-              src="/logo mony.png"
+              src="/logo-mony.png"
               alt="Mony Logo"
               width={120}
               height={40}

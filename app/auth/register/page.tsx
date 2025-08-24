@@ -251,7 +251,7 @@ export default function RegisterPage() {
           </Link>
           <div className="flex items-center justify-center mb-4">
             <Image
-              src="/logo mony.png"
+              src="/logo-mony.png"
               alt="Mony Logo"
               width={120}
               height={40}
