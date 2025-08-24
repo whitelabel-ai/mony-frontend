@@ -50,7 +50,7 @@ export function WelcomeModal({ isOpen, onClose, userName }: WelcomeModalProps) {
         }
         return prev - 1
       })
-    }, 10000)
+    }, 1000)
 
     return () => clearInterval(timer)
   }, [isOpen, onClose])
@@ -58,7 +58,7 @@ export function WelcomeModal({ isOpen, onClose, userName }: WelcomeModalProps) {
   // Reiniciar temporizador cuando se abre el modal
   useEffect(() => {
     if (isOpen) {
-      setTimeLeft(10)
+      setTimeLeft(5)
     }
   }, [isOpen])
 
@@ -101,7 +101,7 @@ export function WelcomeModal({ isOpen, onClose, userName }: WelcomeModalProps) {
                     <div className="h-8 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
                   ) : (
                     <Badge variant="secondary" className="text-lg font-bold px-3 py-1">
-                       {(usersCount + 1).toLocaleString()}
+                       {(usersCount).toLocaleString()}
                     </Badge>
                   )}
                   <span className="text-sm font-medium"> de 300 usuarios!</span>

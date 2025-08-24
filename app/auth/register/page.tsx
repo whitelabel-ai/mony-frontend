@@ -260,7 +260,7 @@ export default function RegisterPage() {
           </div>
           <h1 className="text-3xl font-bold text-foreground">Crear tu cuenta</h1>
           <p className="text-muted-foreground mt-2">
-            Configura tu perfil financiero en solo 3 pasos
+            Configura tu perfil financiero en solo 4 pasos
           </p>
         </div>
 
