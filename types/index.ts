@@ -247,27 +247,30 @@ export const CURRENCIES: Currency[] = [
 ]
 
 // Tipos y constantes para códigos de países
-export interface CountryCode {
+export interface CountryData {
   code: string
   name: string
   dialCode: string
   flag: string
+  currency: string
+  currencyName: string
+  currencySymbol: string
 }
 
-export const COUNTRY_CODES: CountryCode[] = [
-  { code: 'CO', name: 'Colombia', dialCode: '+57', flag: '🇨🇴' },
-  { code: 'US', name: 'Estados Unidos', dialCode: '+1', flag: '🇺🇸' },
-  { code: 'MX', name: 'México', dialCode: '+52', flag: '🇲🇽' },
-  { code: 'AR', name: 'Argentina', dialCode: '+54', flag: '🇦🇷' },
-  { code: 'PE', name: 'Perú', dialCode: '+51', flag: '🇵🇪' },
-  { code: 'CL', name: 'Chile', dialCode: '+56', flag: '🇨🇱' },
-  { code: 'BR', name: 'Brasil', dialCode: '+55', flag: '🇧🇷' },
-  { code: 'UY', name: 'Uruguay', dialCode: '+598', flag: '🇺🇾' },
-  { code: 'BO', name: 'Bolivia', dialCode: '+591', flag: '🇧🇴' },
-  { code: 'EC', name: 'Ecuador', dialCode: '+593', flag: '🇪🇨' },
-  { code: 'VE', name: 'Venezuela', dialCode: '+58', flag: '🇻🇪' },
-  { code: 'PY', name: 'Paraguay', dialCode: '+595', flag: '🇵🇾' },
-  { code: 'ES', name: 'España', dialCode: '+34', flag: '🇪🇸' },
+export const COUNTRY: CountryData[] = [
+  { code: 'CO', name: 'Colombia', dialCode: '+57', flag: '🇨🇴', currency: 'COP', currencyName: 'Peso Colombiano', currencySymbol: '$' },
+  { code: 'US', name: 'Estados Unidos', dialCode: '+1', flag: '🇺🇸', currency: 'USD', currencyName: 'Dólar Estadounidense', currencySymbol: '$' },
+  { code: 'MX', name: 'México', dialCode: '+52', flag: '🇲🇽', currency: 'MXN', currencyName: 'Peso Mexicano', currencySymbol: '$' },
+  { code: 'AR', name: 'Argentina', dialCode: '+54', flag: '🇦🇷', currency: 'ARS', currencyName: 'Peso Argentino', currencySymbol: '$' },
+  { code: 'PE', name: 'Perú', dialCode: '+51', flag: '🇵🇪', currency: 'PEN', currencyName: 'Sol Peruano', currencySymbol: 'S/' },
+  { code: 'CL', name: 'Chile', dialCode: '+56', flag: '🇨🇱', currency: 'CLP', currencyName: 'Peso Chileno', currencySymbol: '$' },
+  { code: 'BR', name: 'Brasil', dialCode: '+55', flag: '🇧🇷', currency: 'BRL', currencyName: 'Real Brasileño', currencySymbol: 'R$' },
+  { code: 'UY', name: 'Uruguay', dialCode: '+598', flag: '🇺🇾', currency: 'UYU', currencyName: 'Peso Uruguayo', currencySymbol: '$' },
+  { code: 'BO', name: 'Bolivia', dialCode: '+591', flag: '🇧🇴', currency: 'BOB', currencyName: 'Boliviano', currencySymbol: 'Bs' },
+  { code: 'EC', name: 'Ecuador', dialCode: '+593', flag: '🇪🇨', currency: 'USD', currencyName: 'Dólar Estadounidense', currencySymbol: '$' },
+  { code: 'VE', name: 'Venezuela', dialCode: '+58', flag: '🇻🇪', currency: 'USD', currencyName: 'Dólar Estadounidense', currencySymbol: '$' },
+  { code: 'PY', name: 'Paraguay', dialCode: '+595', flag: '🇵🇾', currency: 'USD', currencyName: 'Dólar Estadounidense', currencySymbol: '$' },
+  { code: 'ES', name: 'España', dialCode: '+34', flag: '🇪🇸', currency: 'EUR', currencyName: 'Euro', currencySymbol: '€' },
 ]
 
 // Tipos para planes de suscripción
@@ -401,6 +404,7 @@ export interface RegisterStepData {
   confirmPassword?: string
   
   // Paso 2: Configuración regional
+  pais?: string
   countryCode?: string
   phoneNumber?: string
   moneda?: string

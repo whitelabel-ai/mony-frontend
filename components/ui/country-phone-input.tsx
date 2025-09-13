@@ -1,135 +1,153 @@
-'use client'
-
+import * as React from 'react'
 import { useState } from 'react'
-import { Check, ChevronDown } from 'lucide-react'
-import { Button } from './button'
+import { ChevronDown, Phone } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './select'
 import { Input } from './input'
 import { Label } from './label'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-} from './command'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from './popover'
-import { COUNTRY_CODES, type CountryCode } from '@/types'
+import { COUNTRY } from '@/types'
 
-interface CountryPhoneInputProps {
-  countryCode?: string
+export interface CountryPhoneInputProps {
+  selectedCountry?: string
   phoneNumber?: string
-  onCountryChange: (countryCode: string) => void
-  onPhoneChange: (phoneNumber: string) => void
-  error?: string
+  onCountryChange?: (countryCode: string) => void
+  onPhoneChange?: (phoneNumber: string) => void
+  onCurrencyChange?: (currency: string) => void
   className?: string
+  error?: string
+  disabled?: boolean
 }
 
 /**
- * Componente para seleccionar país y número de teléfono
+ * Componente para selección de país y entrada de número telefónico
+ * Incluye funcionalidad automática de moneda basada en el país
  */
-export function CountryPhoneInput({
-  countryCode = 'CO',
+export const CountryPhoneInput = React.forwardRef<
+  HTMLDivElement,
+  CountryPhoneInputProps
+>(({ 
+  selectedCountry = 'CO',
   phoneNumber = '',
   onCountryChange,
   onPhoneChange,
+  onCurrencyChange,
+  className,
   error,
-  className
-}: CountryPhoneInputProps) {
-  const [open, setOpen] = useState(false)
-  
-  const selectedCountry = COUNTRY_CODES.find(country => country.code === countryCode) || COUNTRY_CODES[0]
+  disabled = false,
+  ...props 
+}, ref) => {
+  const [internalCountry, setInternalCountry] = useState(selectedCountry)
+  const [internalPhone, setInternalPhone] = useState(phoneNumber)
 
-  const handleCountrySelect = (country: CountryCode) => {
-    onCountryChange(country.code)
-    setOpen(false)
+  // Encontrar datos del país seleccionado
+  const currentCountryData = COUNTRY.find(c => c.code === internalCountry) || COUNTRY[0]
+
+  const handleCountryChange = (countryCode: string) => {
+    setInternalCountry(countryCode)
+    const countryData = COUNTRY.find(c => c.code === countryCode)
+    
+    if (countryData) {
+      onCountryChange?.(countryCode)
+      // Automáticamente actualizar la moneda cuando cambie el país
+      onCurrencyChange?.(countryData.currency)
+    }
   }
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Solo permitir números
-    const value = e.target.value.replace(/\D/g, '')
-    onPhoneChange(value)
+    const value = e.target.value.replace(/\D/g, '') // Solo números
+    setInternalPhone(value)
+    onPhoneChange?.(value)
   }
 
   return (
-    <div className={`space-y-2 ${className}`}>
-      <Label htmlFor="phone">Número de WhatsApp</Label>
+    <div ref={ref} className={cn('space-y-2', className)} {...props}>
+      <Label className="text-sm font-medium">Número de WhatsApp</Label>
+      
       <div className="flex gap-2">
         {/* Selector de país */}
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              className="w-[140px] justify-between px-3"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-lg">{selectedCountry.flag}</span>
-                <span className="text-sm font-medium">{selectedCountry.dialCode}</span>
+        <div className="w-48">
+          <Select
+            value={internalCountry}
+            onValueChange={handleCountryChange}
+            disabled={disabled}
+          >
+            <SelectTrigger className={cn(
+              'h-10',
+              error && 'border-destructive'
+            )}>
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-lg flex-shrink-0">{currentCountryData.flag}</span>
+                <span className="text-sm text-muted-foreground flex-shrink-0">
+                  {currentCountryData.dialCode}
+                </span>
+                <span className="text-sm truncate">
+                  {currentCountryData.name}
+                </span>
               </div>
-              <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-[300px] p-0 bg-background border border-border shadow-lg" align="start">
-            <Command className="bg-background">
-              <CommandInput placeholder="Buscar país..." className="h-9 bg-background" />
-              <CommandEmpty className="bg-background">No se encontró el país.</CommandEmpty>
-              <CommandGroup className="max-h-[200px] overflow-auto bg-background">
-                {COUNTRY_CODES.map((country) => (
-                  <CommandItem
-                    key={country.code}
-                    value={`${country.name} ${country.dialCode}`}
-                    onSelect={() => handleCountrySelect(country)}
-                    className="flex items-center gap-2 cursor-pointer hover:bg-accent hover:text-accent-foreground bg-background"
-                  >
+            </SelectTrigger>
+            <SelectContent>
+              {COUNTRY.map((country) => (
+                <SelectItem key={country.code} value={country.code}>
+                  <div className="flex items-center gap-3 w-full">
                     <span className="text-lg">{country.flag}</span>
-                    <div className="flex-1">
-                      <div className="font-medium">{country.name}</div>
-                      <div className="text-sm text-muted-foreground">{country.dialCode}</div>
+                    <div className="flex flex-col min-w-0 flex-1">
+                      <span className="text-sm font-medium truncate">{country.name}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {country.dialCode} • {country.currencySymbol} {country.currency}
+                      </span>
                     </div>
-                    <Check
-                      className={`ml-auto h-4 w-4 ${
-                        country.code === countryCode ? 'opacity-100' : 'opacity-0'
-                      }`}
-                    />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </Command>
-          </PopoverContent>
-        </Popover>
+                  </div>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-        {/* Input del número */}
-        <div className="flex-1 relative">
-          <Input
-            id="phone"
-            type="tel"
-            placeholder="300 123 4567"
-            value={phoneNumber}
-            onChange={handlePhoneChange}
-            className={`pl-3 ${error ? 'border-destructive' : ''}`}
-            maxLength={15}
-          />
+        {/* Input del número de teléfono */}
+        <div className="flex-1">
+          <div className="relative">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2 text-muted-foreground">
+              <span className="text-sm font-medium">{currentCountryData.dialCode}</span>
+              <div className="w-px h-4 bg-border"></div>
+            </div>
+            <Input
+              type="tel"
+              value={internalPhone}
+              onChange={handlePhoneChange}
+              placeholder="Número de teléfono"
+              className={cn(
+                'pl-16',
+                error && 'border-destructive'
+              )}
+              disabled={disabled}
+              maxLength={15}
+            />
+          </div>
         </div>
       </div>
-      
-      {/* Número completo preview */}
-      {phoneNumber && (
-        <div className="text-sm text-muted-foreground">
-          Número completo: <span className="font-medium">{selectedCountry.dialCode} {phoneNumber}</span>
-        </div>
-      )}
-      
-      {/* Error */}
+
+      {/* Información adicional */}
+      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <Phone className="h-3 w-3" />
+        <span>
+          Moneda automática: {currentCountryData.currencySymbol} {currentCountryData.currencyName}
+        </span>
+      </div>
+
+      {/* Mensaje de error */}
       {error && (
         <p className="text-sm text-destructive">{error}</p>
       )}
     </div>
   )
-}
+})
+
+CountryPhoneInput.displayName = 'CountryPhoneInput'
 
 export default CountryPhoneInput

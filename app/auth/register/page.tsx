@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import Link from 'next/link'
@@ -25,7 +24,8 @@ import {
 } from '@/components/ui'
 import { WelcomeModal } from '@/components/ui/welcome-modal'
 import { apiService } from '@/lib/api'
-import { CURRENCIES, COUNTRY_CODES, type RegisterStepData, type RegisterStep } from '@/types'
+import { COUNTRY, CURRENCIES, RegisterStepData, RegisterStep } from '@/types'
+import { useForm } from 'react-hook-form'
 import { isValidEmail } from '@/lib/utils'
 
 /**
@@ -53,6 +53,7 @@ const step1Schema = z.object({
 })
 
 const step2Schema = z.object({
+  pais: z.string().min(1, 'Selecciona un país'),
   countryCode: z.string().min(1, 'Selecciona un país'),
   phoneNumber: z
     .string()
@@ -86,6 +87,7 @@ export default function RegisterPage() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false)
   const [registeredUserName, setRegisteredUserName] = useState('')
   const [formData, setFormData] = useState<RegisterStepData>({
+    pais: 'CO',
     countryCode: 'CO',
     moneda: 'COP',
     selectedPlan: 'free',
@@ -110,6 +112,7 @@ export default function RegisterPage() {
   const step2Form = useForm<Step2Data>({
     resolver: zodResolver(step2Schema),
     defaultValues: {
+      pais: formData.pais || 'CO',
       countryCode: formData.countryCode || 'CO',
       phoneNumber: formData.phoneNumber || '',
       moneda: formData.moneda || 'COP',
@@ -195,7 +198,7 @@ export default function RegisterPage() {
       setIsLoading(true)
       
       // Construir el número completo de WhatsApp
-      const selectedCountry = COUNTRY_CODES.find(c => c.code === finalData.countryCode)
+      const selectedCountry = COUNTRY.find(c => c.code === finalData.countryCode)
       const fullPhoneNumber = `${selectedCountry?.dialCode}${finalData.phoneNumber}`
       
       // Preparar datos para el API
@@ -205,6 +208,7 @@ export default function RegisterPage() {
         numeroWhatsapp: fullPhoneNumber,
         password: finalData.password!,
         confirmPassword: finalData.confirmPassword!,
+        pais: finalData.pais!,
         moneda: finalData.moneda!,
         planSeleccionado: finalData.selectedPlan!,
         frecuenciaRecordatorios: finalData.frecuenciaRecordatorios!,
@@ -315,13 +319,13 @@ export default function RegisterPage() {
             <h2 className="text-xl font-semibold">
               {currentStep === 1 && 'Información Personal'}
               {currentStep === 2 && 'Configuración Regional'}
-              {/* {currentStep === 3 && 'Preferencias de Notificación'} */}
+              {currentStep === 3 && 'Preferencias de Notificación'}
               {currentStep === 4 && 'Plan de Suscripción'}
             </h2>
             <p className="text-muted-foreground text-sm">
               {currentStep === 1 && 'Ingresa tus datos básicos para crear tu cuenta'}
               {currentStep === 2 && 'Configura tu región y moneda preferida'}
-              {/* {currentStep === 3 && 'Aquí puedes elegir cada cuánto tiempo Mony te enviará recordatorios para registrar tus gastos y la frecuencia con la que recibirás informes de análisis financiero y reportes personalizados.'} */}
+              {currentStep === 3 && 'Aquí puedes elegir cada cuánto tiempo Mony te enviará recordatorios para registrar tus gastos y la frecuencia con la que recibirás informes de análisis financiero y reportes personalizados.'}
               {currentStep === 4 && 'Selecciona el plan que mejor se adapte a tus necesidades'}
             </p>
           </CardHeader>
@@ -412,47 +416,74 @@ export default function RegisterPage() {
             {/* Paso 2: Configuración Regional */}
             {currentStep === 2 && (
               <form className="space-y-6">
-                <CountryPhoneInput
-                  countryCode={step2Form.watch('countryCode')}
-                  phoneNumber={step2Form.watch('phoneNumber')}
-                  onCountryChange={(code) => step2Form.setValue('countryCode', code)}
-                  onPhoneChange={(phone) => step2Form.setValue('phoneNumber', phone)}
-                  error={step2Form.formState.errors.phoneNumber?.message}
-                />
+                <div className="text-center mb-6">
+                  <h3 className="text-lg font-semibold mb-2">Configura tu región</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Selecciona tu país para configurar automáticamente tu moneda y código telefónico
+                  </p>
+                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="moneda">Moneda por defecto</Label>
-                  <Select
-                    value={step2Form.watch('moneda')}
-                    onValueChange={(value) => step2Form.setValue('moneda', value)}
-                  >
-                    <SelectTrigger className={`bg-background ${step2Form.formState.errors.moneda ? 'border-destructive' : ''}`}>
-                      <SelectValue placeholder="Selecciona tu moneda" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-background border border-border shadow-lg">
-                      {CURRENCIES.map((currency) => (
-                        <SelectItem 
-                          key={currency.code} 
-                          value={currency.code} 
-                          className="hover:bg-accent hover:text-accent-foreground bg-background cursor-pointer"
-                        >
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">{currency.symbol}</span>
-                            <span>{currency.name}</span>
-                            <span className="text-muted-foreground">({currency.code})</span>
-                          </div>
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {step2Form.formState.errors.moneda && (
-                    <p className="text-sm text-destructive">
-                      {step2Form.formState.errors.moneda.message}
-                    </p>
-                  )}
+                <div className="space-y-4">
+                  {/* Selector de país y teléfono */}
+                  <CountryPhoneInput
+                    selectedCountry={step2Form.watch('countryCode')}
+                    phoneNumber={step2Form.watch('phoneNumber')}
+                    onCountryChange={(countryCode) => {
+                      step2Form.setValue('countryCode', countryCode)
+                      step2Form.setValue('pais', countryCode)
+                      // Buscar el país y actualizar la moneda automáticamente
+                      const country = COUNTRY.find(c => c.code === countryCode)
+                      if (country) {
+                        step2Form.setValue('moneda', country.currency)
+                      }
+                    }}
+                    onPhoneChange={(phoneNumber) => {
+                      step2Form.setValue('phoneNumber', phoneNumber)
+                    }}
+                    error={step2Form.formState.errors.phoneNumber?.message || step2Form.formState.errors.countryCode?.message}
+                  />
+
+                  {/* Selector de moneda */}
+                  <div className="space-y-2">
+                    <Label htmlFor="moneda">Moneda preferida</Label>
+                    <Select
+                      value={step2Form.watch('moneda')}
+                      onValueChange={(value) => step2Form.setValue('moneda', value)}
+                    >
+                      <SelectTrigger className={step2Form.formState.errors.moneda ? 'border-destructive' : ''}>
+                        <SelectValue placeholder="Selecciona tu moneda" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CURRENCIES.map((currency) => (
+                          <SelectItem key={currency.code} value={currency.code}>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">{currency.symbol}</span>
+                              <span>{currency.name}</span>
+                              <span className="text-muted-foreground text-sm">({currency.code})</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {step2Form.formState.errors.moneda && (
+                      <p className="text-sm text-destructive">
+                        {step2Form.formState.errors.moneda.message}
+                      </p>
+                    )}
+                    
+                    {/* Información adicional sobre la moneda */}
+                    {step2Form.watch('moneda') && (
+                      <div className="mt-2 p-3 bg-muted/50 rounded-md">
+                        <p className="text-xs text-muted-foreground">
+                          💡 <strong>Tip:</strong> Todas tus transacciones se registrarán en {CURRENCIES.find(c => c.code === step2Form.watch('moneda'))?.name}.
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </form>
             )}
+
 
             {/* Paso 3: Preferencias de Notificación */}
             {currentStep === 3 && (
