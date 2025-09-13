@@ -92,7 +92,9 @@ export const CountryPhoneInput = React.forwardRef<
               </div>
             </SelectTrigger>
             <SelectContent className="max-h-60 w-80">
-              {COUNTRY.map((country) => (
+              {COUNTRY
+                .sort((a, b) => a.name.localeCompare(b.name, 'es', { sensitivity: 'base' }))
+                .map((country) => (
                 <SelectItem key={country.code} value={country.code}>
                   <div className="flex items-center gap-2 sm:gap-3 w-full">
                     <span className="text-lg flex-shrink-0">{country.flag}</span>
