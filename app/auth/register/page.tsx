@@ -242,46 +242,46 @@ export default function RegisterPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 flex items-center justify-center p-2 sm:p-4">
       <div className="w-full max-w-4xl">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 sm:mb-8 px-2">
           <Link
             href="/"
-            className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4"
+            className="inline-flex items-center text-xs sm:text-sm text-muted-foreground hover:text-primary mb-3 sm:mb-4"
           >
-            <ArrowLeft className="h-4 w-4 mr-1" />
+            <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
             Volver al inicio
           </Link>
-          <div className="flex items-center justify-center mb-4">
+          <div className="flex items-center justify-center mb-3 sm:mb-4">
             <Image
               src="/logo-mony.png"
               alt="Mony Logo"
               width={120}
               height={40}
-              className="h-10 w-auto"
+              className="h-8 sm:h-10 w-auto"
             />
           </div>
-          <h1 className="text-3xl font-bold text-foreground">Crear tu cuenta</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">Crear tu cuenta</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-2 leading-relaxed">
             Configura tu perfil financiero en solo 4 pasos
           </p>
         </div>
 
         {/* Indicador de pasos */}
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center space-x-4">
+        <div className="flex justify-center mb-6 md:mb-8 px-2">
+          <div className="flex items-center justify-center space-x-1 sm:space-x-2 md:space-x-4 w-full max-w-3xl">
             {steps.map((step, index) => {
               const Icon = step.icon
               const isActive = currentStep === step.number
               const isCompleted = step.completed
               
               return (
-                <div key={step.number} className="flex items-center">
-                  <div className={`flex items-center space-x-2 ${
+                <div key={step.number} className="flex items-center flex-1 min-w-0">
+                  <div className={`flex flex-col items-center space-y-1 sm:space-y-2 flex-1 ${
                     isActive ? 'text-primary' : isCompleted ? 'text-green-500' : 'text-muted-foreground'
                   }`}>
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
+                    <div className={`w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center border-2 transition-all ${
                       isActive 
                         ? 'border-primary bg-primary text-primary-foreground' 
                         : isCompleted 
@@ -289,21 +289,22 @@ export default function RegisterPage() {
                         : 'border-muted-foreground'
                     }`}>
                       {isCompleted ? (
-                        <Check className="h-5 w-5" />
+                        <Check className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                       ) : (
-                        <Icon className="h-5 w-5" />
+                        <Icon className="h-3 w-3 sm:h-4 sm:w-4 md:h-5 md:w-5" />
                       )}
                     </div>
-                    <div className="hidden sm:block">
-                      <div className={`text-sm font-medium ${
+                    <div className="text-center">
+                      <div className={`text-xs sm:text-sm font-medium leading-tight ${
                         isActive ? 'text-primary' : isCompleted ? 'text-green-500' : 'text-muted-foreground'
                       }`}>
-                        {step.title}
+                        <span className="hidden sm:inline">{step.title}</span>
+                        <span className="sm:hidden">Paso {step.number}</span>
                       </div>
                     </div>
                   </div>
                   {index < steps.length - 1 && (
-                    <div className={`w-12 h-0.5 mx-4 ${
+                    <div className={`flex-1 h-0.5 mx-1 sm:mx-2 ${
                       isCompleted ? 'bg-green-500' : 'bg-muted-foreground/30'
                     }`} />
                   )}
@@ -315,21 +316,21 @@ export default function RegisterPage() {
 
         {/* Contenido del formulario */}
         <Card className="max-w-2xl mx-auto">
-          <CardHeader className="text-center">
-            <h2 className="text-xl font-semibold">
+          <CardHeader className="text-center px-4 sm:px-6">
+            <h2 className="text-lg sm:text-xl font-semibold">
               {currentStep === 1 && 'Información Personal'}
               {currentStep === 2 && 'Configuración Regional'}
               {currentStep === 3 && 'Preferencias de Notificación'}
               {currentStep === 4 && 'Plan de Suscripción'}
             </h2>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
               {currentStep === 1 && 'Ingresa tus datos básicos para crear tu cuenta'}
               {currentStep === 2 && 'Configura tu región y moneda preferida'}
               {currentStep === 3 && 'Aquí puedes elegir cada cuánto tiempo Mony te enviará recordatorios para registrar tus gastos y la frecuencia con la que recibirás informes de análisis financiero y reportes personalizados.'}
               {currentStep === 4 && 'Selecciona el plan que mejor se adapte a tus necesidades'}
             </p>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4 sm:px-6">
             {/* Paso 1: Información Personal */}
             {currentStep === 1 && (
               <form className="space-y-4">
@@ -340,10 +341,10 @@ export default function RegisterPage() {
                     type="text"
                     placeholder="Ingresa tu nombre completo"
                     {...step1Form.register('nombreCompleto')}
-                    className={step1Form.formState.errors.nombreCompleto ? 'border-destructive' : ''}
+                    className={`w-full ${step1Form.formState.errors.nombreCompleto ? 'border-destructive' : ''}`}
                   />
                   {step1Form.formState.errors.nombreCompleto && (
-                    <p className="text-sm text-destructive">
+                    <p className="text-xs sm:text-sm text-destructive">
                       {step1Form.formState.errors.nombreCompleto.message}
                     </p>
                   )}
@@ -356,10 +357,10 @@ export default function RegisterPage() {
                     type="email"
                     placeholder="tu@email.com"
                     {...step1Form.register('email')}
-                    className={step1Form.formState.errors.email ? 'border-destructive' : ''}
+                    className={`w-full ${step1Form.formState.errors.email ? 'border-destructive' : ''}`}
                   />
                   {step1Form.formState.errors.email && (
-                    <p className="text-sm text-destructive">{step1Form.formState.errors.email.message}</p>
+                    <p className="text-xs sm:text-sm text-destructive">{step1Form.formState.errors.email.message}</p>
                   )}
                 </div>
 
@@ -371,7 +372,7 @@ export default function RegisterPage() {
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Crea una contraseña segura"
                       {...step1Form.register('password')}
-                      className={step1Form.formState.errors.password ? 'border-destructive pr-10' : 'pr-10'}
+                      className={`w-full pr-10 ${step1Form.formState.errors.password ? 'border-destructive' : ''}`}
                     />
                     <button
                       type="button"
@@ -382,7 +383,7 @@ export default function RegisterPage() {
                     </button>
                   </div>
                   {step1Form.formState.errors.password && (
-                    <p className="text-sm text-destructive">{step1Form.formState.errors.password.message}</p>
+                    <p className="text-xs sm:text-sm text-destructive">{step1Form.formState.errors.password.message}</p>
                   )}
                 </div>
 
@@ -394,7 +395,7 @@ export default function RegisterPage() {
                       type={showConfirmPassword ? 'text' : 'password'}
                       placeholder="Confirma tu contraseña"
                       {...step1Form.register('confirmPassword')}
-                      className={step1Form.formState.errors.confirmPassword ? 'border-destructive pr-10' : 'pr-10'}
+                      className={`w-full pr-10 ${step1Form.formState.errors.confirmPassword ? 'border-destructive' : ''}`}
                     />
                     <button
                       type="button"
@@ -405,7 +406,7 @@ export default function RegisterPage() {
                     </button>
                   </div>
                   {step1Form.formState.errors.confirmPassword && (
-                    <p className="text-sm text-destructive">
+                    <p className="text-xs sm:text-sm text-destructive">
                       {step1Form.formState.errors.confirmPassword.message}
                     </p>
                   )}
@@ -417,8 +418,8 @@ export default function RegisterPage() {
             {currentStep === 2 && (
               <form className="space-y-6">
                 <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold mb-2">Configura tu región</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="text-base sm:text-lg font-semibold mb-2">Configura tu región</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                     Selecciona tu país para configurar automáticamente tu moneda y código telefónico
                   </p>
                 </div>
@@ -450,7 +451,7 @@ export default function RegisterPage() {
                       value={step2Form.watch('moneda')}
                       onValueChange={(value) => step2Form.setValue('moneda', value)}
                     >
-                      <SelectTrigger className={step2Form.formState.errors.moneda ? 'border-destructive' : ''}>
+                      <SelectTrigger className={`w-full ${step2Form.formState.errors.moneda ? 'border-destructive' : ''}`}>
                         <SelectValue placeholder="Selecciona tu moneda" />
                       </SelectTrigger>
                       <SelectContent>
@@ -458,23 +459,23 @@ export default function RegisterPage() {
                           <SelectItem key={currency.code} value={currency.code}>
                             <div className="flex items-center gap-2">
                               <span className="font-medium">{currency.symbol}</span>
-                              <span>{currency.name}</span>
-                              <span className="text-muted-foreground text-sm">({currency.code})</span>
+                              <span className="text-xs sm:text-sm">{currency.name}</span>
+                              <span className="text-muted-foreground text-xs">({currency.code})</span>
                             </div>
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
                     {step2Form.formState.errors.moneda && (
-                      <p className="text-sm text-destructive">
+                      <p className="text-xs sm:text-sm text-destructive">
                         {step2Form.formState.errors.moneda.message}
                       </p>
                     )}
                     
                     {/* Información adicional sobre la moneda */}
                     {step2Form.watch('moneda') && (
-                      <div className="mt-2 p-3 bg-muted/50 rounded-md">
-                        <p className="text-xs text-muted-foreground">
+                      <div className="mt-2 p-2 sm:p-3 bg-muted/50 rounded-md">
+                        <p className="text-xs text-muted-foreground leading-relaxed">
                           💡 <strong>Tip:</strong> Todas tus transacciones se registrarán en {CURRENCIES.find(c => c.code === step2Form.watch('moneda'))?.name}.
                         </p>
                       </div>
@@ -489,8 +490,8 @@ export default function RegisterPage() {
             {currentStep === 3 && (
               <form className="space-y-6">
                 <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold mb-2">Configura tus notificaciones</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <h3 className="text-base sm:text-lg font-semibold mb-2">Configura tus notificaciones</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                     Aquí puedes elegir cada cuánto tiempo Mony te enviará recordatorios para registrar tus gastos y la frecuencia con la que recibirás informes de análisis financiero y reportes personalizados.
                   </p>
                 </div>
@@ -502,7 +503,7 @@ export default function RegisterPage() {
                       value={step3Form.watch('frecuenciaRecordatorios')}
                       onValueChange={(value) => step3Form.setValue('frecuenciaRecordatorios', value as any)}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Selecciona la frecuencia" />
                       </SelectTrigger>
                       <SelectContent>
@@ -513,7 +514,7 @@ export default function RegisterPage() {
                       </SelectContent>
                     </Select>
                     {step3Form.formState.errors.frecuenciaRecordatorios && (
-                      <p className="text-sm text-destructive">
+                      <p className="text-xs sm:text-sm text-destructive">
                         {step3Form.formState.errors.frecuenciaRecordatorios.message}
                       </p>
                     )}
@@ -525,7 +526,7 @@ export default function RegisterPage() {
                       value={step3Form.watch('frecuenciaInformes')}
                       onValueChange={(value) => step3Form.setValue('frecuenciaInformes', value as any)}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Selecciona la frecuencia" />
                       </SelectTrigger>
                       <SelectContent>
@@ -536,7 +537,7 @@ export default function RegisterPage() {
                       </SelectContent>
                     </Select>
                     {step3Form.formState.errors.frecuenciaInformes && (
-                      <p className="text-sm text-destructive">
+                      <p className="text-xs sm:text-sm text-destructive">
                         {step3Form.formState.errors.frecuenciaInformes.message}
                       </p>
                     )}
@@ -547,12 +548,18 @@ export default function RegisterPage() {
             {/* Paso 4: Plan de Suscripción */}
             {currentStep === 4 && (
               <div className="space-y-6">
+                <div className="text-center mb-6">
+                  <h3 className="text-base sm:text-lg font-semibold mb-2">Elige tu plan</h3>
+                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                    Selecciona el plan que mejor se adapte a tus necesidades
+                  </p>
+                </div>
                 <SubscriptionPlans
                   selectedPlan={step4Form.watch('selectedPlan')}
                   onPlanSelect={(planId) => step4Form.setValue('selectedPlan', planId)}
                 />
                 {step4Form.formState.errors.selectedPlan && (
-                  <p className="text-sm text-destructive text-center">
+                  <p className="text-xs sm:text-sm text-destructive text-center">
                     {step4Form.formState.errors.selectedPlan.message}
                   </p>
                 )}
@@ -560,38 +567,35 @@ export default function RegisterPage() {
             )}
 
             {/* Botones de navegación */}
-            <div className="flex justify-between mt-8">
+            <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 mt-6 sm:mt-8">
               <Button
                 type="button"
                 variant="outline"
                 onClick={handlePrevStep}
                 disabled={currentStep === 1}
-                className={currentStep === 1 ? 'invisible' : ''}
+                className={`w-full sm:w-auto order-2 sm:order-1 ${currentStep === 1 ? 'invisible' : ''}`}
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Anterior
               </Button>
 
               {currentStep < 4 ? (
-                <Button type="button" onClick={handleNextStep}>
+                <Button type="button" onClick={handleNextStep} className="w-full sm:w-auto order-1 sm:order-2">
                   Siguiente
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
               ) : (
-                <Button type="button" onClick={handleSubmit} disabled={isLoading}>
+                <Button type="button" onClick={handleSubmit} disabled={isLoading} className="w-full sm:w-auto order-1 sm:order-2">
                   {isLoading ? 'Creando cuenta...' : 'Crear cuenta'}
                 </Button>
               )}
             </div>
 
             {/* Link a login */}
-            <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground">
+            <div className="text-center mt-6 sm:mt-8 px-4">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 ¿Ya tienes una cuenta?{' '}
-                <Link
-                  href="/auth/login"
-                  className="font-medium text-primary hover:underline"
-                >
+                <Link href="/auth/login" className="text-primary hover:underline font-medium">
                   Inicia sesión
                 </Link>
               </p>

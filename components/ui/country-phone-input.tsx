@@ -67,35 +67,35 @@ export const CountryPhoneInput = React.forwardRef<
 
   return (
     <div ref={ref} className={cn('space-y-2', className)} {...props}>
-      <Label className="text-sm font-medium">Número de WhatsApp</Label>
+      <Label className="text-xs sm:text-sm font-medium">Número de WhatsApp</Label>
       
       <div className="flex gap-2">
         {/* Selector de país */}
-        <div className="w-48">
+        <div className="w-20 sm:w-48">
           <Select
             value={internalCountry}
             onValueChange={handleCountryChange}
             disabled={disabled}
           >
             <SelectTrigger className={cn(
-              'h-10',
+              'h-10 w-full',
               error && 'border-destructive'
             )}>
-              <div className="flex items-center gap-2 min-w-0">
-                <span className="text-lg flex-shrink-0">{currentCountryData.flag}</span>
-                <span className="text-sm text-muted-foreground flex-shrink-0">
+              <div className="flex items-center gap-1 sm:gap-2 min-w-0">
+                <span className="text-sm sm:text-base flex-shrink-0">{currentCountryData.flag}</span>
+                <span className="text-xs sm:text-sm text-muted-foreground flex-shrink-0">
                   {currentCountryData.dialCode}
                 </span>
-                <span className="text-sm truncate">
+                <span className="text-xs sm:text-sm truncate hidden sm:block">
                   {currentCountryData.name}
                 </span>
               </div>
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-60 w-80">
               {COUNTRY.map((country) => (
                 <SelectItem key={country.code} value={country.code}>
-                  <div className="flex items-center gap-3 w-full">
-                    <span className="text-lg">{country.flag}</span>
+                  <div className="flex items-center gap-2 sm:gap-3 w-full">
+                    <span className="text-lg flex-shrink-0">{country.flag}</span>
                     <div className="flex flex-col min-w-0 flex-1">
                       <span className="text-sm font-medium truncate">{country.name}</span>
                       <span className="text-xs text-muted-foreground">
@@ -112,17 +112,17 @@ export const CountryPhoneInput = React.forwardRef<
         {/* Input del número de teléfono */}
         <div className="flex-1">
           <div className="relative">
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 flex items-center gap-2 text-muted-foreground">
-              <span className="text-sm font-medium">{currentCountryData.dialCode}</span>
-              <div className="w-px h-4 bg-border"></div>
+            <div className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 flex items-center gap-1 sm:gap-2 text-muted-foreground">
+              <span className="text-xs sm:text-sm font-medium">{currentCountryData.dialCode}</span>
+              <div className="w-px h-3 sm:h-4 bg-border"></div>
             </div>
             <Input
               type="tel"
               value={internalPhone}
               onChange={handlePhoneChange}
-              placeholder="Número de teléfono"
+              placeholder="Número de WhatsApp"
               className={cn(
-                'pl-16',
+                'pl-12 sm:pl-16 w-full',
                 error && 'border-destructive'
               )}
               disabled={disabled}
@@ -132,17 +132,17 @@ export const CountryPhoneInput = React.forwardRef<
         </div>
       </div>
 
-      {/* Información adicional */}
+      {/* Información adicional 
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <Phone className="h-3 w-3" />
         <span>
           Moneda automática: {currentCountryData.currencySymbol} {currentCountryData.currencyName}
         </span>
       </div>
-
+*/}
       {/* Mensaje de error */}
       {error && (
-        <p className="text-sm text-destructive">{error}</p>
+        <p className="text-xs sm:text-sm text-destructive">{error}</p>
       )}
     </div>
   )

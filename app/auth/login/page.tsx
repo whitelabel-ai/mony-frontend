@@ -67,62 +67,62 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 flex items-center justify-center p-3 sm:p-4">
       <div className="w-full max-w-md">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-6 sm:mb-8">
           <Link
             href="/"
-            className="inline-flex items-center text-sm text-muted-foreground hover:text-primary mb-4"
+            className="inline-flex items-center text-xs sm:text-sm text-muted-foreground hover:text-primary mb-3 sm:mb-4"
           >
-            <ArrowLeft className="h-4 w-4 mr-1" />
+            <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4 mr-1" />
             Volver al inicio
           </Link>
-          <div className="flex items-center justify-center mb-4">
+          <div className="flex items-center justify-center mb-3 sm:mb-4">
             <Image
               src="/logo-mony.png"
               alt="Mony Logo"
               width={120}
               height={40}
-              className="h-10 w-auto"
+              className="h-8 sm:h-10 w-auto"
             />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Bienvenido de vuelta</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground">Bienvenido de vuelta</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-2 px-2 sm:px-0">
             Inicia sesión para continuar gestionando tus finanzas
           </p>
         </div>
 
         {/* Formulario */}
         <Card>
-          <CardHeader className="space-y-1">
-            <h2 className="text-xl font-semibold text-center">Iniciar Sesión</h2>
+          <CardHeader className="space-y-1 p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-semibold text-center">Iniciar Sesión</h2>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <CardContent className="p-4 sm:p-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-3 sm:space-y-4">
               {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email">Correo electrónico</Label>
+              <div className="space-y-1.5 sm:space-y-2">
+                <Label htmlFor="email" className="text-sm sm:text-base">Correo electrónico</Label>
                 <Input
                   id="email"
                   type="email"
                   placeholder="tu@email.com"
                   autoComplete="email"
                   {...register('email')}
-                  className={errors.email ? 'border-destructive' : ''}
+                  className={`w-full h-10 sm:h-11 text-sm sm:text-base ${errors.email ? 'border-destructive' : ''}`}
                 />
                 {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                  <p className="text-xs sm:text-sm text-destructive">{errors.email.message}</p>
                 )}
               </div>
 
               {/* Contraseña */}
-              <div className="space-y-2">
+              <div className="space-y-1.5 sm:space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Contraseña</Label>
+                  <Label htmlFor="password" className="text-sm sm:text-base">Contraseña</Label>
                   <Link
                     href="/auth/forgot-password"
-                    className="text-sm text-primary hover:underline"
+                    className="text-xs sm:text-sm text-primary hover:underline"
                   >
                     ¿Olvidaste tu contraseña?
                   </Link>
@@ -134,29 +134,29 @@ export default function LoginPage() {
                     placeholder="Ingresa tu contraseña"
                     autoComplete="current-password"
                     {...register('password')}
-                    className={errors.password ? 'border-destructive pr-10' : 'pr-10'}
+                    className={`w-full h-10 sm:h-11 text-sm sm:text-base pr-10 ${errors.password ? 'border-destructive' : ''}`}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground touch-manipulation"
                   >
                     {showPassword ? (
-                      <EyeOff className="h-4 w-4" />
+                      <EyeOff className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     ) : (
-                      <Eye className="h-4 w-4" />
+                      <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     )}
                   </button>
                 </div>
                 {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password.message}</p>
+                  <p className="text-xs sm:text-sm text-destructive">{errors.password.message}</p>
                 )}
               </div>
 
               {/* Botón de login */}
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full h-10 sm:h-11 text-sm sm:text-base mt-4 sm:mt-6"
                 disabled={isLoading}
               >
                 {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
@@ -164,7 +164,7 @@ export default function LoginPage() {
             </form>
 
             {/* Divider */}
-            <div className="relative my-6">
+            <div className="relative my-4 sm:my-6">
               <div className="absolute inset-0 flex items-center">
                 <span className="w-full border-t" />
               </div>
@@ -178,7 +178,7 @@ export default function LoginPage() {
             {/* Link a registro */}
             <div className="text-center">
               <Link href="/auth/register">
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full h-10 sm:h-11 text-sm sm:text-base">
                   Crear cuenta nueva
                 </Button>
               </Link>

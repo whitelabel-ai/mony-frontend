@@ -22,6 +22,9 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#0ea5e9' },
     { media: '(prefers-color-scheme: dark)', color: '#0284c7' },
@@ -40,8 +43,11 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/logo-mony.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
       </head>
-      <body className={`${inter.className} antialiased`}>
+      <body className={`${inter.className} antialiased min-h-screen overflow-x-hidden`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -50,13 +56,17 @@ export default function RootLayout({
         >
           {children}
           <Toaster
-            position="top-right"
+            position="top-center"
+            containerClassName="sm:!top-4 !top-2"
             toastOptions={{
               duration: 4000,
+              className: 'text-sm sm:text-base',
               style: {
                 background: 'hsl(var(--card))',
                 color: 'hsl(var(--card-foreground))',
                 border: '1px solid hsl(var(--border))',
+                maxWidth: '90vw',
+                wordBreak: 'break-word',
               },
               success: {
                 iconTheme: {
