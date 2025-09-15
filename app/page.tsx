@@ -17,7 +17,7 @@ export default function HomePage() {
   useEffect(() => {
     if (!loading && isAuthenticated) {
       //router.push('/dashboard')
-      window.location.href = "https://wa.me/573143400476?text=Hola,%20ya%20active%20mi%20cuenta";
+      window.location.href = "https://wa.me/573143400476?text=✅%20Hola,%20ya%20active%20mi%20cuenta";
     }
   }, [isAuthenticated, loading, router])
 

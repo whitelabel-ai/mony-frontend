@@ -57,7 +57,7 @@ export function useAuth() {
       setUser(response.user)
       setIsAuthenticated(true)
       toast.success('¡Inicio de sesión exitoso!')
-      window.location.href = "https://wa.me/573143400476?text=Hola,%20ya%20active%20mi%20cuenta";
+      window.location.href = "https://wa.me/573143400476?text=✅%20Hola,%20ya%20active%20mi%20cuenta";
       // router.push('/dashboard')
       return response
     } catch (error: any) {
@@ -80,7 +80,7 @@ export function useAuth() {
       toast.success('¡Registro exitoso! Bienvenido a Mony')
 
       // 🔽 Redirigir a WhatsApp en lugar de dashboard
-      window.location.href = "https://wa.me/573143400476?text=Hola,%20ya%20active%20mi%20cuenta";
+      window.location.href = "https://wa.me/573143400476?text=✅%20Hola,%20ya%20active%20mi%20cuenta";
 
       // router.push('/dashboard')
       return response
