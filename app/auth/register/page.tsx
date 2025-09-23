@@ -325,7 +325,7 @@ export default function RegisterPage() {
             </h2>
             <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed">
               {currentStep === 1 && 'Ingresa tus datos básicos para crear tu cuenta'}
-              {currentStep === 2 && 'Configura tu región y moneda preferida'}
+              {currentStep === 2 && 'Selecciona tu país para configurar automáticamente tu moneda y código telefónico'}
               {currentStep === 3 && 'Aquí puedes elegir cada cuánto tiempo Mony te enviará recordatorios para registrar tus gastos y la frecuencia con la que recibirás informes de análisis financiero y reportes personalizados.'}
               {currentStep === 4 && 'Selecciona el plan que mejor se adapte a tus necesidades'}
             </p>
@@ -417,12 +417,7 @@ export default function RegisterPage() {
             {/* Paso 2: Configuración Regional */}
             {currentStep === 2 && (
               <form className="space-y-6">
-                <div className="text-center mb-6">
-                  <h3 className="text-base sm:text-lg font-semibold mb-2">Configura tu región</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                    Selecciona tu país para configurar automáticamente tu moneda y código telefónico
-                  </p>
-                </div>
+
 
                 <div className="space-y-4">
                   {/* Selector de país y teléfono */}
@@ -489,12 +484,7 @@ export default function RegisterPage() {
             {/* Paso 3: Preferencias de Notificación */}
             {currentStep === 3 && (
               <form className="space-y-6">
-                <div className="text-center mb-6">
-                  <h3 className="text-base sm:text-lg font-semibold mb-2">Configura tus notificaciones</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                    Aquí puedes elegir cada cuánto tiempo Mony te enviará recordatorios para registrar tus gastos y la frecuencia con la que recibirás informes de análisis financiero y reportes personalizados.
-                  </p>
-                </div>
+
 
                 <div className="space-y-4">
                   <div>
@@ -548,12 +538,7 @@ export default function RegisterPage() {
             {/* Paso 4: Plan de Suscripción */}
             {currentStep === 4 && (
               <div className="space-y-6">
-                <div className="text-center mb-6">
-                  <h3 className="text-base sm:text-lg font-semibold mb-2">Elige tu plan</h3>
-                  <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                    Selecciona el plan que mejor se adapte a tus necesidades
-                  </p>
-                </div>
+
                 <SubscriptionPlans
                   selectedPlan={step4Form.watch('selectedPlan')}
                   onPlanSelect={(planId) => step4Form.setValue('selectedPlan', planId)}
