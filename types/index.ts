@@ -354,7 +354,7 @@ export const SUBSCRIPTION_PLANS = [
     publicidad: false
   },
   {
-    tipo: 'pro_empresarial',
+    tipo: 'pro',
     nombre: 'Mony Pro',
     precio: 14.99,
     moneda: 'USD',

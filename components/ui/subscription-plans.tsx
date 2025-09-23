@@ -39,7 +39,7 @@ export function SubscriptionPlans({ selectedPlan, onPlanSelect, onContinue, clas
         </p>
       </div> */}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-8 max-w-4xl mx-auto [&>*:nth-child(3):nth-last-child(1)]:lg:col-span-2 [&>*:nth-child(3):nth-last-child(1)]:lg:max-w-md [&>*:nth-child(3):nth-last-child(1)]:lg:mx-auto">
         {SUBSCRIPTION_PLANS.map((plan: Plan) => (
           <PlanCard
             key={plan.tipo}
@@ -98,7 +98,7 @@ function PlanCard({ plan, isSelected, onSelect }: PlanCardProps) {
           bgGradient: 'bg-gradient-to-br from-blue-50 to-blue-100',
           popular: true
         }
-      case 'pro_empresarial':
+      case 'pro':
         return {
           color: 'from-purple-500 to-purple-600',
           borderColor: 'border-purple-200',
