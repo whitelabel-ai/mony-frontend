@@ -287,70 +287,95 @@ export interface SubscriptionPlan {
   color: string
 }
 
-export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
+export const SUBSCRIPTION_PLANS = [
   {
-    id: 'free',
-    name: 'Plan Free',
-    price: 0,
-    currency: 'USD',
-    interval: 'month',
-    description: 'Ideal para usuarios que quieren probar la funcionalidad principal de Mony',
-    features: [
-      '🤖 Registro por WhatsApp ilimitado',
-      '📄 Registro básico de transacciones',
-      '📊 Dashboard web básico',
-      '🗂️ Categorización estándar'
+    tipo: 'free',
+    nombre: 'Mony Free',
+    precio: 0,
+    moneda: 'USD',
+    lema: 'La puerta de entrada a la claridad financiera',
+    dirigidoA: 'El Explorador Financiero',
+    descripcion: 'La experiencia de Mony en su forma más esencial. Diseñado para que construyas el hábito de registrar tus movimientos y veas el valor inmediato sin ningún costo.',
+    caracteristicas: [
+      '📊 Limitado a 20 registros al mes',
+      '✅ Registro por Texto',
+      '🗂️ Categorización Estándar (no personalizable)',
+      '📊 Dashboard Básico con resumen de gastos del mes',
+      '💬 Soporte comunitario'
     ],
-    limitations: [
-      'Sin reportes avanzados',
+    limitaciones: [
+      'Limitado a 20 registros mensuales',
+      'Solo registro por texto',
       'Sin categorías personalizadas',
+      'Sin metas de ahorro',
+      'Sin presupuestos',
       'Sin gestión de suscripciones',
-      'Incluye publicidad'
+      'Sin acceso al Mony Coach (IA)',
+      'Sin reportes avanzados',
+      'Sin exportación PDF/Excel',
+      'Incluye mensajes promocionales ocasionales'
     ],
-    color: '#64748b'
+    registrosMensuales: 20,
+    metasDeAhorro: 0,
+    presupuestos: 0,
+    perfilesFinancieros: 1,
+    publicidad: true
+  },
+  {
+    tipo: 'premium',
+    nombre: 'Mony Premium',
+    precio: 6.99,
+    moneda: 'USD',
+    lema: 'El control total de tus finanzas en tu bolsillo',
+    dirigidoA: 'El Gestor Comprometido',
+    descripcion: 'La solución completa para la gestión financiera personal. Desbloquea todo el poder de la IA de Mony para analizar, planificar y automatizar.',
+    caracteristicas: [
+      '♾️ Registros mensuales ilimitados',
+      '✅ Registro por Texto, Foto (OCR) y Audio',
+      '🧠 Acceso completo al Asistente Financiero 24/7 y al Mony Coach',
+      '🎯 Creación y seguimiento de Metas de Ahorro',
+      '💰 Creación de Presupuestos por categoría',
+      '🗓️ Gestión de Suscripciones y recordatorios de pago',
+      '✨ Categorías personalizadas para adaptar Mony a tu vida',
+      '📈 Dashboard Avanzado con reportes detallados y gráficos interactivos',
+      '✅ Sin publicidad',
+      '✉️ Soporte por email'
+    ],
+    limitaciones: [
+      'Solo un perfil financiero',
+      'Sin exportación avanzada PDF/Excel',
+      'Sin múltiples perfiles financieros',
+      'Sin soporte prioritario'
+    ],
+    registrosMensuales: -1,
+    metasDeAhorro: -1,
+    presupuestos: -1,
+    perfilesFinancieros: 1,
+    publicidad: false
+  },
+  {
+    tipo: 'pro_empresarial',
+    nombre: 'Mony Pro',
+    precio: 14.99,
+    moneda: 'USD',
+    lema: 'La herramienta definitiva para tus finanzas personales y profesionales',
+    dirigidoA: 'El Profesional o Emprendedor',
+    descripcion: 'Todo lo del plan Premium, más herramientas avanzadas diseñadas para quienes necesitan una gestión financiera de nivel superior, separando proyectos o negocios.',
+    caracteristicas: [
+      '✅ Incluye todas las características del Plan Premium',
+      '📁 Gestión de múltiples perfiles (hasta 3) - Separa finanzas personales, emprendimiento y proyectos',
+      '📤 Exportación avanzada de reportes en PDF y Excel',
+      '🔍 Filtros y búsqueda avanzada en el Dashboard',
+      '✉️ Envío directo de reportes a tu contador (próximamente)',
+      '⭐ Soporte Prioritario por WhatsApp'
+    ],
+    limitaciones: [],
+    registrosMensuales: -1,
+    metasDeAhorro: -1,
+    presupuestos: -1,
+    perfilesFinancieros: 3,
+    publicidad: false
   }
-  // ,
-  // {
-  //   id: 'premium',
-  //   name: 'Plan Premium',
-  //   price: 9.99,
-  //   currency: 'USD',
-  //   interval: 'month',
-  //   description: 'Para usuarios comprometidos que quieren control total de sus finanzas',
-  //   features: [
-  //     '✅ Todo lo del Plan Free',
-  //     '🧠 Coach de IA completo',
-  //     '🎯 Metas de ahorro',
-  //     '💰 Gestión de presupuestos',
-  //     '📈 Dashboard avanzado',
-  //     '🎙️ Registro por voz y fotos',
-  //     '✨ Categorías personalizadas',
-  //     '🗓️ Gestión de suscripciones'
-  //   ],
-  //   limitations: [
-  //     'Solo un perfil financiero',
-  //     'Sin herramientas para contabilidad'
-  //   ],
-  //   popular: true,
-  //   color: '#3b82f6'
-  // },
-  // {
-  //   id: 'pro',
-  //   name: 'Plan Pro Empresarial',
-  //   price: 49.99,
-  //   currency: 'USD',
-  //   interval: 'month',
-  //   description: 'Para freelancers y emprendedores que necesitan gestión empresarial',
-  //   features: [
-  //     '👑 Todo lo del Plan Premium',
-  //     '📁 Hasta 3 perfiles financieros',
-  //     '📤 Exportación a PDF y Excel',
-  //     '✉️ Envío directo a contador',
-  //     '🔍 Filtros y búsqueda avanzada',
-  //     '⭐ Soporte prioritario'
-  //   ],
-  //   color: '#8b5cf6'
-  // }
 ]
 
 // Tipos de iconos para categorías
