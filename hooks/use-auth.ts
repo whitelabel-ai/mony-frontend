@@ -57,8 +57,7 @@ export function useAuth() {
       setUser(response.user)
       setIsAuthenticated(true)
       toast.success('¡Inicio de sesión exitoso!')
-      window.location.href = "https://wa.me/573143400476?text=✅%20Hola,%20ya%20active%20mi%20cuenta";
-      // router.push('/dashboard')
+      router.push('/dashboard')
       return response
     } catch (error: any) {
       toast.error(error.message || 'Error al iniciar sesión')
@@ -79,8 +78,24 @@ export function useAuth() {
       setIsAuthenticated(true)
       toast.success('¡Registro exitoso! Bienvenido a Mony')
 
-      // 🔽 Redirigir a WhatsApp en lugar de dashboard
-      window.location.href = "https://wa.me/573143400476?text=✅%20Hola,%20ya%20active%20mi%20cuenta";
+      // Redirigir según el plan seleccionado
+      const redirectToDLocal = (plan: string) => {
+        const dLocalUrls = {
+          premium: process.env.NEXT_PUBLIC_DLOCAL_PREMIUM_URL || 'https://checkout.dlocal.com/premium',
+          pro_empresarial: process.env.NEXT_PUBLIC_DLOCAL_PRO_URL || 'https://checkout.dlocal.com/pro',
+          free: null // Plan gratuito no requiere pago
+        };
+        
+        const url = dLocalUrls[plan as keyof typeof dLocalUrls];
+        if (url) {
+          window.open(url, '_blank');
+        }
+      };
+      
+      // Redirigir basado en el plan seleccionado
+      if (data.planSeleccionado && data.planSeleccionado !== 'free') {
+        redirectToDLocal(data.planSeleccionado);
+      }
 
       // router.push('/dashboard')
       return response

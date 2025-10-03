@@ -179,9 +179,7 @@ export default function RegisterPage() {
   const handleWelcomeModalClose = () => {
     setShowWelcomeModal(false)
     // Redirigir al dashboard después de cerrar el modal
-    //window.location.href = '/dashboard'
-    // Redirigir al whatsapp después de cerrar el modal
-    window.location.href = "https://wa.me/573143400476?text=✅%20Hola,%20ya%20active%20mi%20cuenta";
+    window.location.href = '/dashboard'
   }
 
   /**
