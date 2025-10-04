@@ -12,7 +12,7 @@ import {
   Gift,
   CreditCard
 } from 'lucide-react'
-import { type SubscriptionPlan } from '@/types'
+import { type SubscriptionPlan, SUBSCRIPTION_PLANS } from '@/types'
 
 interface UserSubscription {
   id: string
@@ -95,6 +95,13 @@ export function CurrentSubscriptionCard({
   }
 
   const daysUntilExpiry = getDaysUntilExpiry()
+
+  // Función para obtener el siguiente plan disponible
+  const getNextAvailablePlan = (): SubscriptionPlan => {
+    const currentIndex = SUBSCRIPTION_PLANS.findIndex(plan => plan.id === currentPlan.id)
+    const nextPlan = SUBSCRIPTION_PLANS[currentIndex + 1]
+    return nextPlan || SUBSCRIPTION_PLANS.find(plan => plan.id === 'premium') || SUBSCRIPTION_PLANS[1]
+  }
 
   return (
     <Card className="relative overflow-hidden">
@@ -191,7 +198,7 @@ export function CurrentSubscriptionCard({
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
           {isFreePlan ? (
             <Button 
-              onClick={() => onUpgrade(currentPlan)} 
+              onClick={() => onUpgrade(getNextAvailablePlan())} 
               className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
               <ArrowUpCircle className="h-4 w-4 mr-2" />
@@ -200,7 +207,7 @@ export function CurrentSubscriptionCard({
           ) : (
             <>
               <Button 
-                onClick={() => onUpgrade(currentPlan)} 
+                onClick={() => onUpgrade(getNextAvailablePlan())} 
                 variant="default"
                 className="flex-1"
               >
