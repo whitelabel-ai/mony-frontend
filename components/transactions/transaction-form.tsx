@@ -67,7 +67,7 @@ export function TransactionForm({
       monto: transaction.monto,
       descripcion: transaction.descripcion,
       tipo: transaction.tipo,
-      idCategoria: transaction.categoria?.id || '',
+      idCategoria: transaction.categoria?.id?.toString() || '',
       fechaTransaccion: new Date(transaction.fechaTransaccion),
       moneda: transaction.moneda || 'COP',
       notas: transaction.notas || ''
@@ -107,12 +107,19 @@ export function TransactionForm({
   // Filter categories based on transaction type
   const filteredCategories = categories.filter(cat => {
     if (watchedType === 'INGRESO') {
-      return cat.tipo === 'INGRESO'
+      return cat.tipo === 'INGRESO' || cat.tipo === 'Ingreso'
     } else if (watchedType === 'GASTO') {
-      return cat.tipo === 'GASTO'
+      return cat.tipo === 'GASTO' || cat.tipo === 'Gasto'
     }
     return false
   })
+
+  // Get selected category for display
+  const selectedCategoryId = watch('idCategoria')
+  // Convert selectedCategoryId to number for comparison since Prisma IDs are integers
+  const selectedCategory = selectedCategoryId 
+    ? categories.find(cat => cat.id === parseInt(selectedCategoryId))
+    : undefined
 
   const onSubmit = async (data: TransactionFormData) => {
     try {
@@ -221,16 +228,23 @@ export function TransactionForm({
           <div className="space-y-2">
             <Label htmlFor="idCategoria">Categoría *</Label>
             <Select
-              value={watch('idCategoria')}
+              value={selectedCategoryId}
               onValueChange={(value) => setValue('idCategoria', value)}
               disabled={loadingCategories}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Selecciona una categoría" />
+                <SelectValue placeholder="Selecciona una categoría">
+                  {selectedCategory && (
+                    <span className="flex items-center gap-2">
+                      <span>{selectedCategory.icono}</span>
+                      <span>{selectedCategory.nombre}</span>
+                    </span>
+                  )}
+                </SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {filteredCategories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
+                  <SelectItem key={category.id} value={category.id.toString()}>
                     <span className="flex items-center gap-2">
                       <span>{category.icono}</span>
                       <span>{category.nombre}</span>

@@ -41,11 +41,19 @@ export interface Categoria {
   nombre: string
   icono: string
   color: string
-  tipo: 'INGRESO' | 'GASTO'
-  esGlobal: boolean
+  tipo: 'INGRESO' | 'GASTO' | 'Ingreso' | 'Gasto'
+  esGlobal?: boolean
   usuarioId?: string
-  fechaCreacion: string
-  activo: boolean
+  fechaCreacion?: string
+  activo?: boolean
+  // Campos adicionales del backend
+  presupuestoMensual?: number | null
+  descripcion?: string | null
+  createdAt?: string
+  updatedAt?: string
+  _count?: {
+    transacciones: number
+  }
 }
 
 // Tipos de transacciones

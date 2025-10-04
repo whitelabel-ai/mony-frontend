@@ -32,7 +32,7 @@ export function useSubscription() {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }))
       
-      const response = await apiService.get<{ subscription: UserSubscription }>('/subscriptions/current')
+      const response = await apiService.get<{ subscription: UserSubscription }>('/subscriptions/active')
       
       setState(prev => ({
         ...prev,
