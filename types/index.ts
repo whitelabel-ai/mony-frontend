@@ -276,19 +276,27 @@ export const COUNTRY: CountryData[] = [
 // Tipos para planes de suscripción
 export interface SubscriptionPlan {
   id: string
-  name: string
-  price: number
-  currency: string
-  interval: 'month' | 'year'
-  description: string
-  features: string[]
-  limitations?: string[]
+  tipo: string
+  nombre: string
+  precio: number
+  moneda: string
+  lema: string
+  dirigidoA: string
+  descripcion: string
+  caracteristicas: string[]
+  limitaciones: string[]
+  registrosMensuales: number
+  metasDeAhorro: number
+  presupuestos: number
+  perfilesFinancieros: number
+  publicidad: boolean
   popular?: boolean
-  color: string
+  color?: string
 }
 
-export const SUBSCRIPTION_PLANS = [
+export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
+    id: 'free',
     tipo: 'free',
     nombre: 'Mony Free',
     precio: 0,
@@ -322,6 +330,7 @@ export const SUBSCRIPTION_PLANS = [
     publicidad: true
   },
   {
+    id: 'premium',
     tipo: 'premium',
     nombre: 'Mony Premium',
     precio: 6.99,
@@ -354,6 +363,7 @@ export const SUBSCRIPTION_PLANS = [
     publicidad: false
   },
   {
+    id: 'pro',
     tipo: 'pro',
     nombre: 'Mony Pro',
     precio: 14.99,

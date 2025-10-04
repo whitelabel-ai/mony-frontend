@@ -17,6 +17,7 @@ import {
   Sun,
   Moon,
   Wallet,
+  Receipt,
 } from 'lucide-react'
 import { useAuth, useAuthGuard } from '@/hooks'
 import { Button, Avatar, AvatarFallback, AvatarImage } from '@/components/ui'
@@ -46,6 +47,11 @@ const navigationItems: NavigationItem[] = [
     name: 'Metas de Ahorro',
     href: '/dashboard/goals',
     icon: Target,
+  },
+  {
+    name: 'Facturación',
+    href: '/dashboard/billing',
+    icon: Receipt,
   },
   {
     name: 'Suscripciones',
