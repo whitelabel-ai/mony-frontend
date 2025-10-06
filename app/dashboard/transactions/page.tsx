@@ -92,8 +92,8 @@ export default function TransactionsDashboard() {
   const prepareCategoryData = () => {
     if (!analytics?.desglosePorCategorias) return { labels: [], datasets: [] }
 
-    const ingresos = analytics.desglosePorCategorias.filter(cat => cat.tipo === 'INGRESO')
-    const gastos = analytics.desglosePorCategorias.filter(cat => cat.tipo === 'GASTO')
+    const ingresos = analytics.desglosePorCategorias.filter(cat => cat.tipo === 'Ingreso')
+    const gastos = analytics.desglosePorCategorias.filter(cat => cat.tipo === 'Gasto')
 
     return {
       ingresos: {
@@ -340,7 +340,7 @@ export default function TransactionsDashboard() {
                       <td className="p-2 font-medium">{categoria.categoria}</td>
                       <td className="p-2">
                         <span className={`px-2 py-1 rounded-full text-xs ${
-                          categoria.tipo === 'INGRESO' 
+                          categoria.tipo === 'Ingreso' 
                             ? 'bg-green-100 text-green-800' 
                             : 'bg-red-100 text-red-800'
                         }`}>

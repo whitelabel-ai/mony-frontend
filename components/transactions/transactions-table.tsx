@@ -216,7 +216,7 @@ export function TransactionsTable({ onEdit, onView, refreshTrigger }: Transactio
   }
 
   const getTypeColor = (tipo: string) => {
-    return tipo === 'INGRESO' 
+    return tipo === 'Ingreso' 
       ? 'bg-green-100 text-green-800 hover:bg-green-200'
       : 'bg-red-100 text-red-800 hover:bg-red-200'
   }
@@ -282,8 +282,8 @@ export function TransactionsTable({ onEdit, onView, refreshTrigger }: Transactio
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos los tipos</SelectItem>
-                <SelectItem value="INGRESO">Ingresos</SelectItem>
-                <SelectItem value="GASTO">Gastos</SelectItem>
+                <SelectItem value="Ingreso">Ingresos</SelectItem>
+                <SelectItem value="Gasto">Gastos</SelectItem>
               </SelectContent>
             </Select>
 
@@ -433,7 +433,7 @@ export function TransactionsTable({ onEdit, onView, refreshTrigger }: Transactio
                     </td>
                     <td className="p-4 text-right">
                       <div className="font-mono font-medium">
-                        {transaction.tipo === 'INGRESO' ? '+' : '-'}
+                        {transaction.tipo === 'Ingreso' ? '+' : '-'}
                         ${transaction.monto.toLocaleString()}
                       </div>
                       <div className="text-xs text-muted-foreground">

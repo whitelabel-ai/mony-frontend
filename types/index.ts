@@ -41,7 +41,7 @@ export interface Categoria {
   nombre: string
   icono: string
   color: string
-  tipo: 'INGRESO' | 'GASTO' | 'Ingreso' | 'Gasto'
+  tipo: 'Ingreso' | 'Gasto'
   esGlobal?: boolean
   usuarioId?: string
   fechaCreacion?: string
@@ -62,7 +62,7 @@ export interface Transaccion {
   descripcion: string
   monto: number
   fecha: string
-  tipo: 'INGRESO' | 'GASTO'
+  tipo: 'Ingreso' | 'Gasto'
   categoriaId: string
   categoria: Categoria
   usuarioId: string
@@ -75,7 +75,7 @@ export interface Transaction {
   descripcion: string
   monto: number
   moneda: string
-  tipo: 'INGRESO' | 'GASTO'
+  tipo: 'Ingreso' | 'Gasto'
   fechaTransaccion: string
   fechaCreacion: string
   notas?: string
@@ -86,7 +86,7 @@ export interface Transaction {
     nombre: string
     icono: string
     color: string
-    tipo: 'INGRESO' | 'GASTO'
+    tipo: 'Ingreso' | 'Gasto'
   }
   fuenteRegistro?: {
     id: string
@@ -99,7 +99,7 @@ export interface CreateTransactionDto {
   descripcion: string
   monto: number
   moneda: string
-  tipo: 'INGRESO' | 'GASTO'
+  tipo: 'Ingreso' | 'Gasto'
   fechaTransaccion?: string
   idCategoria: string
   idFuente?: string
@@ -110,7 +110,7 @@ export interface UpdateTransactionDto {
   descripcion?: string
   monto?: number
   moneda?: string
-  tipo?: 'INGRESO' | 'GASTO'
+  tipo?: 'Ingreso' | 'Gasto'
   fechaTransaccion?: string
   idCategoria?: string
   idFuente?: string
@@ -120,7 +120,7 @@ export interface UpdateTransactionDto {
 export interface FilterTransactionsDto {
   fechaInicio?: string
   fechaFin?: string
-  tipo?: 'INGRESO' | 'GASTO'
+  tipo?: 'Ingreso' | 'Gasto'
   idCategoria?: string
   busqueda?: string
   pagina?: number
@@ -155,7 +155,7 @@ export interface TransactionAnalytics {
     totalMonto: number
     cantidadTransacciones: number
     porcentajeDelTotal: number
-    tipo: 'INGRESO' | 'GASTO'
+    tipo: 'Ingreso' | 'Gasto'
   }[]
   seriesTiempo: {
     fecha: string

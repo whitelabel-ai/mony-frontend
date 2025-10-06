@@ -59,11 +59,11 @@ export function AnalyticsDashboard({ transactions, period, className }: Analytic
 
     // Calcular totales
     const totalIncome = filteredTransactions
-      .filter(t => t.tipo === 'INGRESO')
+      .filter(t => t.tipo === 'Ingreso')
       .reduce((sum, t) => sum + t.monto, 0)
     
     const totalExpenses = filteredTransactions
-      .filter(t => t.tipo === 'GASTO')
+      .filter(t => t.tipo === 'Gasto')
       .reduce((sum, t) => sum + t.monto, 0)
     
     const netIncome = totalIncome - totalExpenses
@@ -105,11 +105,11 @@ export function AnalyticsDashboard({ transactions, period, className }: Analytic
       })
       
       const monthIncome = monthTransactions
-        .filter(t => t.tipo === 'INGRESO')
+        .filter(t => t.tipo === 'Ingreso')
         .reduce((sum, t) => sum + t.monto, 0)
       
       const monthExpenses = monthTransactions
-        .filter(t => t.tipo === 'GASTO')
+        .filter(t => t.tipo === 'Gasto')
         .reduce((sum, t) => sum + t.monto, 0)
       
       monthlyData.push({

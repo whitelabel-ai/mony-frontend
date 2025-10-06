@@ -24,7 +24,7 @@ import { toast } from 'react-hot-toast'
 const transactionSchema = z.object({
   monto: z.number().min(0.01, 'El monto debe ser mayor a 0'),
   descripcion: z.string().min(1, 'La descripción es requerida').max(255, 'Máximo 255 caracteres'),
-  tipo: z.enum(['INGRESO', 'GASTO'], {
+  tipo: z.enum(['Ingreso', 'Gasto'], {
     required_error: 'El tipo de transacción es requerido'
   }),
   idCategoria: z.string().min(1, 'La categoría es requerida'),
@@ -74,7 +74,7 @@ export function TransactionForm({
     } : {
       monto: 0,
       descripcion: '',
-      tipo: 'GASTO',
+      tipo: 'Gasto',
       idCategoria: '',
       fechaTransaccion: new Date(),
       moneda: 'COP',
@@ -106,12 +106,7 @@ export function TransactionForm({
 
   // Filter categories based on transaction type
   const filteredCategories = categories.filter(cat => {
-    if (watchedType === 'INGRESO') {
-      return cat.tipo === 'INGRESO' || cat.tipo === 'Ingreso'
-    } else if (watchedType === 'GASTO') {
-      return cat.tipo === 'GASTO' || cat.tipo === 'Gasto'
-    }
-    return false
+    return cat.tipo === watchedType
   })
 
   // Get selected category for display
@@ -178,7 +173,7 @@ export function TransactionForm({
             <Select
               value={watchedType}
               onValueChange={(value) => {
-                setValue('tipo', value as 'INGRESO' | 'GASTO')
+                setValue('tipo', value as 'Ingreso' | 'Gasto')
                 setValue('idCategoria', '') // Reset category when type changes
               }}
             >
@@ -186,8 +181,8 @@ export function TransactionForm({
                 <SelectValue placeholder="Selecciona el tipo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="INGRESO">Ingreso</SelectItem>
-                <SelectItem value="GASTO">Gasto</SelectItem>
+                <SelectItem value="Ingreso">Ingreso</SelectItem>
+                <SelectItem value="Gasto">Gasto</SelectItem>
               </SelectContent>
             </Select>
             {errors.tipo && (

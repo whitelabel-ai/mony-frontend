@@ -54,7 +54,7 @@ export function TransactionModal({
               <div>
                 <label className="text-sm font-medium text-muted-foreground">Tipo</label>
                 <p className="text-sm">
-                  {transaction.tipo === 'INGRESO' ? 'Ingreso' : 'Gasto'}
+                  {transaction.tipo === 'Ingreso' ? 'Ingreso' : 'Gasto'}
                 </p>
               </div>
               <div>

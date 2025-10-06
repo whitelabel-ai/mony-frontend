@@ -100,13 +100,13 @@ export class TransactionsApiService {
   async getCategoryStats(filters?: {
     fechaInicio?: string
     fechaFin?: string
-    tipo?: 'INGRESO' | 'GASTO'
+    tipo?: 'Ingreso' | 'Gasto'
   }): Promise<{
     categoria: string
     totalMonto: number
     cantidadTransacciones: number
     porcentajeDelTotal: number
-    tipo: 'INGRESO' | 'GASTO'
+    tipo: 'Ingreso' | 'Gasto'
   }[]> {
     const params = new URLSearchParams()
     
@@ -151,7 +151,7 @@ export class TransactionsApiService {
   async generatePdfReport(filters?: {
     fechaInicio?: string
     fechaFin?: string
-    tipo?: 'INGRESO' | 'GASTO'
+    tipo?: 'Ingreso' | 'Gasto'
     idCategoria?: string
     incluirGraficos?: boolean
     incluirDetalles?: boolean

@@ -29,7 +29,7 @@ import { Categoria } from '@/types'
 export interface TransactionFilters {
   search?: string
   dateRange?: DateRange
-  tipo?: 'ingreso' | 'gasto' | 'all'
+  tipo?: 'Ingreso' | 'Gasto' | 'all'
   categoria?: string
   montoMin?: number
   montoMax?: number
@@ -45,8 +45,8 @@ interface TransactionFiltersProps {
 
 const tipoOptions = [
   { value: 'all', label: 'Todos los tipos', icon: DollarSign },
-  { value: 'ingreso', label: 'Ingresos', icon: TrendingUp },
-  { value: 'gasto', label: 'Gastos', icon: TrendingDown },
+  { value: 'Ingreso', label: 'Ingresos', icon: TrendingUp },
+  { value: 'Gasto', label: 'Gastos', icon: TrendingDown },
 ]
 
 const monedaOptions = [
