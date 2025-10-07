@@ -158,6 +158,34 @@ class ApiService {
   }
 
   /**
+   * Actualizar perfil del usuario autenticado
+   */
+  public async updateUserProfile(userId: string, data: Partial<UserProfile>): Promise<UserProfile> {
+    try {
+      const response = await this.api.patch<UserProfile>(`/users/${userId}`, data)
+      return response.data
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Error al actualizar el perfil')
+    }
+  }
+
+  /**
+   * Cambiar contraseña del usuario
+   */
+  public async changePassword(userId: string, data: {
+    currentPassword: string
+    newPassword: string
+    confirmPassword: string
+  }): Promise<{ message: string }> {
+    try {
+      const response = await this.api.post<{ message: string }>(`/users/${userId}/change-password`, data)
+      return response.data
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Error al cambiar la contraseña')
+    }
+  }
+
+  /**
    * Método genérico para peticiones GET
    */
   public async get<T>(url: string): Promise<T> {
@@ -216,6 +244,8 @@ export const {
   logout,
   getUserProfile,
   getUsersCount,
+  updateUserProfile,
+  changePassword,
   isAuthenticated,
   get,
   post,

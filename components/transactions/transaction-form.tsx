@@ -111,9 +111,8 @@ export function TransactionForm({
 
   // Get selected category for display
   const selectedCategoryId = watch('idCategoria')
-  // Convert selectedCategoryId to number for comparison since Prisma IDs are integers
   const selectedCategory = selectedCategoryId 
-    ? categories.find(cat => cat.id === parseInt(selectedCategoryId))
+    ? categories.find(cat => cat.id === selectedCategoryId)
     : undefined
 
   const onSubmit = async (data: TransactionFormData) => {

@@ -201,6 +201,9 @@ export interface UserProfile {
   email: string
   numeroWhatsapp: string
   moneda: string
+  pais?: string
+  frecuenciaRecordatorios?: FrecuenciaNotificacion
+  frecuenciaInformes?: FrecuenciaNotificacion
   estadoSuscripcion: string
   fechaRegistro: string
   categorias: any[]
@@ -216,6 +219,44 @@ export interface UserProfile {
     metasActivas: number
     suscripcionesActivas: number
   }
+}
+
+// Tipos para Metas de Ahorro
+export interface SavingGoal {
+  id: string;
+  nombre: string;
+  montoObjetivo: number;
+  montoActual: number;
+  fechaObjetivo: string;
+  estado: 'activa' | 'inactiva' | 'completada' | 'cancelada';
+  fechaCreacion: string;
+  idUsuario: string;
+}
+
+export interface CreateSavingGoalData {
+  nombre: string;
+  montoObjetivo: number;
+  fechaObjetivo: string;
+}
+
+export interface UpdateSavingGoalData {
+  nombre?: string;
+  montoObjetivo?: number;
+  fechaObjetivo?: string;
+  estado?: 'activa' | 'inactiva' | 'completada' | 'cancelada';
+}
+
+export interface UpdateSavingGoalAmountData {
+  monto: number;
+}
+
+export interface SavingGoalStats {
+  totalMetas: number;
+  metasActivas: number;
+  metasCompletadas: number;
+  montoTotalObjetivo: number;
+  montoTotalAhorrado: number;
+  porcentajePromedio: number;
 }
 
 // Tipos de respuesta de API
@@ -474,4 +515,33 @@ export interface NotificationPreferences {
 export interface UsersCountResponse {
   totalUsers: number
   message: string
+}
+
+// Tipos para configuraciones de usuario
+export interface UpdateUserProfileData {
+  nombreCompleto?: string
+  email?: string
+  numeroWhatsapp?: string
+  pais?: string
+  moneda?: string
+  frecuenciaRecordatorios?: FrecuenciaNotificacion
+  frecuenciaInformes?: FrecuenciaNotificacion
+}
+
+export interface ChangePasswordData {
+  currentPassword: string
+  newPassword: string
+  confirmPassword: string
+}
+
+// Tipos para configuraciones de la aplicación
+export interface AppSettings {
+  theme: Theme
+  notifications: NotificationPreferences
+  language: string
+}
+
+export interface UserSettings {
+  profile: UpdateUserProfileData
+  app: AppSettings
 }
