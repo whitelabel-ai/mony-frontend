@@ -107,9 +107,9 @@ export function DeleteGoalDialog({ goal, open, onOpenChange, onGoalDeleted }: De
                   ¡Atención!
                 </p>
                 <p className="text-sm text-yellow-700">
-                  Esta meta tiene {formatCurrency(goal.montoActual)} ahorrados. 
-                  Al eliminarla, perderás el registro de este progreso.
-                </p>
+                    Esta meta tiene {formatCurrency(goal.montoActual)} ahorrados. 
+                    Al eliminarla, perderás el registro de este progreso.
+                  </p>
               </div>
             </div>
           )}

@@ -38,7 +38,7 @@ import { useToast } from '@/hooks/use-toast';
 
 const formSchema = z.object({
   nombre: z.string().min(1, 'El nombre es requerido').max(100, 'El nombre es muy largo'),
-  montoObjetivo: z.number().min(1, 'El monto debe ser mayor a 0'),
+  montoObjetivo: z.number().min(0.01, 'El monto debe ser mayor a 0'),
   fechaObjetivo: z.date({
     required_error: 'La fecha objetivo es requerida',
   }),

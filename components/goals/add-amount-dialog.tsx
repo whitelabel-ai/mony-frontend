@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
-import { SavingGoal, UpdateSavingGoalAmountData } from '@/types';
+import { SavingGoal } from '@/types';
 import { updateSavingGoalAmount } from '@/lib/api/saving-goals';
 import { useToast } from '@/hooks/use-toast';
 
@@ -72,27 +72,23 @@ export function AddAmountDialog({ goal, open, onOpenChange, onGoalUpdated }: Add
     return parseFloat(value.replace(/[^0-9]/g, '')) || 0;
   };
 
-  const currentProgress = goal.montoObjetivo > 0 ? (goal.montoActual / goal.montoObjetivo) * 100 : 0;
+  const currentProgress = goal.montoObjetivo > 0 ? (goal.montoActual) / (goal.montoObjetivo) * 100 : 0;
   const watchedAmount = form.watch('monto');
-  const newTotal = goal.montoActual + (watchedAmount || 0);
-  const newProgress = goal.montoObjetivo > 0 ? (newTotal / goal.montoObjetivo) * 100 : 0;
+  const newTotal = (goal.montoActual) + (watchedAmount || 0);
+  const newProgress = goal.montoObjetivo > 0 ? (newTotal / (goal.montoObjetivo)) * 100 : 0;
 
   const onSubmit = async (data: FormData) => {
     try {
       setLoading(true);
-      
-      const updateData: UpdateSavingGoalAmountData = {
-        monto: data.monto,
-      };
 
-      const response = await updateSavingGoalAmount(goal.id, updateData);
+      const response = await updateSavingGoalAmount(goal.id, data.monto);
       
       if (response.success && response.data) {
         onGoalUpdated(response.data);
         form.reset();
         onOpenChange(false);
         
-        const isCompleted = response.data.montoActual >= response.data.montoObjetivo;
+        const isCompleted = (response.data.montoActual) >= (response.data.montoObjetivo);
         
         toast({
           title: isCompleted ? '¡Meta completada!' : 'Dinero agregado',

@@ -222,6 +222,18 @@ class ApiService {
   }
 
   /**
+   * Método genérico para peticiones PATCH
+   */
+  public async patch<T>(url: string, data?: any): Promise<T> {
+    try {
+      const response = await this.api.patch<T>(url, data)
+      return response.data
+    } catch (error: any) {
+      throw new Error(error.response?.data?.message || 'Error en la petición')
+    }
+  }
+
+  /**
    * Método genérico para peticiones DELETE
    */
   public async delete<T>(url: string): Promise<T> {
@@ -250,5 +262,6 @@ export const {
   get,
   post,
   put,
+  patch,
   delete: deleteRequest,
 } = apiService

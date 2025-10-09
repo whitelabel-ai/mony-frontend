@@ -94,12 +94,12 @@ export default function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-muted">
       {/* Sidebar móvil */}
       {sidebarOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
-          <div className="fixed left-0 top-0 h-full w-64 bg-card border-r shadow-lg">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
+          <div className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border shadow-lg">
             <SidebarContent
               navigationItems={navigationItems}
               pathname={pathname}
@@ -111,7 +111,7 @@ export default function DashboardLayout({
 
       {/* Sidebar desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
-        <div className="flex flex-col flex-grow bg-card border-r shadow-sm">
+        <div className="flex flex-col flex-grow bg-card border border-border shadow-sm">
           <SidebarContent
             navigationItems={navigationItems}
             pathname={pathname}

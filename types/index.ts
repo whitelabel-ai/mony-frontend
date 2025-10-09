@@ -243,7 +243,7 @@ export interface UpdateSavingGoalData {
   nombre?: string;
   montoObjetivo?: number;
   fechaObjetivo?: string;
-  estado?: 'activa' | 'inactiva' | 'completada' | 'cancelada';
+  estado?: 'activa' | 'completada' | 'inactiva' | 'cancelada';
 }
 
 export interface UpdateSavingGoalAmountData {
@@ -251,12 +251,22 @@ export interface UpdateSavingGoalAmountData {
 }
 
 export interface SavingGoalStats {
-  totalMetas: number;
-  metasActivas: number;
-  metasCompletadas: number;
-  montoTotalObjetivo: number;
-  montoTotalAhorrado: number;
-  porcentajePromedio: number;
+  total: number;
+  activas: number;
+  completadas: number;
+  inactivas: number;
+  canceladas: number;
+  totalObjetivo: number;
+  totalAhorrado: number;
+  progresoPromedio: number;
+}
+
+export interface SavingGoalsResponse {
+  metas: SavingGoal[];
+  total: number;
+  pagina: number;
+  limite: number;
+  totalPaginas: number;
 }
 
 // Tipos de respuesta de API
@@ -309,7 +319,7 @@ export interface CountryData {
 export const COUNTRY: CountryData[] = [
   { code: 'CO', name: 'Colombia', dialCode: '+57', flag: '🇨🇴', currency: 'COP', currencyName: 'Peso Colombiano', currencySymbol: '$' },
   { code: 'US', name: 'Estados Unidos', dialCode: '+1', flag: '🇺🇸', currency: 'USD', currencyName: 'Dólar Estadounidense', currencySymbol: '$' },
-  { code: 'MX', name: 'México', dialCode: '+52', flag: '🇲🇽', currency: 'MXN', currencyName: 'Peso Mexicano', currencySymbol: '$' },
+  { code: 'MX', name: 'México', dialCode: '+521', flag: '🇲🇽', currency: 'MXN', currencyName: 'Peso Mexicano', currencySymbol: '$' },
   { code: 'AR', name: 'Argentina', dialCode: '+54', flag: '🇦🇷', currency: 'ARS', currencyName: 'Peso Argentino', currencySymbol: '$' },
   { code: 'PE', name: 'Perú', dialCode: '+51', flag: '🇵🇪', currency: 'PEN', currencyName: 'Sol Peruano', currencySymbol: 'S/' },
   { code: 'CL', name: 'Chile', dialCode: '+56', flag: '🇨🇱', currency: 'CLP', currencyName: 'Peso Chileno', currencySymbol: '$' },

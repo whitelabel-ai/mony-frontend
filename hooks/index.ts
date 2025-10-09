@@ -7,3 +7,4 @@ export {
 } from './use-auth'
 
 export { useToast } from './use-toast'
+export { useThemeConfig } from './use-theme-config'

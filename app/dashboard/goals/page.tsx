@@ -34,9 +34,7 @@ export default function GoalsPage() {
         getSavingGoalStats()
       ]);
 
-      if (goalsResponse.success && goalsResponse.data) {
-        setGoals(goalsResponse.data.goals);
-      }
+      setGoals(goalsResponse.metas || []);
 
       if (statsResponse.success && statsResponse.data) {
         setStats(statsResponse.data);

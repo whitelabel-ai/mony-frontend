@@ -19,8 +19,11 @@ export function GoalStats({ stats }: GoalStatsProps) {
     }).format(amount);
   };
 
-  const progressPercentage = stats.montoTotalObjetivo > 0 
-    ? (stats.montoTotalAhorrado / stats.montoTotalObjetivo) * 100 
+  const totalSaved = stats.totalAhorrado;
+  const totalTarget = stats.totalObjetivo;
+
+  const progressPercentage = totalTarget > 0 
+    ? (totalSaved / totalTarget) * 100 
     : 0;
 
   return (
@@ -32,9 +35,9 @@ export function GoalStats({ stats }: GoalStatsProps) {
           <Target className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.totalMetas}</div>
+          <div className="text-2xl font-bold">{stats.total}</div>
           <p className="text-xs text-muted-foreground">
-            {stats.metasActivas} activas, {stats.metasCompletadas} completadas
+            {stats.activas} activas, {stats.completadas} completadas
           </p>
         </CardContent>
       </Card>
@@ -61,9 +64,9 @@ export function GoalStats({ stats }: GoalStatsProps) {
           <DollarSign className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{formatCurrency(stats.montoTotalAhorrado)}</div>
+          <div className="text-2xl font-bold">{formatCurrency(stats.totalAhorrado)}</div>
           <p className="text-xs text-muted-foreground">
-            De {formatCurrency(stats.montoTotalObjetivo)} objetivo
+            De {formatCurrency(stats.totalObjetivo)} objetivo
           </p>
         </CardContent>
       </Card>
@@ -75,10 +78,10 @@ export function GoalStats({ stats }: GoalStatsProps) {
           <CheckCircle className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{stats.metasCompletadas}</div>
+          <div className="text-2xl font-bold">{stats.completadas}</div>
           <p className="text-xs text-muted-foreground">
-            {stats.totalMetas > 0 
-              ? `${((stats.metasCompletadas / stats.totalMetas) * 100).toFixed(1)}% del total`
+            {stats.total > 0 
+              ? `${((stats.completadas / stats.total) * 100).toFixed(1)}% del total`
               : 'Sin metas aún'
             }
           </p>

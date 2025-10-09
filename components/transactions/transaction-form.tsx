@@ -112,7 +112,7 @@ export function TransactionForm({
   // Get selected category for display
   const selectedCategoryId = watch('idCategoria')
   const selectedCategory = selectedCategoryId 
-    ? categories.find(cat => cat.id === selectedCategoryId)
+    ? categories.find(cat => cat.id.toString() === selectedCategoryId)
     : undefined
 
   const onSubmit = async (data: TransactionFormData) => {
