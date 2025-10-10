@@ -75,14 +75,13 @@ function MyComponent() {
     getThemeColors 
   } = useThemeConfig()
 
-  return (
+  return {
     <div>
       <p>Tema actual: {theme}</p>
       <button onClick={() => changeTheme('dark')}>
         Cambiar a oscuro
       </button>
     </div>
-  )
 }
 ```
 
