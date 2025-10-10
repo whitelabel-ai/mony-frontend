@@ -186,6 +186,54 @@ class ApiService {
   }
 
   /**
+   * Solicitar restablecimiento de contraseña
+   */
+  public async forgotPassword(email: string): Promise<{ success: boolean; message: string }> {
+    try {
+      console.log('🔍 Enviando solicitud de forgot-password a:', `${this.api.defaults.baseURL}/auth/forgot-password`)
+      console.log('📧 Email:', email)
+      
+      const response = await this.api.post<{ success: boolean; message: string }>('/auth/forgot-password', { email })
+      
+      console.log('✅ Respuesta exitosa:', response.data)
+      return response.data
+    } catch (error: any) {
+      console.error('❌ Error en forgot-password:', error)
+      console.error('📊 Error response:', error.response?.data)
+      console.error('📊 Error status:', error.response?.status)
+      console.error('📊 Error headers:', error.response?.headers)
+      
+      const message = error.response?.data?.message || 'Error al enviar email de recuperación'
+      throw new Error(message)
+    }
+  }
+
+  /**
+   * Restablecer contraseña con token
+   */
+  public async resetPassword(token: string, newPassword: string): Promise<{ success: boolean; message: string }> {
+    try {
+      console.log('🔍 Enviando solicitud de reset-password a:', `${this.api.defaults.baseURL}/auth/reset-password`)
+      console.log('🔑 Token:', token.substring(0, 20) + '...')
+      
+      const response = await this.api.post<{ success: boolean; message: string }>('/auth/reset-password', { 
+        token, 
+        newPassword 
+      })
+      
+      console.log('✅ Respuesta exitosa:', response.data)
+      return response.data
+    } catch (error: any) {
+      console.error('❌ Error en reset-password:', error)
+      console.error('📊 Error response:', error.response?.data)
+      console.error('📊 Error status:', error.response?.status)
+      
+      const message = error.response?.data?.message || 'Error al restablecer la contraseña'
+      throw new Error(message)
+    }
+  }
+
+  /**
    * Método genérico para peticiones GET
    */
   public async get<T>(url: string): Promise<T> {
@@ -258,6 +306,8 @@ export const {
   getUsersCount,
   updateUserProfile,
   changePassword,
+  forgotPassword,
+  resetPassword,
   isAuthenticated,
   get,
   post,
