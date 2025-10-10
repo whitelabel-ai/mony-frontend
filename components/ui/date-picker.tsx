@@ -199,8 +199,17 @@ export function DatePicker({
   React.useEffect(() => {
     if (isOpen && buttonRef) {
       const rect = buttonRef.getBoundingClientRect()
+      const overlayHeight = 400 // Altura aproximada del overlay
+      const spaceBelow = window.innerHeight - rect.bottom
+      const spaceAbove = rect.top
+      
+      // Si no hay suficiente espacio debajo, mostrar arriba
+      const showAbove = spaceBelow < overlayHeight && spaceAbove > overlayHeight
+      
       setOverlayPosition({
-        top: rect.bottom + window.scrollY + 5,
+        top: showAbove 
+          ? rect.top + window.scrollY - overlayHeight - 5
+          : rect.bottom + window.scrollY + 5,
         left: rect.left + window.scrollX
       })
     }
@@ -260,7 +269,7 @@ export function DatePicker({
                     {months[selectedMonth]}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent className="z-[10000] pointer-events-auto">
+                <SelectContent className="z-[100000] pointer-events-auto">
                   {months.map((month, index) => (
                     <SelectItem key={index} value={index.toString()}>
                       {month}
@@ -277,7 +286,7 @@ export function DatePicker({
                     {selectedYear}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent className="z-[10000] pointer-events-auto">
+                <SelectContent className="z-[100000] pointer-events-auto">
                   {years.map((year) => (
                     <SelectItem key={year} value={year.toString()}>
                       {year}

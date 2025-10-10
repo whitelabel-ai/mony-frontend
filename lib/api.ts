@@ -52,9 +52,9 @@ class ApiService {
           }
         }
 
-        // Mostrar mensaje de error
-        const message = error.response?.data?.message || 'Error en la petición'
-        toast.error(message)
+        // No mostrar toast automáticamente - dejar que cada componente maneje sus errores
+        // const message = error.response?.data?.message || 'Error en la petición'
+        // toast.error(message)
 
         return Promise.reject(error)
       }

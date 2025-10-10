@@ -38,20 +38,67 @@ export async function getSavingGoal(id: string): Promise<ApiResponse<SavingGoal>
 
 // Crear una nueva meta de ahorro
 export async function createSavingGoal(data: CreateSavingGoalData): Promise<ApiResponse<SavingGoal>> {
-  return apiService.post<ApiResponse<SavingGoal>>('/saving-goals', data);
+  try {
+    const response = await apiService.post<SavingGoal>('/saving-goals', data);
+    return {
+      success: true,
+      data: response,
+      message: 'Meta de ahorro creada exitosamente'
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Error al crear la meta de ahorro'
+    };
+  }
 }
 
 // Actualizar una meta de ahorro
 export async function updateSavingGoal(id: string, data: UpdateSavingGoalData): Promise<ApiResponse<SavingGoal>> {
-  return apiService.put<ApiResponse<SavingGoal>>(`/saving-goals/${id}`, data);
+  try {
+    const response = await apiService.put<SavingGoal>(`/saving-goals/${id}`, data);
+    return {
+      success: true,
+      data: response,
+      message: 'Meta de ahorro actualizada exitosamente'
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Error al actualizar la meta de ahorro'
+    };
+  }
 }
 
 // Actualizar el monto actual de una meta de ahorro
 export async function updateSavingGoalAmount(id: string, amount: number): Promise<ApiResponse<SavingGoal>> {
-  return apiService.patch<ApiResponse<SavingGoal>>(`/saving-goals/${id}/amount`, { montoActual: amount });
+  try {
+    const response = await apiService.patch<SavingGoal>(`/saving-goals/${id}/amount`, { monto: amount });
+    return {
+      success: true,
+      data: response,
+      message: 'Monto de la meta actualizado exitosamente'
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Error al actualizar el monto de la meta'
+    };
+  }
 }
 
 // Eliminar una meta de ahorro
 export async function deleteSavingGoal(id: string): Promise<ApiResponse<void>> {
-  return apiService.delete<ApiResponse<void>>(`/saving-goals/${id}`);
+  try {
+    await apiService.delete<void>(`/saving-goals/${id}`);
+    return {
+      success: true,
+      message: 'Meta de ahorro eliminada exitosamente'
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Error al eliminar la meta de ahorro'
+    };
+  }
 }

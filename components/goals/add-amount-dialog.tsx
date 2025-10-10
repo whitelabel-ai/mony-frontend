@@ -80,7 +80,9 @@ export function AddAmountDialog({ goal, open, onOpenChange, onGoalUpdated }: Add
     try {
       setLoading(true);
 
-      const response = await updateSavingGoalAmount(goal.id, data.monto);
+      // Calcular el monto total (actual + nuevo monto a agregar)
+      const montoTotal = goal.montoActual + data.monto;
+      const response = await updateSavingGoalAmount(goal.id, montoTotal);
       
       if (response.success && response.data) {
         onGoalUpdated(response.data);

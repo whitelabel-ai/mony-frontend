@@ -81,6 +81,7 @@ export function CreateGoalDialog({ open, onOpenChange, onGoalCreated }: CreateGo
       const response = await createSavingGoal(createData);
       
       if (response.success && response.data) {
+        toast.success(response.message || 'Meta de ahorro creada exitosamente');
         onGoalCreated(response.data);
         form.reset();
         onOpenChange(false);

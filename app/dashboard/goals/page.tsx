@@ -46,9 +46,7 @@ export default function GoalsPage() {
 
   const handleGoalCreated = (newGoal: SavingGoal) => {
     setGoals(prev => [newGoal, ...prev]);
-    setCreateDialogOpen(false);
     loadData(); // Recargar estadísticas
-    toast.success('Meta creada exitosamente');
   };
 
   const handleGoalUpdated = (updatedGoal: SavingGoal) => {
