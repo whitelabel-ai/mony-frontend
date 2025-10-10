@@ -387,10 +387,10 @@ export default function TransactionsDashboard() {
                         ${categoria.montoTotal.toLocaleString()}
                       </td>
                       <td className="p-2 text-right">
-                        {categoria.cantidadTransacciones}
+                        {categoria.totalTransacciones || 0}
                       </td>
                       <td className="p-2 text-right">
-                        {categoria.porcentajeDelTotal.toFixed(1)}%
+                        {categoria.porcentaje?.toFixed(1) || '0.0'}%
                       </td>
                     </tr>
                   ))}

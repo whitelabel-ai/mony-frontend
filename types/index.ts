@@ -147,11 +147,14 @@ export interface TransactionAnalytics {
     promedioGastos: number
   }
   categorias: {
+    id: number
     nombre: string
-    montoTotal: number
-    cantidadTransacciones: number
-    porcentajeDelTotal: number
     tipo: 'Ingreso' | 'Gasto'
+    totalTransacciones: number
+    montoTotal: number
+    porcentaje: number
+    presupuestoMensual?: number
+    porcentajePresupuesto?: number
   }[]
   serieTemporal: {
     periodo: string
