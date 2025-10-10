@@ -49,8 +49,6 @@ export interface Categoria {
   // Campos adicionales del backend
   presupuestoMensual?: number | null
   descripcion?: string | null
-  createdAt?: string
-  updatedAt?: string
   _count?: {
     transacciones: number
   }
@@ -79,8 +77,6 @@ export interface Transaction {
   fechaTransaccion: string
   fechaCreacion: string
   notas?: string
-  createdAt: string
-  updatedAt: string
   categoria?: {
     id: string
     nombre: string

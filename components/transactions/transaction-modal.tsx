@@ -100,18 +100,10 @@ export function TransactionModal({
               </div>
             )}
             
-            <div className="grid grid-cols-2 gap-4 text-xs text-muted-foreground">
+            <div className="grid grid-cols-1 gap-4 text-sm">
               <div>
-                <label className="font-medium">Creado</label>
-                <p>
-                  {new Date(transaction.createdAt).toLocaleString('es-CO')}
-                </p>
-              </div>
-              <div>
-                <label className="font-medium">Actualizado</label>
-                <p>
-                  {new Date(transaction.updatedAt).toLocaleString('es-CO')}
-                </p>
+                <span className="font-medium text-muted-foreground">Creado</span>
+                <p>{new Date(transaction.fechaCreacion).toLocaleString('es-CO')}</p>
               </div>
             </div>
           </div>

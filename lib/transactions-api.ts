@@ -157,7 +157,7 @@ export class TransactionsApiService {
     incluirDetalles?: boolean
     agrupacion?: 'dia' | 'semana' | 'mes'
     titulo?: string
-    formato?: 'resumen' | 'detallado'
+    formato?: 'pdf' | 'excel'
   }): Promise<Blob> {
     const params = new URLSearchParams()
     

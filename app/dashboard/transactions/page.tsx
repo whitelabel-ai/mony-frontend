@@ -10,7 +10,8 @@ import {
   Filter,
   Download,
   Plus,
-  Search
+  Search,
+  ChevronDown
 } from 'lucide-react'
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns'
 import { es } from 'date-fns/locale'
@@ -19,6 +20,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { LineChart, BarChart, PieChart, MetricCard } from '@/components/charts'
 import { TransactionModal } from '@/components/transactions/transaction-modal'
 import { transactionsApi } from '@/lib/transactions-api'
@@ -138,26 +145,27 @@ export default function TransactionsDashboard() {
     setFilters(prev => ({ ...prev, fechaInicio, fechaFin }))
   }
 
-  const handleDownloadReport = async () => {
+  const handleDownloadReport = async (formato: 'pdf' | 'excel') => {
     try {
       const blob = await transactionsApi.generatePdfReport({
         fechaInicio: filters.fechaInicio,
         fechaFin: filters.fechaFin,
         incluirGraficos: true,
         incluirDetalles: true,
-        formato: 'detallado'
+        formato: formato
       })
       
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `reporte-transacciones-${format(new Date(), 'yyyy-MM-dd')}.pdf`
+      const extension = formato === 'pdf' ? 'pdf' : 'xlsx'
+      a.download = `reporte-transacciones-${format(new Date(), 'yyyy-MM-dd')}.${extension}`
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
       
-      toast.success('Reporte descargado exitosamente')
+      toast.success(`Reporte ${formato.toUpperCase()} descargado exitosamente`)
     } catch (error) {
       console.error('Error al descargar reporte:', error)
       toast.error('Error al generar el reporte')
@@ -186,16 +194,31 @@ export default function TransactionsDashboard() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard de Transacciones</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Transacciones</h1>
           <p className="text-muted-foreground">
             Análisis detallado de tus ingresos y gastos
           </p>
         </div>
         <div className="flex gap-2">
-           <Button variant="outline" onClick={handleDownloadReport}>
-             <Download className="h-4 w-4 mr-2" />
-             Descargar Reporte
-           </Button>
+           <DropdownMenu>
+             <DropdownMenuTrigger asChild>
+               <Button variant="outline">
+                 <Download className="h-4 w-4 mr-2" />
+                 Descargar Reporte
+                 <ChevronDown className="h-4 w-4 ml-2" />
+               </Button>
+             </DropdownMenuTrigger>
+             <DropdownMenuContent align="end">
+               <DropdownMenuItem onClick={() => handleDownloadReport('pdf')}>
+                 <Download className="h-4 w-4 mr-2" />
+                 Reporte PDF
+               </DropdownMenuItem>
+               <DropdownMenuItem onClick={() => handleDownloadReport('excel')}>
+                 <Download className="h-4 w-4 mr-2" />
+                 Reporte Excel
+               </DropdownMenuItem>
+             </DropdownMenuContent>
+           </DropdownMenu>
            <Link href="/dashboard/transactions/list">
              <Button variant="outline">
                <CreditCard className="h-4 w-4 mr-2" />
