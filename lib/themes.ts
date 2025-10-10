@@ -31,10 +31,10 @@ export interface Theme {
   colors: ThemeColors
 }
 
-// Tema claro
-export const lightTheme: Theme = {
-  name: 'light',
-  displayName: 'Claro',
+// Tema azul claro
+export const blueLight: Theme = {
+  name: 'blue-light',
+  displayName: 'Azul Claro',
   colors: {
     background: '0 0% 100%',
     foreground: '222.2 84% 4.9%',
@@ -42,26 +42,26 @@ export const lightTheme: Theme = {
     cardForeground: '222.2 84% 4.9%',
     popover: '0 0% 99%',
     popoverForeground: '222.2 84% 4.9%',
-    primary: '221.2 83.2% 53.3%',
-    primaryForeground: '210 40% 98%',
+    primary: '200 100% 50%', // Azul vibrante de la imagen
+    primaryForeground: '0 0% 100%',
     secondary: '210 40% 96%',
     secondaryForeground: '222.2 84% 4.9%',
     muted: '210 40% 94%',
     mutedForeground: '215.4 16.3% 46.9%',
-    accent: '210 40% 96%',
-    accentForeground: '222.2 84% 4.9%',
+    accent: '200 100% 95%',
+    accentForeground: '200 100% 20%',
     destructive: '0 84.2% 60.2%',
     destructiveForeground: '210 40% 98%',
     border: '214.3 31.8% 91.4%',
     input: '214.3 31.8% 91.4%',
-    ring: '221.2 83.2% 53.3%'
+    ring: '200 100% 50%'
   }
 }
 
-// Tema oscuro
-export const darkTheme: Theme = {
-  name: 'dark',
-  displayName: 'Oscuro',
+// Tema azul oscuro
+export const blueDark: Theme = {
+  name: 'blue-dark',
+  displayName: 'Azul Oscuro',
   colors: {
     background: '222.2 84% 4.9%',
     foreground: '210 40% 98%',
@@ -69,24 +69,78 @@ export const darkTheme: Theme = {
     cardForeground: '210 40% 98%',
     popover: '222.2 84% 7%',
     popoverForeground: '210 40% 98%',
-    primary: '217.2 91.2% 59.8%',
+    primary: '200 100% 60%', // Azul más claro para contraste en dark
     primaryForeground: '222.2 84% 4.9%',
     secondary: '217.2 32.6% 19%',
     secondaryForeground: '210 40% 98%',
     muted: '217.2 32.6% 19%',
     mutedForeground: '215 20.2% 65.1%',
-    accent: '217.2 32.6% 19%',
-    accentForeground: '210 40% 98%',
+    accent: '200 50% 15%',
+    accentForeground: '200 100% 80%',
     destructive: '0 62.8% 30.6%',
     destructiveForeground: '210 40% 98%',
     border: '217.2 32.6% 19%',
     input: '217.2 32.6% 19%',
-    ring: '224.3 76.3% 94.1%'
+    ring: '200 100% 60%'
+  }
+}
+
+// Tema verde claro
+export const greenLight: Theme = {
+  name: 'green-light',
+  displayName: 'Verde Claro',
+  colors: {
+    background: '0 0% 100%',
+    foreground: '222.2 84% 4.9%',
+    card: '0 0% 98%',
+    cardForeground: '222.2 84% 4.9%',
+    popover: '0 0% 99%',
+    popoverForeground: '222.2 84% 4.9%',
+    primary: '85 100% 50%', // Verde vibrante de la imagen
+    primaryForeground: '0 0% 100%',
+    secondary: '120 40% 96%',
+    secondaryForeground: '222.2 84% 4.9%',
+    muted: '120 40% 94%',
+    mutedForeground: '215.4 16.3% 46.9%',
+    accent: '85 100% 95%',
+    accentForeground: '85 100% 20%',
+    destructive: '0 84.2% 60.2%',
+    destructiveForeground: '210 40% 98%',
+    border: '214.3 31.8% 91.4%',
+    input: '214.3 31.8% 91.4%',
+    ring: '85 100% 50%'
+  }
+}
+
+// Tema verde oscuro
+export const greenDark: Theme = {
+  name: 'green-dark',
+  displayName: 'Verde Oscuro',
+  colors: {
+    background: '222.2 84% 4.9%',
+    foreground: '210 40% 98%',
+    card: '222.2 84% 6.5%',
+    cardForeground: '210 40% 98%',
+    popover: '222.2 84% 7%',
+    popoverForeground: '210 40% 98%',
+    primary: '85 100% 60%', // Verde más claro para contraste en dark
+    primaryForeground: '222.2 84% 4.9%',
+    secondary: '120 32.6% 19%',
+    secondaryForeground: '210 40% 98%',
+    muted: '120 32.6% 19%',
+    mutedForeground: '215 20.2% 65.1%',
+    accent: '85 50% 15%',
+    accentForeground: '85 100% 80%',
+    destructive: '0 62.8% 30.6%',
+    destructiveForeground: '210 40% 98%',
+    border: '120 32.6% 19%',
+    input: '120 32.6% 19%',
+    ring: '85 100% 60%'
   }
 }
 
 // Lista de todos los temas disponibles
-export const themes: Theme[] = [lightTheme, darkTheme]
+export const themes: Theme[] = [blueLight, blueDark, greenLight, greenDark]
 
 // Función para obtener un tema por nombre
 export const getTheme = (themeName: string): Theme | undefined => {
@@ -125,15 +179,18 @@ export const applyTheme = (themeName: string): void => {
   if (!theme) return
 
   const root = document.documentElement
-  const cssVariables = generateCSSVariables(theme)
   
-  // Aplicar las variables CSS al root
-  cssVariables.split('\n').forEach(line => {
-    const [property, value] = line.split(':').map(s => s.trim())
-    if (property && value) {
-      root.style.setProperty(property, value.replace(';', ''))
-    }
-  })
+  // Aplicar el tema usando data-theme
+  root.setAttribute('data-theme', themeName)
+  
+  // También mantener compatibilidad con next-themes para dark/light
+  if (themeName.includes('dark')) {
+    root.classList.add('dark')
+    root.classList.remove('light')
+  } else {
+    root.classList.add('light')
+    root.classList.remove('dark')
+  }
 }
 
 // Configuración adicional para personalización fácil

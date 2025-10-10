@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ProfileSettings } from './profile-settings'
 import { PasswordSettings } from './password-settings'
-import { ThemeSettings } from './theme-settings'
+import { ThemeConfigurator } from '../theme/theme-configurator'
 
 export function SettingsTabs() {
   const [activeTab, setActiveTab] = useState('profile')
@@ -75,7 +75,7 @@ export function SettingsTabs() {
         </TabsContent>
 
         <TabsContent value="appearance" className="space-y-6">
-          <ThemeSettings />
+          <ThemeConfigurator />
         </TabsContent>
 
         <TabsContent value="notifications" className="space-y-6">

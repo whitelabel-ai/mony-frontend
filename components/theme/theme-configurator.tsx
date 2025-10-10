@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Monitor, Moon, Sun, Palette, Check, Copy } from 'lucide-react'
+import { Monitor, Moon, Sun, Palette, Check, Copy, Droplets, Leaf } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -16,51 +16,18 @@ interface ThemeConfiguratorProps {
 
 export function ThemeConfigurator({ className }: ThemeConfiguratorProps) {
   const { 
-    theme, 
     currentTheme, 
-    changeTheme, 
-    toggleTheme, 
+    toggleLightDark, 
+    changePalette,
+    getCurrentPalette,
     isDark, 
-    getAvailableThemes, 
-    isThemeLoaded,
-    getCurrentThemeName 
+    isThemeLoaded
   } = useThemeConfig()
   
   const { toast } = useToast()
   const [copiedColors, setCopiedColors] = useState<string | null>(null)
 
-  const themes = getAvailableThemes()
-  const currentThemeName = getCurrentThemeName()
-
-  const themeOptions = [
-    {
-      name: 'light',
-      label: 'Claro',
-      icon: Sun,
-      description: 'Tema claro y limpio'
-    },
-    {
-      name: 'dark',
-      label: 'Oscuro',
-      icon: Moon,
-      description: 'Tema oscuro para mejor experiencia nocturna'
-    },
-    {
-      name: 'system',
-      label: 'Sistema',
-      icon: Monitor,
-      description: 'Sigue la configuración del sistema'
-    }
-  ]
-
-  const handleThemeChange = (themeName: string) => {
-    changeTheme(themeName)
-    toast({
-      title: 'Tema cambiado',
-      description: `Se ha aplicado el tema ${themeOptions.find(t => t.name === themeName)?.label}`,
-      duration: 2000
-    })
-  }
+  const currentPalette = getCurrentPalette()
 
   const copyThemeColors = async () => {
     if (!currentTheme) return
@@ -87,6 +54,25 @@ export function ThemeConfigurator({ className }: ThemeConfiguratorProps) {
     }
   }
 
+  const handlePaletteToggle = () => {
+    const newPalette = currentPalette === 'blue' ? 'green' : 'blue'
+    changePalette(newPalette)
+    toast({
+      title: 'Paleta cambiada',
+      description: `Ahora usando la paleta ${newPalette === 'blue' ? 'azul' : 'verde'}`,
+      duration: 2000
+    })
+  }
+
+  const handleModeToggle = () => {
+    toggleLightDark()
+    toast({
+      title: 'Modo cambiado',
+      description: `Cambiado a modo ${isDark() ? 'oscuro' : 'claro'}`,
+      duration: 2000
+    })
+  }
+
   if (!isThemeLoaded()) {
     return (
       <Card className={className}>
@@ -104,149 +90,162 @@ export function ThemeConfigurator({ className }: ThemeConfiguratorProps) {
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Palette className="h-5 w-5" />
-          Configuración de Temas
+          Apariencia
         </CardTitle>
         <CardDescription>
-          Personaliza la apariencia de la aplicación según tus preferencias
+          Personaliza los colores y el modo de visualización
         </CardDescription>
       </CardHeader>
       
       <CardContent className="space-y-6">
-        {/* Selector de temas */}
-        <div className="space-y-3">
-          <h4 className="text-sm font-medium">Seleccionar tema</h4>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {themeOptions.map((option) => {
-              const Icon = option.icon
-              const isActive = theme === option.name
-              
-              return (
-                <Button
-                  key={option.name}
-                  variant={isActive ? 'default' : 'outline'}
-                  className={cn(
-                    'h-auto p-4 flex flex-col items-center gap-2 text-center',
-                    isActive && 'ring-2 ring-primary ring-offset-2'
-                  )}
-                  onClick={() => handleThemeChange(option.name)}
-                >
-                  <Icon className="h-5 w-5" />
-                  <div>
-                    <div className="font-medium">{option.label}</div>
-                    <div className="text-xs text-muted-foreground">
-                      {option.description}
-                    </div>
-                  </div>
-                  {isActive && (
-                    <Check className="h-4 w-4 absolute top-2 right-2" />
-                  )}
-                </Button>
-              )
-            })}
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Información del tema actual */}
-        <div className="space-y-3">
+        {/* Vista previa del tema actual */}
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h4 className="text-sm font-medium">Tema actual</h4>
-            <Badge variant={isDark() ? 'secondary' : 'default'}>
-              {currentTheme?.displayName || 'Desconocido'}
-            </Badge>
+            <div className="flex gap-2">
+              <Badge variant={isDark() ? 'secondary' : 'default'} className="text-xs">
+                {isDark() ? 'Oscuro' : 'Claro'}
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                {currentPalette === 'blue' ? 'Azul' : 'Verde'}
+              </Badge>
+            </div>
           </div>
           
           {currentTheme && (
             <div className="space-y-3">
-              <div className="text-sm text-muted-foreground">
-                Tema activo: <span className="font-medium">{currentTheme.displayName}</span>
-              </div>
-              
-              {/* Vista previa de colores */}
-              <div className="space-y-2">
-                <div className="text-sm font-medium">Colores principales</div>
-                <div className="grid grid-cols-4 gap-2">
-                  <div className="space-y-1">
-                    <div 
-                      className="h-8 w-full rounded border"
-                      style={{ backgroundColor: `hsl(${currentTheme.colors.primary})` }}
-                    />
-                    <div className="text-xs text-center">Primary</div>
-                  </div>
-                  <div className="space-y-1">
-                    <div 
-                      className="h-8 w-full rounded border"
-                      style={{ backgroundColor: `hsl(${currentTheme.colors.secondary})` }}
-                    />
-                    <div className="text-xs text-center">Secondary</div>
-                  </div>
-                  <div className="space-y-1">
-                    <div 
-                      className="h-8 w-full rounded border"
-                      style={{ backgroundColor: `hsl(${currentTheme.colors.accent})` }}
-                    />
-                    <div className="text-xs text-center">Accent</div>
-                  </div>
-                  <div className="space-y-1">
-                    <div 
-                      className="h-8 w-full rounded border"
-                      style={{ backgroundColor: `hsl(${currentTheme.colors.muted})` }}
-                    />
-                    <div className="text-xs text-center">Muted</div>
-                  </div>
+              {/* Vista previa de colores principales */}
+              <div className="grid grid-cols-4 gap-3">
+                <div className="space-y-2">
+                  <div 
+                    className="h-12 w-full rounded-lg border-2 border-border shadow-sm"
+                    style={{ backgroundColor: `hsl(${currentTheme.colors.primary})` }}
+                  />
+                  <div className="text-xs text-center text-muted-foreground">Principal</div>
+                </div>
+                <div className="space-y-2">
+                  <div 
+                    className="h-12 w-full rounded-lg border-2 border-border shadow-sm"
+                    style={{ backgroundColor: `hsl(${currentTheme.colors.secondary})` }}
+                  />
+                  <div className="text-xs text-center text-muted-foreground">Secundario</div>
+                </div>
+                <div className="space-y-2">
+                  <div 
+                    className="h-12 w-full rounded-lg border-2 border-border shadow-sm"
+                    style={{ backgroundColor: `hsl(${currentTheme.colors.accent})` }}
+                  />
+                  <div className="text-xs text-center text-muted-foreground">Acento</div>
+                </div>
+                <div className="space-y-2">
+                  <div 
+                    className="h-12 w-full rounded-lg border-2 border-border shadow-sm"
+                    style={{ backgroundColor: `hsl(${currentTheme.colors.muted})` }}
+                  />
+                  <div className="text-xs text-center text-muted-foreground">Silenciado</div>
                 </div>
               </div>
-
-              {/* Botón para copiar colores */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={copyThemeColors}
-                className="w-full"
-                disabled={copiedColors === currentTheme.name}
-              >
-                {copiedColors === currentTheme.name ? (
-                  <>
-                    <Check className="h-4 w-4 mr-2" />
-                    Copiado
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4 mr-2" />
-                    Copiar colores del tema
-                  </>
-                )}
-              </Button>
             </div>
           )}
         </div>
 
         <Separator />
 
-        {/* Acciones rápidas */}
-        <div className="space-y-3">
-          <h4 className="text-sm font-medium">Acciones rápidas</h4>
-          <div className="flex gap-2">
+        {/* Controles principales */}
+        <div className="space-y-4">
+          <h4 className="text-sm font-medium">Personalización</h4>
+          
+          <div className="grid grid-cols-2 gap-3">
+            {/* Toggle de modo claro/oscuro */}
             <Button
               variant="outline"
-              size="sm"
-              onClick={toggleTheme}
-              className="flex-1"
+              size="lg"
+              onClick={handleModeToggle}
+              className="h-auto p-4 flex flex-col items-center gap-2"
             >
               {isDark() ? (
                 <>
-                  <Sun className="h-4 w-4 mr-2" />
-                  Cambiar a claro
+                  <Sun className="h-6 w-6" />
+                  <div className="text-center">
+                    <div className="font-medium">Modo oscuro</div>
+                    <div className="text-xs text-muted-foreground">Cambiar a claro</div>
+                  </div>
                 </>
               ) : (
                 <>
-                  <Moon className="h-4 w-4 mr-2" />
-                  Cambiar a oscuro
+                  <Moon className="h-6 w-6" />
+                  <div className="text-center">
+                    <div className="font-medium">Modo claro</div>
+                    <div className="text-xs text-muted-foreground">Cambiar a oscuro</div>
+                  </div>
+                </>
+              )}
+            </Button>
+
+            {/* Toggle de paleta de colores */}
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={handlePaletteToggle}
+              className="h-auto p-4 flex flex-col items-center gap-2"
+            >
+              {currentPalette === 'blue' ? (
+                <>
+                  <div className="flex items-center gap-2">
+                    <Leaf className="h-6 w-6" />
+                    <div 
+                      className="w-4 h-4 rounded-full border"
+                      style={{ backgroundColor: 'hsl(142, 76%, 36%)' }}
+                    />
+                  </div>
+                  <div className="text-center">
+                    <div className="font-medium">Paleta azul</div>
+                    <div className="text-xs text-muted-foreground">Cambiar a verde</div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2">
+                    <Droplets className="h-6 w-6" />
+                    <div 
+                      className="w-4 h-4 rounded-full border"
+                      style={{ backgroundColor: 'hsl(217, 91%, 60%)' }}
+                    />
+                  </div>
+                  <div className="text-center">
+                    <div className="font-medium">Paleta verde</div>
+                    <div className="text-xs text-muted-foreground">Cambiar a azul</div>
+                  </div>
                 </>
               )}
             </Button>
           </div>
+        </div>
+
+        <Separator />
+
+        {/* Acción adicional */}
+        <div className="space-y-3">
+          <h4 className="text-sm font-medium">Herramientas</h4>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={copyThemeColors}
+            className="w-full"
+            disabled={copiedColors === currentTheme?.name}
+          >
+            {copiedColors === currentTheme?.name ? (
+              <>
+                <Check className="h-4 w-4 mr-2" />
+                Colores copiados
+              </>
+            ) : (
+              <>
+                <Copy className="h-4 w-4 mr-2" />
+                Copiar colores del tema
+              </>
+            )}
+          </Button>
         </div>
       </CardContent>
     </Card>

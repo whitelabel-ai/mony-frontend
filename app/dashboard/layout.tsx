@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
+import { useThemeConfig } from '@/hooks/use-theme-config'
 import {
   LayoutDashboard,
   CreditCard,
@@ -73,6 +74,7 @@ export default function DashboardLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { user, logout } = useAuth()
   const { theme, setTheme } = useTheme()
+  const { toggleLightDark, isDark } = useThemeConfig()
   const pathname = usePathname()
   const { loading } = useAuthGuard()
 
@@ -140,7 +142,7 @@ export default function DashboardLayout({
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                onClick={toggleLightDark}
               >
                 <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                 <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />

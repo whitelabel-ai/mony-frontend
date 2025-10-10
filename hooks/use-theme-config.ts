@@ -21,8 +21,18 @@ export const useThemeConfig = () => {
     if (!mounted) return
 
     const activeTheme = theme === 'system' ? systemTheme : theme
-    const themeConfig = getTheme(activeTheme || 'light')
+    // Si el tema es 'light' o 'dark', usar los nuevos temas azules por defecto
+    let themeName = activeTheme || 'blue-light'
+    if (activeTheme === 'light') themeName = 'blue-light'
+    if (activeTheme === 'dark') themeName = 'blue-dark'
+    
+    const themeConfig = getTheme(themeName)
     setCurrentTheme(themeConfig || null)
+    
+    // Aplicar el tema
+    if (themeConfig) {
+      applyTheme(themeName)
+    }
   }, [theme, systemTheme, mounted])
 
   // Función para cambiar tema con validación
@@ -44,15 +54,20 @@ export const useThemeConfig = () => {
 
   // Función para obtener el nombre del tema actual
   const getCurrentThemeName = (): string => {
-    if (!mounted) return 'light'
-    return theme === 'system' ? (systemTheme || 'light') : (theme || 'light')
+    if (!mounted) return 'blue-light'
+    const activeTheme = theme === 'system' ? systemTheme : theme
+    // Si el tema es 'light' o 'dark', usar los nuevos temas azules por defecto
+    let themeName = activeTheme || 'blue-light'
+    if (activeTheme === 'light') themeName = 'blue-light'
+    if (activeTheme === 'dark') themeName = 'blue-dark'
+    return themeName
   }
 
   // Función para verificar si es tema oscuro
   const isDark = (): boolean => {
     if (!mounted) return false
     const currentThemeName = getCurrentThemeName()
-    return currentThemeName === 'dark'
+    return currentThemeName.includes('dark')
   }
 
   // Función para alternar entre claro y oscuro
@@ -77,6 +92,37 @@ export const useThemeConfig = () => {
     return mounted && currentTheme !== null
   }
 
+  // Función para obtener la paleta actual (blue o green)
+  const getCurrentPalette = (): 'blue' | 'green' => {
+    const themeName = getCurrentThemeName()
+    return themeName.includes('green') ? 'green' : 'blue'
+  }
+
+  // Función para cambiar entre paletas manteniendo el modo (light/dark)
+  const changePalette = (palette: 'blue' | 'green') => {
+    const currentThemeName = getCurrentThemeName()
+    const isCurrentlyDark = currentThemeName.includes('dark')
+    const newTheme = `${palette}-${isCurrentlyDark ? 'dark' : 'light'}`
+    changeTheme(newTheme)
+  }
+
+  // Función para alternar entre light y dark manteniendo la paleta
+  const toggleLightDark = () => {
+    const currentPalette = getCurrentPalette()
+    const currentThemeName = getCurrentThemeName()
+    const isCurrentlyDark = currentThemeName.includes('dark')
+    const newTheme = `${currentPalette}-${isCurrentlyDark ? 'light' : 'dark'}`
+    changeTheme(newTheme)
+  }
+
+  // Función para obtener todos los temas agrupados por paleta
+  const getThemesByPalette = () => {
+    return {
+      blue: themes.filter(t => t.name.includes('blue')),
+      green: themes.filter(t => t.name.includes('green'))
+    }
+  }
+
   return {
     // Estado
     theme,
@@ -88,12 +134,16 @@ export const useThemeConfig = () => {
     setTheme,
     toggleTheme,
     applyCustomTheme,
+    changePalette,
+    toggleLightDark,
     
     // Funciones de información
     getCurrentThemeName,
+    getCurrentPalette,
     isDark,
     getThemeColors,
     getAvailableThemes,
+    getThemesByPalette,
     isThemeLoaded,
     
     // Temas disponibles
