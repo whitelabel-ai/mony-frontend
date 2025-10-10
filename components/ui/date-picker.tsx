@@ -1,17 +1,13 @@
 "use client"
 
 import * as React from "react"
+import { createPortal } from "react-dom"
 import { CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
 import { es } from "date-fns/locale"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 import {
   Select,
   SelectContent,
@@ -26,6 +22,7 @@ interface DatePickerProps {
   placeholder?: string
   disabled?: (date: Date) => boolean
   className?: string
+  variant?: 'default' | 'transaction' | 'goal'
 }
 
 export function DatePicker({
@@ -34,6 +31,7 @@ export function DatePicker({
   placeholder = "Selecciona una fecha",
   disabled,
   className,
+  variant = 'default',
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = React.useState(false)
   const [selectedDay, setSelectedDay] = React.useState(date?.getDate() || 1)
@@ -93,7 +91,11 @@ export function DatePicker({
     setSelectedYear(year)
   }
 
-  const handleApplyDate = () => {
+  const handleApplyDate = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     const newDate = new Date(selectedYear, selectedMonth, selectedDay)
     if (disabled && disabled(newDate)) {
       return
@@ -102,7 +104,11 @@ export function DatePicker({
     setIsOpen(false)
   }
 
-  const handleCancel = () => {
+  const handleCancel = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     // Restaurar valores originales
     if (date) {
       setSelectedDay(date.getDate())
@@ -117,11 +123,29 @@ export function DatePicker({
     setIsOpen(false)
   }
 
-  const handleQuickSelect = (type: 'in3months' | 'in6months' | 'in1year' | 'endofyear') => {
+  const handleQuickSelect = (type: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
     const today = new Date()
     let newDate: Date
 
     switch (type) {
+      // Opciones para transacciones
+      case 'today':
+        newDate = new Date()
+        break
+      case 'yesterday':
+        newDate = new Date(today.getTime() - 24 * 60 * 60 * 1000)
+        break
+      case 'week_ago':
+        newDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
+        break
+      case 'month_start':
+        newDate = new Date(today.getFullYear(), today.getMonth(), 1)
+        break
+      // Opciones para metas
       case 'in3months':
         newDate = new Date(today.getFullYear(), today.getMonth() + 3, today.getDate())
         break
@@ -143,22 +167,78 @@ export function DatePicker({
     setSelectedYear(newDate.getFullYear())
   }
 
-  return (
-    <Popover open={isOpen} onOpenChange={setIsOpen} modal={false}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          className={cn(
-            "w-full justify-start text-left font-normal",
-            !date && "text-muted-foreground",
-            className
-          )}
-        >
-          <CalendarIcon className="mr-2 h-4 w-4" />
-          {date ? format(date, "PPP", { locale: es }) : placeholder}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent className="w-80 p-4" align="start">
+  const getQuickSelectOptions = () => {
+    if (variant === 'transaction') {
+      return [
+        { key: 'today', label: 'Hoy' },
+        { key: 'yesterday', label: 'Ayer' },
+        { key: 'week_ago', label: 'Hace 1 semana' },
+        { key: 'month_start', label: 'Inicio del mes' },
+      ]
+    } else if (variant === 'goal') {
+      return [
+        { key: 'in3months', label: 'En 3 meses' },
+        { key: 'in6months', label: 'En 6 meses' },
+        { key: 'in1year', label: 'En 1 año' },
+        { key: 'endofyear', label: 'Fin de año' },
+      ]
+    } else {
+      return [
+        { key: 'today', label: 'Hoy' },
+        { key: 'in1year', label: 'En 1 año' },
+        { key: 'in6months', label: 'En 6 meses' },
+        { key: 'endofyear', label: 'Fin de año' },
+      ]
+    }
+  }
+
+  const [buttonRef, setButtonRef] = React.useState<HTMLButtonElement | null>(null)
+  const [overlayPosition, setOverlayPosition] = React.useState({ top: 0, left: 0 })
+
+  // Calcular posición del overlay
+  React.useEffect(() => {
+    if (isOpen && buttonRef) {
+      const rect = buttonRef.getBoundingClientRect()
+      setOverlayPosition({
+        top: rect.bottom + window.scrollY + 5,
+        left: rect.left + window.scrollX
+      })
+    }
+  }, [isOpen, buttonRef])
+
+  // Cerrar al hacer click fuera
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (isOpen && buttonRef && !buttonRef.contains(event.target as Node)) {
+        const overlay = document.getElementById('date-picker-overlay')
+        if (overlay && !overlay.contains(event.target as Node)) {
+          setIsOpen(false)
+        }
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isOpen, buttonRef])
+
+  let overlayContent = null
+  
+  if (isOpen && typeof window !== 'undefined') {
+    overlayContent = createPortal(
+      <div
+        id="date-picker-overlay"
+        className="fixed bg-white border border-gray-200 rounded-lg shadow-lg p-4 w-80"
+        style={{
+          top: overlayPosition.top,
+          left: overlayPosition.left,
+          zIndex: 99999,
+          pointerEvents: 'auto'
+        }}
+        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => e.stopPropagation()}
+      >
         <div className="space-y-4">
           <div className="grid grid-cols-3 gap-2">
             <div>
@@ -180,7 +260,7 @@ export function DatePicker({
                     {months[selectedMonth]}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[10000] pointer-events-auto">
                   {months.map((month, index) => (
                     <SelectItem key={index} value={index.toString()}>
                       {month}
@@ -197,7 +277,7 @@ export function DatePicker({
                     {selectedYear}
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="z-[10000] pointer-events-auto">
                   {years.map((year) => (
                     <SelectItem key={year} value={year.toString()}>
                       {year}
@@ -211,42 +291,18 @@ export function DatePicker({
           <div className="space-y-2">
             <div className="text-xs font-medium text-muted-foreground">Selección rápida:</div>
             <div className="grid grid-cols-2 gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleQuickSelect('in3months')}
-                className="text-xs"
-              >
-                En 3 meses
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleQuickSelect('in6months')}
-                className="text-xs"
-              >
-                En 6 meses
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleQuickSelect('in1year')}
-                className="text-xs"
-              >
-                En 1 año
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => handleQuickSelect('endofyear')}
-                className="text-xs"
-              >
-                Fin de año
-              </Button>
+              {getQuickSelectOptions().map((option) => (
+                <Button
+                  key={option.key}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={(e) => handleQuickSelect(option.key, e)}
+                  className="text-xs"
+                >
+                  {option.label}
+                </Button>
+              ))}
             </div>
           </div>
 
@@ -272,7 +328,27 @@ export function DatePicker({
             </Button>
           </div>
         </div>
-      </PopoverContent>
-    </Popover>
+      </div>,
+      document.body
+    )
+  }
+
+  return (
+    <div className="relative">
+      <Button
+        ref={setButtonRef}
+        variant="outline"
+        className={cn(
+          "w-full justify-start text-left font-normal",
+          !date && "text-muted-foreground",
+          className
+        )}
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <CalendarIcon className="mr-2 h-4 w-4" />
+        {date ? format(date, "PPP", { locale: es }) : placeholder}
+      </Button>
+      {overlayContent}
+    </div>
   )
 }

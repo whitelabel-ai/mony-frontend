@@ -4,17 +4,13 @@ import React, { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { CalendarIcon, Loader2 } from 'lucide-react'
-import { format } from 'date-fns'
-import { es } from 'date-fns/locale'
-import { cn } from '@/lib/utils'
+import { Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { DatePicker } from '@/components/ui/date-picker'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { transactionsApi } from '@/lib/transactions-api'
 import type { Transaction, CreateTransactionDto, UpdateTransactionDto, Categoria } from '@/types'
@@ -258,32 +254,13 @@ export function TransactionForm({
           {/* Fecha */}
           <div className="space-y-2">
             <Label>Fecha *</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !watchedDate && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {watchedDate ? (
-                    format(watchedDate, "PPP", { locale: es })
-                  ) : (
-                    <span>Selecciona una fecha</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={watchedDate}
-                  onSelect={(date: Date | undefined) => date && setValue('fechaTransaccion', date)}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
+            <DatePicker
+              date={watchedDate}
+              onDateChange={(date) => date && setValue('fechaTransaccion', date)}
+              placeholder="Selecciona una fecha"
+              disabled={(date) => date > new Date()} // No permitir fechas futuras
+              variant="transaction"
+            />
             {errors.fechaTransaccion && (
               <p className="text-sm text-red-500">{errors.fechaTransaccion.message}</p>
             )}

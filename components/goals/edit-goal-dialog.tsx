@@ -212,6 +212,7 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Edit
                       date={field.value}
                       onDateChange={field.onChange}
                       placeholder="Selecciona una fecha"
+                      variant="goal"
                     />
                   </FormControl>
                   <FormMessage />

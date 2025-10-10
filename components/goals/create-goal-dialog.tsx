@@ -187,6 +187,7 @@ export function CreateGoalDialog({ open, onOpenChange, onGoalCreated }: CreateGo
                       onDateChange={field.onChange}
                       placeholder="Selecciona una fecha"
                       disabled={(date) => date < new Date()}
+                      variant="goal"
                     />
                   </FormControl>
                   <FormDescription>
