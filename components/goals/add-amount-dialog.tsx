@@ -27,7 +27,7 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { SavingGoal } from '@/types';
 import { updateSavingGoalAmount } from '@/lib/api/saving-goals';
-import { useToast } from '@/hooks/use-toast';
+import toast from 'react-hot-toast';
 
 const formSchema = z.object({
   monto: z.number().min(0.01, 'El monto debe ser mayor a 0'),
@@ -44,7 +44,6 @@ interface AddAmountDialogProps {
 
 export function AddAmountDialog({ goal, open, onOpenChange, onGoalUpdated }: AddAmountDialogProps) {
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -90,21 +89,16 @@ export function AddAmountDialog({ goal, open, onOpenChange, onGoalUpdated }: Add
         
         const isCompleted = (response.data.montoActual) >= (response.data.montoObjetivo);
         
-        toast({
-          title: isCompleted ? '¡Meta completada!' : 'Dinero agregado',
-          description: isCompleted 
-            ? '¡Felicitaciones! Has alcanzado tu meta de ahorro.'
-            : `Se agregaron ${formatCurrency(data.monto)} a tu meta`,
-        });
+        if (isCompleted) {
+          toast.success('¡Meta completada! ¡Felicitaciones! Has alcanzado tu meta de ahorro.');
+        } else {
+          toast.success(`Se agregaron ${formatCurrency(data.monto)} a tu meta`);
+        }
       } else {
         throw new Error(response.error || 'Error al agregar el monto');
       }
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Error al agregar dinero a la meta',
-        variant: 'destructive',
-      });
+      toast.error(error instanceof Error ? error.message : 'Error al agregar dinero a la meta');
     } finally {
       setLoading(false);
     }

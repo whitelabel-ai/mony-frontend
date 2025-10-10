@@ -34,7 +34,7 @@ import {
 } from '@/components/ui/select';
 import { SavingGoal, UpdateSavingGoalData } from '@/types';
 import { updateSavingGoal } from '@/lib/api/saving-goals';
-import { useToast } from '@/hooks/use-toast';
+import toast from 'react-hot-toast';
 
 const formSchema = z.object({
   nombre: z.string().min(1, 'El nombre es requerido').max(100, 'El nombre es muy largo'),
@@ -56,7 +56,7 @@ interface EditGoalDialogProps {
 
 export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: EditGoalDialogProps) {
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -105,19 +105,12 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Edit
       if (response.success && response.data) {
         onGoalUpdated(response.data);
         onOpenChange(false);
-        toast({
-          title: 'Meta actualizada',
-          description: 'Los cambios han sido guardados exitosamente',
-        });
+        toast.success('Meta actualizada exitosamente');
       } else {
         throw new Error(response.error || 'Error al actualizar la meta');
       }
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Error al actualizar la meta de ahorro',
-        variant: 'destructive',
-      });
+      toast.error(error instanceof Error ? error.message : 'Error al actualizar la meta de ahorro');
     } finally {
       setLoading(false);
     }

@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { SavingGoal } from '@/types';
 import { deleteSavingGoal } from '@/lib/api/saving-goals';
-import { useToast } from '@/hooks/use-toast';
+import toast from 'react-hot-toast';
 
 interface DeleteGoalDialogProps {
   goal: SavingGoal;
@@ -24,7 +24,6 @@ interface DeleteGoalDialogProps {
 
 export function DeleteGoalDialog({ goal, open, onOpenChange, onGoalDeleted }: DeleteGoalDialogProps) {
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-CO', {
@@ -45,19 +44,12 @@ export function DeleteGoalDialog({ goal, open, onOpenChange, onGoalDeleted }: De
         onGoalDeleted(goal.id);
         onOpenChange(false);
         
-        toast({
-          title: 'Meta eliminada',
-          description: `La meta "${goal.nombre}" ha sido eliminada exitosamente`,
-        });
+        toast.success(`La meta "${goal.nombre}" ha sido eliminada exitosamente`);
       } else {
         throw new Error(response.error || 'Error al eliminar la meta');
       }
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Error al eliminar la meta',
-        variant: 'destructive',
-      });
+      toast.error(error instanceof Error ? error.message : 'Error al eliminar la meta');
     } finally {
       setLoading(false);
     }

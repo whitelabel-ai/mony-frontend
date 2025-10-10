@@ -136,7 +136,7 @@ export function TransactionForm({
           idCategoria: data.idCategoria
         }
         await transactionsApi.createTransaction(createData)
-        toast.success('Transacción creada exitosamente')
+        // No mostrar toast aquí para creación - lo maneja la página principal
       }
       
       onSuccess?.()
@@ -256,7 +256,11 @@ export function TransactionForm({
             <Label>Fecha *</Label>
             <DatePicker
               date={watchedDate}
-              onDateChange={(date) => date && setValue('fechaTransaccion', date)}
+              onDateChange={(date) => {
+                if (date) {
+                  setValue('fechaTransaccion', date, { shouldValidate: false, shouldDirty: false, shouldTouch: false })
+                }
+              }}
               placeholder="Selecciona una fecha"
               disabled={(date) => date > new Date()} // No permitir fechas futuras
               variant="transaction"

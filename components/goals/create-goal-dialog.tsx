@@ -27,7 +27,7 @@ import { Input } from '@/components/ui/input';
 import { DatePicker } from '@/components/ui/date-picker';
 import { SavingGoal, CreateSavingGoalData } from '@/types';
 import { createSavingGoal } from '@/lib/api/saving-goals';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'react-hot-toast';
 
 const formSchema = z.object({
   nombre: z.string().min(1, 'El nombre es requerido').max(100, 'El nombre es muy largo'),
@@ -49,7 +49,6 @@ interface CreateGoalDialogProps {
 
 export function CreateGoalDialog({ open, onOpenChange, onGoalCreated }: CreateGoalDialogProps) {
   const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -89,11 +88,7 @@ export function CreateGoalDialog({ open, onOpenChange, onGoalCreated }: CreateGo
         throw new Error(response.error || 'Error al crear la meta');
       }
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: error instanceof Error ? error.message : 'Error al crear la meta de ahorro',
-        variant: 'destructive',
-      });
+      toast.error(error instanceof Error ? error.message : 'Error al crear la meta de ahorro');
     } finally {
       setLoading(false);
     }

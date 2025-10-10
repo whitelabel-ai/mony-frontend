@@ -336,6 +336,7 @@ export function DatePicker({
   return (
     <div className="relative">
       <Button
+        type="button"
         ref={setButtonRef}
         variant="outline"
         className={cn(

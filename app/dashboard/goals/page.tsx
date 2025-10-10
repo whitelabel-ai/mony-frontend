@@ -12,7 +12,7 @@ import { getSavingGoals, getSavingGoalStats } from '@/lib/api/saving-goals';
 import { CreateGoalDialog } from '@/components/goals/create-goal-dialog';
 import { GoalCard } from '@/components/goals/goal-card';
 import { GoalStats } from '@/components/goals/goal-stats';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'react-hot-toast';
 
 export default function GoalsPage() {
   const [goals, setGoals] = useState<SavingGoal[]>([]);
@@ -20,8 +20,6 @@ export default function GoalsPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const { toast } = useToast();
-
   useEffect(() => {
     loadData();
   }, []);
@@ -40,11 +38,7 @@ export default function GoalsPage() {
         setStats(statsResponse.data);
       }
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: 'No se pudieron cargar las metas de ahorro',
-        variant: 'destructive',
-      });
+      toast.error('No se pudieron cargar las metas de ahorro');
     } finally {
       setLoading(false);
     }
@@ -54,10 +48,7 @@ export default function GoalsPage() {
     setGoals(prev => [newGoal, ...prev]);
     setCreateDialogOpen(false);
     loadData(); // Recargar estadísticas
-    toast({
-      title: 'Meta creada',
-      description: 'Tu nueva meta de ahorro ha sido creada exitosamente',
-    });
+    toast.success('Meta creada exitosamente');
   };
 
   const handleGoalUpdated = (updatedGoal: SavingGoal) => {
@@ -70,10 +61,7 @@ export default function GoalsPage() {
   const handleGoalDeleted = (goalId: string) => {
     setGoals(prev => prev.filter(goal => goal.id !== goalId));
     loadData(); // Recargar estadísticas
-    toast({
-      title: 'Meta eliminada',
-      description: 'La meta de ahorro ha sido eliminada',
-    });
+    toast.success('Meta eliminada');
   };
 
   const filteredGoals = goals.filter(goal => {
