@@ -53,7 +53,7 @@ export class TransactionsApiService {
    * Actualizar una transacción existente
    */
   async updateTransaction(id: string, data: UpdateTransactionDto): Promise<Transaction> {
-    return apiService.put<Transaction>(`${this.baseUrl}/${id}`, data)
+    return apiService.patch<Transaction>(`${this.baseUrl}/${id}`, data)
   }
 
   /**

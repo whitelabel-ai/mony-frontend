@@ -56,7 +56,7 @@ export async function createSavingGoal(data: CreateSavingGoalData): Promise<ApiR
 // Actualizar una meta de ahorro
 export async function updateSavingGoal(id: string, data: UpdateSavingGoalData): Promise<ApiResponse<SavingGoal>> {
   try {
-    const response = await apiService.put<SavingGoal>(`/saving-goals/${id}`, data);
+    const response = await apiService.patch<SavingGoal>(`/saving-goals/${id}`, data);
     return {
       success: true,
       data: response,

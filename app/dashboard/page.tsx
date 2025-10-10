@@ -13,6 +13,7 @@ import {
   ArrowDownRight,
 } from 'lucide-react'
 import { useUserProfile } from '@/hooks'
+import { useRecentTransactions } from '@/hooks/use-recent-transactions'
 import {
   Card,
   CardContent,
@@ -23,13 +24,16 @@ import {
 } from '@/components/ui'
 import { formatCurrency, formatDate, getGreeting } from '@/lib/utils'
 import type { UserProfile } from '@/types'
+import { useRouter } from 'next/navigation'
 
 /**
  * Página principal del dashboard
  */
 export default function DashboardPage() {
   const { profile, loading, error, refreshProfile } = useUserProfile()
+  const { transactions: recentTransactions, loading: loadingTransactions } = useRecentTransactions(4)
   const greeting = getGreeting()
+  const router = useRouter()
 
   if (loading) {
     return (
@@ -86,7 +90,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Estadísticas principales */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-3">
         {/* Balance del mes */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -141,120 +145,61 @@ export default function DashboardPage() {
             </p>
           </CardContent>
         </Card>
-
-        {/* Transacciones totales */}
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Transacciones</CardTitle>
-            <CreditCard className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{estadisticas.totalTransacciones}</div>
-            <p className="text-xs text-muted-foreground">
-              Transacciones registradas este mes
-            </p>
-          </CardContent>
-        </Card>
       </div>
 
-      {/* Sección de acciones rápidas */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {/* Agregar transacción */}
-        <Card className="cursor-pointer hover:shadow-md transition-shadow">
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Plus className="h-5 w-5 text-primary" />
-              <span>Nueva Transacción</span>
-            </CardTitle>
-            <CardDescription>
-              Registra un nuevo ingreso o gasto
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button className="w-full">
-              Agregar Transacción
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Metas de ahorro */}
+      {/* Resumen de módulos principales */}
+      <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3">
+        {/* Metas de ahorro completas */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Target className="h-5 w-5 text-primary" />
-              <span>Metas de Ahorro</span>
-            </CardTitle>
-            <CardDescription>
-              {estadisticas.metasActivas} metas activas
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full">
-              Ver Metas
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Suscripciones */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <Calendar className="h-5 w-5 text-primary" />
-              <span>Suscripciones</span>
-            </CardTitle>
-            <CardDescription>
-              {estadisticas.suscripcionesActivas} suscripciones activas
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button variant="outline" className="w-full">
-              Gestionar
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Resumen de metas y suscripciones */}
-      <div className="grid gap-4 md:grid-cols-2">
-        {/* Metas de ahorro recientes */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Metas de Ahorro</CardTitle>
-            <CardDescription>
-              Progreso de tus objetivos financieros
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center space-x-2">
+                  <Target className="h-5 w-5 text-primary" />
+                  <span>Metas de Ahorro</span>
+                </CardTitle>
+                <CardDescription>
+                  {estadisticas.metasActivas} metas activas • Progreso de tus objetivos financieros
+                </CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             {profile.metasDeAhorro.length > 0 ? (
               <div className="space-y-4">
-                {profile.metasDeAhorro.slice(0, 3).map((meta) => {
-                  const progreso = (meta.montoActual / meta.montoObjetivo) * 100
-                  return (
-                    <div key={meta.id} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <h4 className="text-sm font-medium">{meta.nombre}</h4>
-                        <span className="text-sm text-muted-foreground">
-                          {progreso.toFixed(0)}%
-                        </span>
+                {profile.metasDeAhorro
+                  .sort((a, b) => new Date(a.fechaObjetivo).getTime() - new Date(b.fechaObjetivo).getTime())
+                  .slice(0, 3)
+                  .map((meta) => {
+                    const progreso = (meta.montoActual / meta.montoObjetivo) * 100
+                    return (
+                      <div key={meta.id} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-sm font-medium">{meta.nombre}</h4>
+                          <span className="text-sm text-muted-foreground">
+                            {progreso.toFixed(0)}%
+                          </span>
+                        </div>
+                        <div className="w-full bg-muted rounded-full h-2">
+                          <div
+                            className="bg-primary h-2 rounded-full transition-all"
+                            style={{ width: `${Math.min(progreso, 100)}%` }}
+                          />
+                        </div>
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>{formatCurrency(meta.montoActual, currency)}</span>
+                          <span>{formatCurrency(meta.montoObjetivo, currency)}</span>
+                        </div>
                       </div>
-                      <div className="w-full bg-muted rounded-full h-2">
-                        <div
-                          className="bg-primary h-2 rounded-full transition-all"
-                          style={{ width: `${Math.min(progreso, 100)}%` }}
-                        />
-                      </div>
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>{formatCurrency(meta.montoActual, currency)}</span>
-                        <span>{formatCurrency(meta.montoObjetivo, currency)}</span>
-                      </div>
-                    </div>
-                  )
-                })}
-                {profile.metasDeAhorro.length > 3 && (
-                  <Button variant="ghost" className="w-full mt-4">
-                    Ver todas las metas
-                  </Button>
-                )}
+                    )
+                  })}
+                <Button 
+                  variant="ghost" 
+                  className="w-full mt-4"
+                  onClick={() => router.push('/dashboard/goals')}
+                >
+                  Ver todas las metas
+                </Button>
               </div>
             ) : (
               <div className="text-center py-6">
@@ -262,7 +207,79 @@ export default function DashboardPage() {
                 <p className="text-muted-foreground mb-4">
                   No tienes metas de ahorro aún
                 </p>
-                <Button>Crear primera meta</Button>
+                <Button onClick={() => router.push('/dashboard/goals')}>
+                  Crear primera meta
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Transacciones recientes */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center space-x-2">
+                  <CreditCard className="h-5 w-5 text-primary" />
+                  <span>Transacciones</span>
+                </CardTitle>
+                <CardDescription>
+                  {estadisticas.totalTransacciones} transacciones • Últimas del mes
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {loadingTransactions ? (
+              <div className="space-y-4">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="flex items-center justify-between">
+                    <div className="space-y-2">
+                      <div className="h-4 bg-muted animate-pulse rounded w-32" />
+                      <div className="h-3 bg-muted animate-pulse rounded w-24" />
+                    </div>
+                    <div className="h-4 bg-muted animate-pulse rounded w-16" />
+                  </div>
+                ))}
+              </div>
+            ) : recentTransactions && recentTransactions.length > 0 ? (
+              <div className="space-y-4">
+                {recentTransactions.map((transaccion) => (
+                  <div key={transaccion.id} className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-sm font-medium">{transaccion.descripcion}</h4>
+                      <p className="text-xs text-muted-foreground">
+                        {formatDate(transaccion.fechaTransaccion)} • {transaccion.categoria?.nombre || 'Sin categoría'}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className={`text-sm font-medium ${
+                        transaccion.tipo === 'Ingreso' ? 'text-green-600' : 'text-red-600'
+                      }`}>
+                        {transaccion.tipo === 'Ingreso' ? '+' : '-'}
+                        {formatCurrency(transaccion.monto, transaccion.moneda || 'COP')}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                <Button 
+                  variant="ghost" 
+                  className="w-full mt-4"
+                  onClick={() => router.push('/dashboard/transactions')}
+                >
+                  Ver todas las transacciones
+                </Button>
+              </div>
+            ) : (
+              <div className="text-center py-6">
+                <CreditCard className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                <p className="text-muted-foreground mb-4">
+                  No tienes transacciones registradas
+                </p>
+                <Button onClick={() => router.push('/dashboard/transactions')}>
+                  Agregar primera transacción
+                </Button>
               </div>
             )}
           </CardContent>
@@ -271,16 +288,24 @@ export default function DashboardPage() {
         {/* Próximas suscripciones */}
         <Card>
           <CardHeader>
-            <CardTitle>Próximos Pagos</CardTitle>
-            <CardDescription>
-              Suscripciones que vencen pronto
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center space-x-2">
+                  <Calendar className="h-5 w-5 text-primary" />
+                  <span>Suscripciones</span>
+                </CardTitle>
+                <CardDescription>
+                  {estadisticas.suscripcionesActivas} suscripciones • Próximos pagos
+                </CardDescription>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             {profile.suscripciones.length > 0 ? (
               <div className="space-y-4">
                 {profile.suscripciones
                   .filter((sub) => sub.activa)
+                  .sort((a, b) => new Date(a.proximoPago).getTime() - new Date(b.proximoPago).getTime())
                   .slice(0, 3)
                   .map((suscripcion) => (
                     <div key={suscripcion.id} className="flex items-center justify-between">
@@ -300,11 +325,13 @@ export default function DashboardPage() {
                       </div>
                     </div>
                   ))}
-                {profile.suscripciones.filter((sub) => sub.activa).length > 3 && (
-                  <Button variant="ghost" className="w-full mt-4">
-                    Ver todas las suscripciones
-                  </Button>
-                )}
+                <Button 
+                  variant="ghost" 
+                  className="w-full mt-4"
+                  onClick={() => router.push('/dashboard/subscriptions')}
+                >
+                  Ver todas las suscripciones
+                </Button>
               </div>
             ) : (
               <div className="text-center py-6">
@@ -312,7 +339,9 @@ export default function DashboardPage() {
                 <p className="text-muted-foreground mb-4">
                   No tienes suscripciones registradas
                 </p>
-                <Button>Agregar suscripción</Button>
+                <Button onClick={() => router.push('/dashboard/subscriptions')}>
+                  Agregar suscripción
+                </Button>
               </div>
             )}
           </CardContent>
