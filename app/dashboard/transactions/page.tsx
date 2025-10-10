@@ -65,30 +65,42 @@ export default function TransactionsDashboard() {
 
   // Preparar datos para gráficos
   const prepareTimeSeriesData = () => {
-    if (!analytics?.seriesTiempo) return { labels: [], datasets: [] }
+    if (!analytics?.serieTemporal) return { labels: [], datasets: [] }
 
-    const labels = analytics.seriesTiempo.map(item => 
-      format(new Date(item.fecha), 'dd/MM', { locale: es })
-    )
+    const labels = analytics.serieTemporal.map(item => {
+      // El backend devuelve periodo en formato 'yyyy-MM' para agrupación mensual
+      // Intentamos parsearlo como fecha, si falla usamos el valor tal como viene
+      try {
+        if (item.periodo.includes('-') && item.periodo.length <= 7) {
+          // Formato yyyy-MM, agregamos día 01 para crear fecha válida
+          const date = new Date(item.periodo + '-01')
+          return format(date, 'MMM yy', { locale: es })
+        } else {
+          return item.periodo
+        }
+      } catch {
+        return item.periodo
+      }
+    })
 
     return {
       labels,
       datasets: [
         {
           label: 'Ingresos',
-          data: analytics.seriesTiempo.map(item => item.ingresos),
+          data: analytics.serieTemporal.map(item => item.ingresos),
           borderColor: '#10b981',
           backgroundColor: '#10b98120'
         },
         {
           label: 'Gastos',
-          data: analytics.seriesTiempo.map(item => item.gastos),
+          data: analytics.serieTemporal.map(item => item.gastos),
           borderColor: '#ef4444',
           backgroundColor: '#ef444420'
         },
         {
           label: 'Balance',
-          data: analytics.seriesTiempo.map(item => item.balance),
+          data: analytics.serieTemporal.map(item => item.balance),
           borderColor: '#3b82f6',
           backgroundColor: '#3b82f620'
         }
@@ -97,23 +109,23 @@ export default function TransactionsDashboard() {
   }
 
   const prepareCategoryData = () => {
-    if (!analytics?.desglosePorCategorias) return { labels: [], datasets: [] }
+    if (!analytics?.categorias) return { labels: [], datasets: [] }
 
-    const ingresos = analytics.desglosePorCategorias.filter(cat => cat.tipo === 'Ingreso')
-    const gastos = analytics.desglosePorCategorias.filter(cat => cat.tipo === 'Gasto')
+    const ingresos = analytics.categorias.filter(cat => cat.tipo === 'Ingreso')
+    const gastos = analytics.categorias.filter(cat => cat.tipo === 'Gasto')
 
     return {
       ingresos: {
-        labels: ingresos.map(cat => cat.categoria),
+        labels: ingresos.map(cat => cat.nombre),
         datasets: [{
-          data: ingresos.map(cat => cat.totalMonto),
+          data: ingresos.map(cat => cat.montoTotal),
           backgroundColor: ['#10b981', '#06b6d4', '#8b5cf6', '#ec4899', '#f59e0b']
         }]
       },
       gastos: {
-        labels: gastos.map(cat => cat.categoria),
+        labels: gastos.map(cat => cat.nombre),
         datasets: [{
-          data: gastos.map(cat => cat.totalMonto),
+          data: gastos.map(cat => cat.montoTotal),
           backgroundColor: ['#ef4444', '#f97316', '#84cc16', '#6366f1', '#f43f5e']
         }]
       }
@@ -300,7 +312,7 @@ export default function TransactionsDashboard() {
           />
           <MetricCard
             title="Total Transacciones"
-            value={analytics.resumen.transaccionesTotales}
+            value={analytics.resumen.totalTransacciones}
             icon={<CreditCard className="h-6 w-6 text-purple-600" />}
           />
         </div>
@@ -338,7 +350,7 @@ export default function TransactionsDashboard() {
       </div>
 
       {/* Tabla de categorías */}
-      {analytics?.desglosePorCategorias && analytics.desglosePorCategorias.length > 0 && (
+      {analytics?.categorias && analytics.categorias.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Resumen por Categorías</CardTitle>
@@ -359,9 +371,9 @@ export default function TransactionsDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {analytics.desglosePorCategorias.map((categoria, index) => (
+                  {analytics.categorias.map((categoria, index) => (
                     <tr key={index} className="border-b hover:bg-muted/50">
-                      <td className="p-2 font-medium">{categoria.categoria}</td>
+                      <td className="p-2 font-medium">{categoria.nombre}</td>
                       <td className="p-2">
                         <span className={`px-2 py-1 rounded-full text-xs ${
                           categoria.tipo === 'Ingreso' 
@@ -372,7 +384,7 @@ export default function TransactionsDashboard() {
                         </span>
                       </td>
                       <td className="p-2 text-right font-mono">
-                        ${categoria.totalMonto.toLocaleString()}
+                        ${categoria.montoTotal.toLocaleString()}
                       </td>
                       <td className="p-2 text-right">
                         {categoria.cantidadTransacciones}

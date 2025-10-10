@@ -142,23 +142,28 @@ export interface TransactionAnalytics {
     totalIngresos: number
     totalGastos: number
     balanceNeto: number
-    transaccionesTotales: number
+    totalTransacciones: number
     promedioIngresos: number
     promedioGastos: number
   }
-  desglosePorCategorias: {
-    categoria: string
-    totalMonto: number
+  categorias: {
+    nombre: string
+    montoTotal: number
     cantidadTransacciones: number
     porcentajeDelTotal: number
     tipo: 'Ingreso' | 'Gasto'
   }[]
-  seriesTiempo: {
-    fecha: string
+  serieTemporal: {
+    periodo: string
     ingresos: number
     gastos: number
     balance: number
+    totalTransacciones: number
   }[]
+  periodo: {
+    fechaInicio: string
+    fechaFin: string
+  }
 }
 
 // Tipos de metas de ahorro
