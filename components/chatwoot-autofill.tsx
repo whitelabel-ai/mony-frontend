@@ -13,11 +13,16 @@ type CachedData = {
   name: string
   whatsapp: string
   email?: string
-  moneda?: string
-  country_code?: string
-  country?: string
-  company_name?: string
   expiresAt: number
+}
+
+function normalizeWhatsapp(input?: string): string | null {
+  if (!input) return null
+  const cleaned = input.replace(/[\s-().]/g, '')
+  // Mantener '+' si existe, de lo contrario dejar tal cual
+  const normalized = cleaned
+  // Validar luego con isValidWhatsApp
+  return normalized || null
 }
 
 function readCache(): CachedData | null {
@@ -32,6 +37,19 @@ function readCache(): CachedData | null {
   }
 }
 
+// Lee el cache independientemente del vencimiento para comparar el número previo
+function readCacheAny(): CachedData | null {
+  try {
+    const raw = localStorage.getItem(LS_KEY)
+    if (!raw) return null
+    const data = JSON.parse(raw) as CachedData
+    if (!data?.whatsapp) return null
+    return data
+  } catch {
+    return null
+  }
+}
+
 function writeCache(data: Omit<CachedData, 'expiresAt'>) {
   try {
     const payload: CachedData = { ...data, expiresAt: Date.now() + DAYS_365_MS }
@@ -39,39 +57,22 @@ function writeCache(data: Omit<CachedData, 'expiresAt'>) {
   } catch {}
 }
 
-// Detección básica de empresa según dominio del email
-const PERSONAL_DOMAINS = new Set([
-  'gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'live.com', 'icloud.com',
-  'proton.me', 'protonmail.com', 'zoho.com', 'gmx.com'
-])
-
-function toTitleCase(s: string) {
-  return s.replace(/[-_.]+/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase())
-}
-
-function deriveCompanyNameFromEmail(email?: string): string | undefined {
-  if (!email) return undefined
-  const parts = email.split('@')
-  if (parts.length !== 2) return undefined
-  const domain = parts[1].toLowerCase()
-  if (PERSONAL_DOMAINS.has(domain)) return 'Persona'
-  const labels = domain.split('.')
-  if (labels.length < 2) return toTitleCase(domain)
-  // Tomar el segundo nivel del dominio, p.ej. acme.com -> acme, foo.bar.co -> bar
-  const sld = labels[labels.length - 2]
-  return toTitleCase(sld)
-}
-
-// Mapeo básico de nombre de país desde código ISO
-const COUNTRY_MAP: Record<string, string> = {
-  CO: 'Colombia', MX: 'México', PE: 'Perú', CL: 'Chile', AR: 'Argentina', VE: 'Venezuela',
-  US: 'Estados Unidos', ES: 'España', BR: 'Brasil', UY: 'Uruguay', PA: 'Panamá', EC: 'Ecuador',
-}
-
-function resolveCountryName(code?: string): string | undefined {
-  if (!code) return undefined
-  const c = code.toUpperCase()
-  return COUNTRY_MAP[c] || c
+function clearAllChatwootData() {
+  try {
+    // Limpiar nuestro cache
+    localStorage.removeItem(LS_KEY)
+    // Intentar limpiar posibles claves usadas por el widget
+    const prefixes = ['cw_', 'chatwoot', '__cw']
+    const keys: string[] = []
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i)
+      if (!k) continue
+      if (prefixes.some((p) => k.startsWith(p))) keys.push(k)
+    }
+    keys.forEach((k) => {
+      try { localStorage.removeItem(k) } catch {}
+    })
+  } catch {}
 }
 
 /**
@@ -80,93 +81,70 @@ function resolveCountryName(code?: string): string | undefined {
  */
 export default function ChatwootAutofill() {
   const { profile } = useUserProfile()
-  const initializedRef = useRef(false)
+  const shouldResetRef = useRef(false)
 
   useEffect(() => {
-    // Leer cache para comparar y decidir si actualizar
     const cached = readCache()
-
-    // Solo continuar si tenemos perfil válido
+    const cachedAny = readCacheAny()
+    // Tomar datos actuales del perfil
     const name = profile?.nombreCompleto?.trim()
-    const whatsapp = profile?.numeroWhatsapp?.trim()
+    const whatsappRaw = profile?.numeroWhatsapp?.trim()
+    const whatsapp = normalizeWhatsapp(whatsappRaw)
     const email = profile?.email?.trim()
-    const currency = profile?.moneda?.trim()
-    const countryCode = profile?.pais?.trim()?.toUpperCase()
-    const countryName = resolveCountryName(countryCode)
-    const companyName = deriveCompanyNameFromEmail(email)
     const id = profile?.id?.toString()
 
     if (!id || !name || !whatsapp) return
     if (!isValidWhatsApp(whatsapp)) return
+
+    // Si el número cambió respecto al que tengamos guardado (aún vencido), borrar nuestro cache
+    if (cachedAny && normalizeWhatsapp(cachedAny.whatsapp) !== whatsapp) {
+      try { localStorage.removeItem(LS_KEY) } catch {}
+      // Reset para evitar que el widget asocie con conversación anterior
+      shouldResetRef.current = true
+    }
 
     const onReady = () => {
       try {
         const cw = (window as any).$chatwoot
         if (!cw || typeof cw.setUser !== 'function') return
 
-        const applyUser = () => {
-          cw.setUser(id, {
-            name,
-            email,
-            phone_number: whatsapp,
-          })
-
-          if (typeof cw.setCustomAttributes === 'function') {
-            const attrs: Record<string, any> = {}
-            if (currency) attrs.moneda = currency
-            if (countryCode) attrs.country_code = countryCode
-            if (countryName) attrs.country = countryName
-            if (companyName) attrs.company_name = companyName
-            if (Object.keys(attrs).length) cw.setCustomAttributes(attrs)
-          }
-
-          writeCache({ id, name, whatsapp, email, moneda: currency, country_code: countryCode, country: countryName, company_name: companyName })
-
-          // Abrir widget para que vea campos pre-rellenados
-          if (typeof cw.toggle === 'function') {
-            cw.toggle('open')
-          }
+        // Si marcamos reset por cambio de número, reiniciar el widget
+        if (shouldResetRef.current && typeof cw.reset === 'function') {
+          try { cw.reset() } catch {}
+          shouldResetRef.current = false
         }
 
-        // Decidir si resetear o solo actualizar según diferencias
-        const idChanged = cached && cached.id !== id
-        const phoneChanged = cached && cached.whatsapp !== whatsapp
-        const nameChanged = cached && cached.name !== name
-        const emailChanged = cached && cached.email !== email
-        const countryChanged = cached && cached.country_code !== countryCode
-        const companyChanged = cached && cached.company_name !== companyName
+        // setUser: id único y datos estándar (usando número actualizado)
+        cw.setUser(id, {
+          name,
+          email,
+          phone_number: whatsapp,
+        })
 
-        if (idChanged) {
-          // Nuevo identificador → mejor reset para evitar mezclar contactos
-          if (typeof cw.reset === 'function') {
-            cw.reset()
-          }
-          applyUser()
-          return
+        // Persistir cache para futuras visitas
+        writeCache({ id, name, whatsapp, email })
+
+        // Intentar prefijar un mensaje inicial si el widget muestra pre-chat message
+        // Nota: Chatwoot no expone API pública para setear "Message" del pre-chat.
+        // Como fallback, podemos abrir el widget para que el usuario vea los campos ya rellenados.
+        if (typeof cw.toggle === 'function') {
+          cw.toggle('open')
         }
-
-        if (!cached || phoneChanged || nameChanged || emailChanged || countryChanged || companyChanged) {
-          // No hay cache o hay cambios relevantes → actualizar datos del contacto
-          applyUser()
-          return
-        }
-
-        // Cache coincide → no hacer nada
       } catch (e) {
         // Silencio errores para no romper la app
       }
     }
 
-    // Evitar múltiples binds
-    if (!initializedRef.current) {
-      initializedRef.current = true
-      if (typeof window !== 'undefined') {
-        // Si ya está listo, ejecutar; de lo contrario, escuchar el evento
-        if ((window as any).$chatwoot) {
+    if (typeof window !== 'undefined') {
+      // Si ya está listo, ejecutar; de lo contrario, escuchar el evento y quitarlo después
+      if ((window as any).$chatwoot) {
+        onReady()
+      } else {
+        const handler = () => {
           onReady()
-        } else {
-          window.addEventListener('chatwoot:ready', onReady, { once: true })
+          window.removeEventListener('chatwoot:ready', handler)
         }
+        window.addEventListener('chatwoot:ready', handler)
       }
     }
   }, [profile])
