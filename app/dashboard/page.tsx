@@ -91,13 +91,13 @@ export default function DashboardPage() {
               Aquí tienes un resumen de tus finanzas personales
             </p>
           </div>
-          <Button 
+          {/* <Button 
             onClick={() => window.open('https://wa.me/573143400476?text=¡Hola%20Mony!%20Soy%20usuario%20registrado%20y%20necesito%20ayuda%20con%20mis%20finanzas', '_blank')}
             className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 w-fit"
           >
             <MessageCircle className="h-4 w-4" />
             Hablar con Mony
-          </Button>
+          </Button> */}
         </div>
       </div>
 
