@@ -1,312 +1,211 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { createPortal } from "react-dom"
-import { CalendarIcon } from "lucide-react"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import React, { useState } from "react";
+import { CalendarIcon } from "lucide-react";
+import { Button } from "./button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./select";
+import { Popover, PopoverContent, PopoverTrigger } from "./popover";
+import { cn } from "@/lib/utils";
 
 interface DatePickerProps {
-  date?: Date
-  onDateChange?: (date: Date | undefined) => void
-  placeholder?: string
-  disabled?: (date: Date) => boolean
-  className?: string
-  variant?: 'default' | 'transaction' | 'goal'
+  value?: Date;
+  onChange?: (date: Date | undefined) => void;
+  placeholder?: string;
+  className?: string;
+  disabled?: boolean;
 }
 
 export function DatePicker({
-  date,
-  onDateChange,
-  placeholder = "Selecciona una fecha",
-  disabled,
+  value,
+  onChange,
+  placeholder = "Seleccionar fecha",
   className,
-  variant = 'default',
+  disabled = false,
 }: DatePickerProps) {
-  const [isOpen, setIsOpen] = React.useState(false)
-  const [selectedDay, setSelectedDay] = React.useState(date?.getDate() || 1)
-  const [selectedMonth, setSelectedMonth] = React.useState(date?.getMonth() || new Date().getMonth())
-  const [selectedYear, setSelectedYear] = React.useState(date?.getFullYear() || new Date().getFullYear())
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedDay, setSelectedDay] = useState<number | "">(value?.getDate() || "");
+  const [selectedMonth, setSelectedMonth] = useState<number | "">(value ? value.getMonth() + 1 : "");
+  const [selectedYear, setSelectedYear] = useState<number | "">(value?.getFullYear() || "");
 
-  // Sincronizar con la fecha externa cuando cambie
+  // Actualizar estado interno cuando cambie el valor externo
   React.useEffect(() => {
-    if (date) {
-      setSelectedDay(date.getDate())
-      setSelectedMonth(date.getMonth())
-      setSelectedYear(date.getFullYear())
-    }
-  }, [date])
-
-  const years = React.useMemo(() => {
-    const startYear = new Date().getFullYear()
-    const endYear = startYear + 10
-    return Array.from({ length: endYear - startYear + 1 }, (_, i) => startYear + i)
-  }, [])
-
-  const months = [
-    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-  ]
-
-  // Obtener el número de días en el mes seleccionado
-  const getDaysInMonth = (month: number, year: number) => {
-    return new Date(year, month + 1, 0).getDate()
-  }
-
-  const daysInSelectedMonth = getDaysInMonth(selectedMonth, selectedYear)
-
-  // Actualizar el día si es mayor al máximo del mes
-  React.useEffect(() => {
-    if (selectedDay > daysInSelectedMonth) {
-      setSelectedDay(daysInSelectedMonth)
-    }
-  }, [selectedMonth, selectedYear, selectedDay, daysInSelectedMonth])
-
-  const handleDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const day = parseInt(e.target.value)
-    if (!isNaN(day) && day >= 1 && day <= daysInSelectedMonth) {
-      setSelectedDay(day)
-    } else if (e.target.value === '') {
-      setSelectedDay(1)
-    }
-  }
-
-  const handleMonthChange = (value: string) => {
-    const month = parseInt(value)
-    setSelectedMonth(month)
-  }
-
-  const handleYearChange = (value: string) => {
-    const year = parseInt(value)
-    setSelectedYear(year)
-  }
-
-  const handleApplyDate = (e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault()
-      e.stopPropagation()
-    }
-    const newDate = new Date(selectedYear, selectedMonth, selectedDay)
-    if (disabled && disabled(newDate)) {
-      return
-    }
-    onDateChange?.(newDate)
-    setIsOpen(false)
-  }
-
-  const handleCancel = (e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault()
-      e.stopPropagation()
-    }
-    // Restaurar valores originales
-    if (date) {
-      setSelectedDay(date.getDate())
-      setSelectedMonth(date.getMonth())
-      setSelectedYear(date.getFullYear())
+    if (value) {
+      setSelectedDay(value.getDate());
+      setSelectedMonth(value.getMonth() + 1);
+      setSelectedYear(value.getFullYear());
     } else {
-      const today = new Date()
-      setSelectedDay(today.getDate())
-      setSelectedMonth(today.getMonth())
-      setSelectedYear(today.getFullYear())
+      setSelectedDay("");
+      setSelectedMonth("");
+      setSelectedYear("");
     }
-    setIsOpen(false)
-  }
+  }, [value]);
 
-  const handleQuickSelect = (type: string, e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault()
-      e.stopPropagation()
+  const handleDayChange = (day: string) => {
+    setSelectedDay(Number(day));
+  };
+
+  const handleMonthChange = (month: string) => {
+    setSelectedMonth(Number(month));
+  };
+
+  const handleYearChange = (year: string) => {
+    setSelectedYear(Number(year));
+  };
+
+  const handleApply = () => {
+    if (selectedDay && selectedMonth && selectedYear) {
+      const newDate = new Date(Number(selectedYear), Number(selectedMonth) - 1, Number(selectedDay));
+      onChange?.(newDate);
     }
-    const today = new Date()
-    let newDate: Date
+    setIsOpen(false);
+  };
 
-    switch (type) {
-      // Opciones para transacciones
-      case 'today':
-        newDate = new Date()
-        break
-      case 'yesterday':
-        newDate = new Date(today.getTime() - 24 * 60 * 60 * 1000)
-        break
-      case 'week_ago':
-        newDate = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
-        break
-      case 'month_start':
-        newDate = new Date(today.getFullYear(), today.getMonth(), 1)
-        break
-      // Opciones para metas
-      case 'in3months':
-        newDate = new Date(today.getFullYear(), today.getMonth() + 3, today.getDate())
-        break
-      case 'in6months':
-        newDate = new Date(today.getFullYear(), today.getMonth() + 6, today.getDate())
-        break
-      case 'in1year':
-        newDate = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate())
-        break
-      case 'endofyear':
-        newDate = new Date(today.getFullYear(), 11, 31) // 31 de diciembre
-        break
-      default:
-        newDate = today
+  const handleCancel = () => {
+    // Restaurar valores originales
+    if (value) {
+      setSelectedDay(value.getDate());
+      setSelectedMonth(value.getMonth() + 1);
+      setSelectedYear(value.getFullYear());
+    } else {
+      setSelectedDay("");
+      setSelectedMonth("");
+      setSelectedYear("");
     }
+    setIsOpen(false);
+  };
 
-    setSelectedDay(newDate.getDate())
-    setSelectedMonth(newDate.getMonth())
-    setSelectedYear(newDate.getFullYear())
-  }
+  const handleQuickSelect = (date: Date) => {
+    onChange?.(date);
+    setIsOpen(false);
+  };
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString("es-ES", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
 
   const getQuickSelectOptions = () => {
-    if (variant === 'transaction') {
-      return [
-        { key: 'today', label: 'Hoy' },
-        { key: 'yesterday', label: 'Ayer' },
-        { key: 'week_ago', label: 'Hace 1 semana' },
-        { key: 'month_start', label: 'Inicio del mes' },
-      ]
-    } else if (variant === 'goal') {
-      return [
-        { key: 'in3months', label: 'En 3 meses' },
-        { key: 'in6months', label: 'En 6 meses' },
-        { key: 'in1year', label: 'En 1 año' },
-        { key: 'endofyear', label: 'Fin de año' },
-      ]
-    } else {
-      return [
-        { key: 'today', label: 'Hoy' },
-        { key: 'in1year', label: 'En 1 año' },
-        { key: 'in6months', label: 'En 6 meses' },
-        { key: 'endofyear', label: 'Fin de año' },
-      ]
-    }
-  }
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    
+    const lastWeek = new Date(today);
+    lastWeek.setDate(today.getDate() - 7);
+    
+    const lastMonth = new Date(today);
+    lastMonth.setMonth(today.getMonth() - 1);
 
-  const [buttonRef, setButtonRef] = React.useState<HTMLButtonElement | null>(null)
-  const [overlayPosition, setOverlayPosition] = React.useState({ top: 0, left: 0 })
+    return [
+      { label: "Hoy", date: today },
+      { label: "Ayer", date: yesterday },
+      { label: "Hace una semana", date: lastWeek },
+      { label: "Hace un mes", date: lastMonth },
+    ];
+  };
 
-  // Calcular posición del overlay
-  React.useEffect(() => {
-    if (isOpen && buttonRef) {
-      const rect = buttonRef.getBoundingClientRect()
-      const overlayHeight = 400 // Altura aproximada del overlay
-      const spaceBelow = window.innerHeight - rect.bottom
-      const spaceAbove = rect.top
-      
-      // Si no hay suficiente espacio debajo, mostrar arriba
-      const showAbove = spaceBelow < overlayHeight && spaceAbove > overlayHeight
-      
-      setOverlayPosition({
-        top: showAbove 
-          ? rect.top + window.scrollY - overlayHeight - 5
-          : rect.bottom + window.scrollY + 5,
-        left: rect.left + window.scrollX
-      })
-    }
-  }, [isOpen, buttonRef])
-
-  // Cerrar al hacer click fuera
-  React.useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (isOpen && buttonRef && !buttonRef.contains(event.target as Node)) {
-        const overlay = document.getElementById('date-picker-overlay')
-        if (overlay && !overlay.contains(event.target as Node)) {
-          setIsOpen(false)
-        }
-      }
-    }
-
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [isOpen, buttonRef])
-
-  let overlayContent = null
+  // Generar opciones para días, meses y años
+  const days = Array.from({ length: 31 }, (_, i) => i + 1);
+  const months = [
+    { value: 1, label: "Enero" },
+    { value: 2, label: "Febrero" },
+    { value: 3, label: "Marzo" },
+    { value: 4, label: "Abril" },
+    { value: 5, label: "Mayo" },
+    { value: 6, label: "Junio" },
+    { value: 7, label: "Julio" },
+    { value: 8, label: "Agosto" },
+    { value: 9, label: "Septiembre" },
+    { value: 10, label: "Octubre" },
+    { value: 11, label: "Noviembre" },
+    { value: 12, label: "Diciembre" },
+  ];
   
-  if (isOpen && typeof window !== 'undefined') {
-    overlayContent = createPortal(
-      <div
-        id="date-picker-overlay"
-        className="fixed bg-white border border-gray-200 rounded-lg shadow-lg p-4 w-80"
-        style={{
-          top: overlayPosition.top,
-          left: overlayPosition.left,
-          zIndex: 99999,
-          pointerEvents: 'auto'
-        }}
-        onClick={(e) => e.stopPropagation()}
-        onMouseDown={(e) => e.stopPropagation()}
-      >
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 16 }, (_, i) => currentYear - 5 + i);
+
+  return (
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          className={cn(
+            "w-full justify-start text-left font-normal",
+            !value && "text-muted-foreground",
+            className
+          )}
+          disabled={disabled}
+        >
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {value ? formatDate(value) : placeholder}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80 p-4" align="start">
         <div className="space-y-4">
-          <div className="grid grid-cols-3 gap-2">
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Día</label>
-              <Input
-                type="number"
-                min="1"
-                max={daysInSelectedMonth}
-                value={selectedDay}
-                onChange={handleDayChange}
-                className="mt-1"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Mes</label>
-              <Select value={selectedMonth.toString()} onValueChange={handleMonthChange}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Seleccionar mes">
-                    {months[selectedMonth]}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="z-[100000] pointer-events-auto">
-                  {months.map((month, index) => (
-                    <SelectItem key={index} value={index.toString()}>
-                      {month}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-sm font-medium text-muted-foreground">Año</label>
-              <Select value={selectedYear.toString()} onValueChange={handleYearChange}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="Seleccionar año">
-                    {selectedYear}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="z-[100000] pointer-events-auto">
-                  {years.map((year) => (
-                    <SelectItem key={year} value={year.toString()}>
-                      {year}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+          {/* Selección manual de fecha */}
+          <div className="space-y-3">
+            <h4 className="font-medium text-sm">Seleccionar fecha</h4>
+            <div className="grid grid-cols-3 gap-2">
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Día</label>
+                <Select value={selectedDay.toString()} onValueChange={handleDayChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Día" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {days.map((day) => (
+                      <SelectItem key={day} value={day.toString()}>
+                        {day}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Mes</label>
+                <Select value={selectedMonth.toString()} onValueChange={handleMonthChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Mes" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {months.map((month) => (
+                      <SelectItem key={month.value} value={month.value.toString()}>
+                        {month.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Año</label>
+                <Select value={selectedYear.toString()} onValueChange={handleYearChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Año" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {years.map((year) => (
+                      <SelectItem key={year} value={year.toString()}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
+          {/* Opciones rápidas */}
           <div className="space-y-2">
-            <div className="text-xs font-medium text-muted-foreground">Selección rápida:</div>
+            <h4 className="font-medium text-sm">Selección rápida</h4>
             <div className="grid grid-cols-2 gap-2">
               {getQuickSelectOptions().map((option) => (
                 <Button
-                  key={option.key}
-                  type="button"
+                  key={option.label}
                   variant="outline"
                   size="sm"
-                  onClick={(e) => handleQuickSelect(option.key, e)}
+                  onClick={() => handleQuickSelect(option.date)}
                   className="text-xs"
                 >
                   {option.label}
@@ -315,50 +214,21 @@ export function DatePicker({
             </div>
           </div>
 
-          <div className="text-center text-sm text-muted-foreground">
-            Fecha seleccionada: {selectedDay} de {months[selectedMonth]} de {selectedYear}
-          </div>
-
-          <div className="flex gap-2 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCancel}
-              className="flex-1"
-            >
+          {/* Botones de acción */}
+          <div className="flex justify-end gap-2 pt-2 border-t">
+            <Button variant="outline" size="sm" onClick={handleCancel}>
               Cancelar
             </Button>
-            <Button
-              type="button"
-              onClick={handleApplyDate}
-              className="flex-1"
+            <Button 
+              size="sm" 
+              onClick={handleApply}
+              disabled={!selectedDay || !selectedMonth || !selectedYear}
             >
               Aplicar
             </Button>
           </div>
         </div>
-      </div>,
-      document.body
-    )
-  }
-
-  return (
-    <div className="relative">
-      <Button
-        type="button"
-        ref={setButtonRef}
-        variant="outline"
-        className={cn(
-          "w-full justify-start text-left font-normal",
-          !date && "text-muted-foreground",
-          className
-        )}
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <CalendarIcon className="mr-2 h-4 w-4" />
-        {date ? format(date, "PPP", { locale: es }) : placeholder}
-      </Button>
-      {overlayContent}
-    </div>
-  )
+      </PopoverContent>
+    </Popover>
+  );
 }

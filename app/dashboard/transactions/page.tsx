@@ -277,23 +277,21 @@ export default function TransactionsDashboard() {
             </div>
             <div className="flex gap-2">
               <DatePicker
-                date={filters.fechaInicio ? new Date(filters.fechaInicio) : undefined}
-                onDateChange={(date) => setFilters(prev => ({ 
+                value={filters.fechaInicio ? new Date(filters.fechaInicio) : undefined}
+                onChange={(date: Date | undefined) => setFilters(prev => ({ 
                   ...prev, 
                   fechaInicio: date ? format(date, 'yyyy-MM-dd') : '' 
                 }))}
                 placeholder="Fecha inicio"
-                variant="transaction"
                 className="w-auto"
               />
               <DatePicker
-                date={filters.fechaFin ? new Date(filters.fechaFin) : undefined}
-                onDateChange={(date) => setFilters(prev => ({ 
+                value={filters.fechaFin ? new Date(filters.fechaFin) : undefined}
+                onChange={(date: Date | undefined) => setFilters(prev => ({ 
                   ...prev, 
                   fechaFin: date ? format(date, 'yyyy-MM-dd') : '' 
                 }))}
                 placeholder="Fecha fin"
-                variant="transaction"
                 className="w-auto"
               />
             </div>

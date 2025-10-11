@@ -255,15 +255,14 @@ export function TransactionForm({
           <div className="space-y-2">
             <Label>Fecha *</Label>
             <DatePicker
-              date={watchedDate}
-              onDateChange={(date) => {
+              value={watchedDate}
+              onChange={(date: Date | undefined) => {
                 if (date) {
                   setValue('fechaTransaccion', date, { shouldValidate: false, shouldDirty: false, shouldTouch: false })
                 }
               }}
               placeholder="Selecciona una fecha"
-              disabled={(date) => date > new Date()} // No permitir fechas futuras
-              variant="transaction"
+              disabled={false} // Simplificado por ahora
             />
             {errors.fechaTransaccion && (
               <p className="text-sm text-red-500">{errors.fechaTransaccion.message}</p>

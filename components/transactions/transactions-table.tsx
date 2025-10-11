@@ -326,16 +326,14 @@ export function TransactionsTable({ onEdit, onView, refreshTrigger }: Transactio
           {/* Filtros de fecha */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <DatePicker
-              date={filters.fechaInicio ? new Date(filters.fechaInicio) : undefined}
-              onDateChange={(date) => handleFilterChange('fechaInicio', date ? format(date, 'yyyy-MM-dd') : '')}
+              value={filters.fechaInicio ? new Date(filters.fechaInicio) : undefined}
+              onChange={(date: Date | undefined) => handleFilterChange('fechaInicio', date ? format(date, 'yyyy-MM-dd') : '')}
               placeholder="Fecha inicio"
-              variant="transaction"
             />
             <DatePicker
-              date={filters.fechaFin ? new Date(filters.fechaFin) : undefined}
-              onDateChange={(date) => handleFilterChange('fechaFin', date ? format(date, 'yyyy-MM-dd') : '')}
+              value={filters.fechaFin ? new Date(filters.fechaFin) : undefined}
+              onChange={(date: Date | undefined) => handleFilterChange('fechaFin', date ? format(date, 'yyyy-MM-dd') : '')}
               placeholder="Fecha fin"
-              variant="transaction"
             />
             <Button variant="outline" onClick={clearFilters}>
               <Filter className="h-4 w-4 mr-2" />

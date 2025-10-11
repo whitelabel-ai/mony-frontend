@@ -179,11 +179,10 @@ export function CreateGoalDialog({ open, onOpenChange, onGoalCreated }: CreateGo
                   <FormLabel>Fecha objetivo</FormLabel>
                   <FormControl>
                     <DatePicker
-                      date={field.value}
-                      onDateChange={field.onChange}
+                      value={field.value}
+                      onChange={field.onChange}
                       placeholder="Selecciona una fecha"
-                      disabled={(date) => date < new Date()}
-                      variant="goal"
+                      disabled={false} // Simplificado por ahora
                     />
                   </FormControl>
                   <FormDescription>

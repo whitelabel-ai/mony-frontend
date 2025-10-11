@@ -208,10 +208,9 @@ export function SubscriptionForm({
         <div>
           <Label>Fecha de inicio *</Label>
           <DatePicker
-            date={watchedValues.fechaInicio}
-            onDateChange={(date) => setValue('fechaInicio', date || new Date())}
+            value={watchedValues.fechaInicio}
+            onChange={(date: Date | undefined) => setValue('fechaInicio', date || new Date())}
             placeholder="Seleccionar fecha de inicio"
-            variant="default"
           />
           <p className="text-sm text-gray-500 mt-1">
             El próximo pago se calculará automáticamente basado en la frecuencia seleccionada

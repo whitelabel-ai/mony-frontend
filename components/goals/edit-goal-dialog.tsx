@@ -202,10 +202,9 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Edit
                   <FormLabel>Fecha objetivo</FormLabel>
                   <FormControl>
                     <DatePicker
-                      date={field.value}
-                      onDateChange={field.onChange}
+                      value={field.value}
+                      onChange={field.onChange}
                       placeholder="Selecciona una fecha"
-                      variant="goal"
                     />
                   </FormControl>
                   <FormMessage />
