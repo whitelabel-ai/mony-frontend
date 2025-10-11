@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { LineChart, BarChart, PieChart, MetricCard } from '@/components/charts'
 import { TransactionModal } from '@/components/transactions/transaction-modal'
+import { DatePicker } from '@/components/ui/date-picker'
 import { transactionsApi } from '@/lib/transactions-api'
 import type { TransactionAnalytics, FilterTransactionsDto } from '@/types'
 import { toast } from 'react-hot-toast'
@@ -275,16 +276,24 @@ export default function TransactionsDashboard() {
               </Button>
             </div>
             <div className="flex gap-2">
-              <Input
-                type="date"
-                value={filters.fechaInicio}
-                onChange={(e) => setFilters(prev => ({ ...prev, fechaInicio: e.target.value }))}
+              <DatePicker
+                date={filters.fechaInicio ? new Date(filters.fechaInicio) : undefined}
+                onDateChange={(date) => setFilters(prev => ({ 
+                  ...prev, 
+                  fechaInicio: date ? format(date, 'yyyy-MM-dd') : '' 
+                }))}
+                placeholder="Fecha inicio"
+                variant="transaction"
                 className="w-auto"
               />
-              <Input
-                type="date"
-                value={filters.fechaFin}
-                onChange={(e) => setFilters(prev => ({ ...prev, fechaFin: e.target.value }))}
+              <DatePicker
+                date={filters.fechaFin ? new Date(filters.fechaFin) : undefined}
+                onDateChange={(date) => setFilters(prev => ({ 
+                  ...prev, 
+                  fechaFin: date ? format(date, 'yyyy-MM-dd') : '' 
+                }))}
+                placeholder="Fecha fin"
+                variant="transaction"
                 className="w-auto"
               />
             </div>

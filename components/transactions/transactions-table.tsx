@@ -39,6 +39,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { DatePicker } from '@/components/ui/date-picker'
 import { TransactionModal } from './transaction-modal'
 import { transactionsApi } from '@/lib/transactions-api'
 import type {
@@ -324,17 +325,17 @@ export function TransactionsTable({ onEdit, onView, refreshTrigger }: Transactio
 
           {/* Filtros de fecha */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <Input
-              type="date"
+            <DatePicker
+              date={filters.fechaInicio ? new Date(filters.fechaInicio) : undefined}
+              onDateChange={(date) => handleFilterChange('fechaInicio', date ? format(date, 'yyyy-MM-dd') : '')}
               placeholder="Fecha inicio"
-              value={filters.fechaInicio || ''}
-              onChange={(e) => handleFilterChange('fechaInicio', e.target.value)}
+              variant="transaction"
             />
-            <Input
-              type="date"
+            <DatePicker
+              date={filters.fechaFin ? new Date(filters.fechaFin) : undefined}
+              onDateChange={(date) => handleFilterChange('fechaFin', date ? format(date, 'yyyy-MM-dd') : '')}
               placeholder="Fecha fin"
-              value={filters.fechaFin || ''}
-              onChange={(e) => handleFilterChange('fechaFin', e.target.value)}
+              variant="transaction"
             />
             <Button variant="outline" onClick={clearFilters}>
               <Filter className="h-4 w-4 mr-2" />

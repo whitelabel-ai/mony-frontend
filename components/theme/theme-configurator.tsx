@@ -98,59 +98,6 @@ export function ThemeConfigurator({ className }: ThemeConfiguratorProps) {
       </CardHeader>
       
       <CardContent className="space-y-6">
-        {/* Vista previa del tema actual */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h4 className="text-sm font-medium">Tema actual</h4>
-            <div className="flex gap-2">
-              <Badge variant={isDark() ? 'secondary' : 'default'} className="text-xs">
-                {isDark() ? 'Oscuro' : 'Claro'}
-              </Badge>
-              <Badge variant="outline" className="text-xs">
-                {currentPalette === 'blue' ? 'Azul' : 'Verde'}
-              </Badge>
-            </div>
-          </div>
-          
-          {currentTheme && (
-            <div className="space-y-3">
-              {/* Vista previa de colores principales */}
-              <div className="grid grid-cols-4 gap-3">
-                <div className="space-y-2">
-                  <div 
-                    className="h-12 w-full rounded-lg border-2 border-border shadow-sm"
-                    style={{ backgroundColor: `hsl(${currentTheme.colors.primary})` }}
-                  />
-                  <div className="text-xs text-center text-muted-foreground">Principal</div>
-                </div>
-                <div className="space-y-2">
-                  <div 
-                    className="h-12 w-full rounded-lg border-2 border-border shadow-sm"
-                    style={{ backgroundColor: `hsl(${currentTheme.colors.secondary})` }}
-                  />
-                  <div className="text-xs text-center text-muted-foreground">Secundario</div>
-                </div>
-                <div className="space-y-2">
-                  <div 
-                    className="h-12 w-full rounded-lg border-2 border-border shadow-sm"
-                    style={{ backgroundColor: `hsl(${currentTheme.colors.accent})` }}
-                  />
-                  <div className="text-xs text-center text-muted-foreground">Acento</div>
-                </div>
-                <div className="space-y-2">
-                  <div 
-                    className="h-12 w-full rounded-lg border-2 border-border shadow-sm"
-                    style={{ backgroundColor: `hsl(${currentTheme.colors.muted})` }}
-                  />
-                  <div className="text-xs text-center text-muted-foreground">Silenciado</div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <Separator />
-
         {/* Controles principales */}
         <div className="space-y-4">
           <h4 className="text-sm font-medium">Personalización</h4>
@@ -220,6 +167,59 @@ export function ThemeConfigurator({ className }: ThemeConfiguratorProps) {
               )}
             </Button>
           </div>
+        </div>
+
+        <Separator />
+
+        {/* Vista previa del tema actual */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-medium">Tema actual</h4>
+            <div className="flex gap-2">
+              <Badge variant={isDark() ? 'secondary' : 'default'} className="text-xs">
+                {isDark() ? 'Oscuro' : 'Claro'}
+              </Badge>
+              <Badge variant="outline" className="text-xs">
+                {currentPalette === 'blue' ? 'Azul' : 'Verde'}
+              </Badge>
+            </div>
+          </div>
+          
+          {currentTheme && (
+            <div className="space-y-3">
+              {/* Vista previa de colores principales */}
+              <div className="grid grid-cols-4 gap-3">
+                <div className="space-y-2">
+                  <div 
+                    className="h-12 w-full rounded-lg border-2 border-border shadow-sm"
+                    style={{ backgroundColor: `hsl(${currentTheme.colors.primary})` }}
+                  />
+                  <div className="text-xs text-center text-muted-foreground">Principal</div>
+                </div>
+                <div className="space-y-2">
+                  <div 
+                    className="h-12 w-full rounded-lg border-2 border-border shadow-sm"
+                    style={{ backgroundColor: `hsl(${currentTheme.colors.secondary})` }}
+                  />
+                  <div className="text-xs text-center text-muted-foreground">Secundario</div>
+                </div>
+                <div className="space-y-2">
+                  <div 
+                    className="h-12 w-full rounded-lg border-2 border-border shadow-sm"
+                    style={{ backgroundColor: `hsl(${currentTheme.colors.accent})` }}
+                  />
+                  <div className="text-xs text-center text-muted-foreground">Acento</div>
+                </div>
+                <div className="space-y-2">
+                  <div 
+                    className="h-12 w-full rounded-lg border-2 border-border shadow-sm"
+                    style={{ backgroundColor: `hsl(${currentTheme.colors.muted})` }}
+                  />
+                  <div className="text-xs text-center text-muted-foreground">Silenciado</div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         <Separator />

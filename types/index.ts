@@ -559,3 +559,84 @@ export interface UserSettings {
   profile: UpdateUserProfileData
   app: AppSettings
 }
+
+// Tipos para suscripciones de usuario (servicios como Netflix, Spotify, etc.)
+export interface UserSubscription {
+  id: string
+  nombre: string
+  descripcion?: string
+  monto: number
+  moneda: string
+  frecuencia: 'DIARIA' | 'SEMANAL' | 'MENSUAL' | 'ANUAL'
+  fechaInicio: string
+  fechaProximoPago: string
+  activa: boolean
+  sitioWeb?: string
+  notas?: string
+  idUsuario: string
+  idCategoria?: number
+  categoria?: {
+    id: number
+    nombre: string
+    tipo: string
+  }
+  fechaCreacion: string
+  fechaActualizacion: string
+}
+
+export interface CreateUserSubscriptionDto {
+  nombre: string
+  descripcion?: string
+  monto: number
+  moneda?: string
+  frecuencia: 'DIARIA' | 'SEMANAL' | 'MENSUAL' | 'ANUAL'
+  fechaInicio: string
+  fechaProximoPago: string
+  activa?: boolean
+  sitioWeb?: string
+  notas?: string
+  categoryId?: string
+}
+
+export interface UpdateUserSubscriptionDto {
+  nombre?: string
+  descripcion?: string
+  monto?: number
+  moneda?: string
+  frecuencia?: 'DIARIA' | 'SEMANAL' | 'MENSUAL' | 'ANUAL'
+  fechaInicio?: string
+  fechaProximoPago?: string
+  activa?: boolean
+  sitioWeb?: string
+  notas?: string
+  categoryId?: string
+}
+
+export interface UserSubscriptionsResponse {
+  subscriptions: UserSubscription[]
+  summary: {
+    total: number
+    active: number
+    inactive: number
+    paused: number
+    totalMonthlyAmount: number
+  }
+}
+
+export interface SubscriptionSummary {
+  total: number
+  active: number
+  inactive: number
+  paused: number
+  totalMonthlyAmount: number
+}
+
+export interface UpcomingPayment {
+  id: string
+  nombre: string
+  monto: number
+  moneda: string
+  fechaProximoPago: string
+  diasRestantes: number
+  estado: 'vencido' | 'hoy' | 'manana' | 'pronto' | 'proximo'
+}
