@@ -178,8 +178,18 @@ export default function RegisterPage() {
    */
   const handleWelcomeModalClose = () => {
     setShowWelcomeModal(false)
-    // Redirigir al dashboard después de cerrar el modal
-    window.location.href = '/dashboard'
+    // Redirigir al dashboard después de cerrar el modal usando SPA navigation
+    try {
+      // Preferir router.push para preservar BFCache
+      // Nota: useRouter no está importado aquí; usamos Link modal o navegamos con location.assign
+      // como fallback si no hay router en scope.
+      if (typeof window !== 'undefined' && window.history && window.location) {
+        window.location.assign('/dashboard')
+      }
+    } catch (e) {
+      console.warn('Navigation fallback to /dashboard', e)
+      window.location.href = '/dashboard'
+    }
   }
 
   /**

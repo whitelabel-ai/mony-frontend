@@ -182,6 +182,8 @@ export default function DashboardLayout({
               size="icon"
               className="lg:hidden"
               onClick={() => setSidebarOpen(true)}
+              aria-label="Abrir menú"
+              title="Abrir menú"
             >
               <Menu className="h-6 w-6" />
             </Button>
@@ -195,6 +197,8 @@ export default function DashboardLayout({
                 variant="ghost"
                 size="icon"
                 onClick={toggleLightDark}
+                aria-label="Cambiar tema"
+                title="Cambiar tema"
               >
                 <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                 <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -218,6 +222,8 @@ export default function DashboardLayout({
                 size="icon"
                 onClick={logout}
                 className="text-muted-foreground hover:text-destructive"
+                aria-label="Cerrar sesión"
+                title="Cerrar sesión"
               >
                 <LogOut className="h-5 w-5" />
               </Button>
@@ -263,7 +269,7 @@ function SidebarContent({
           <span className="text-xl font-bold text-primary">Mony</span>
         </div>
         {onClose && (
-          <Button variant="ghost" size="icon" onClick={onClose}>
+          <Button variant="ghost" size="icon" onClick={onClose} aria-label="Cerrar menú" title="Cerrar menú">
             <X className="h-5 w-5" />
           </Button>
         )}

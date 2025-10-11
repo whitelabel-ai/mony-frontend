@@ -225,6 +225,7 @@ export function PaymentHistory({ limit = 5 }: PaymentHistoryProps) {
                     size="sm"
                     className="h-8 w-8 p-0"
                     title="Descargar recibo"
+                    aria-label="Descargar recibo"
                   >
                     <Download className="h-4 w-4" />
                   </Button>

@@ -1,10 +1,25 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  compress: true,
   images: {
-    domains: ['localhost'],
+    formats: ['image/avif', 'image/webp'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'crm.whitelabel.lat',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.mony.app',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.whitelabel.lat',
+      },
+    ],
   },
-  env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1',
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
   },
 }
 

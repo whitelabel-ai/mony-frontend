@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { useAuth } from '@/hooks'
 import { Button } from '@/components/ui'
 import Image from 'next/image'
@@ -65,24 +66,22 @@ export default function HomePage() {
               width={120}
               height={40}
               className="h-8 sm:h-10 w-auto"
+              priority
             />
             <span className="text-lg sm:text-2xl font-bold text-primary">
               Mony
             </span>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <Button
-              variant="ghost"
-              onClick={() => router.push('/auth/login')}
-              className="text-xs sm:text-sm px-3 sm:px-4 py-2 text-gray-700 hover:text-primary hover:bg-primary/10 transition-all duration-300 font-medium"
-            >
-              Iniciar Sesión
+            <Button asChild variant="ghost" className="text-xs sm:text-sm px-3 sm:px-4 py-2 text-gray-700 hover:text-primary hover:bg-primary/10 transition-all duration-300 font-medium">
+              <Link href="/auth/login" prefetch>
+                Iniciar Sesión
+              </Link>
             </Button>
-            <Button 
-              onClick={() => router.push('/auth/register')}
-              className="text-xs sm:text-sm px-3 sm:px-6 py-2 bg-primary hover:secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-medium"
-            >
-              Comenzar Gratis
+            <Button asChild className="text-xs sm:text-sm px-3 sm:px-6 py-2 bg-primary hover:secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-medium">
+              <Link href="/auth/register" prefetch>
+                Comenzar Gratis
+              </Link>
             </Button>
           </div>
         </nav>
@@ -672,10 +671,12 @@ export default function HomePage() {
           
           {/* Botón principal */}
           <button
+            aria-label="Abrir chat del coach"
+            title="Abrir chat del coach"
             onClick={() => {
               // Intentar abrir Chatwoot primero, si no está disponible, abrir WhatsApp
-              if (typeof window !== 'undefined' && (window as any).chatwootSDK) {
-                (window as any).chatwootSDK.toggle();
+              if (typeof window !== 'undefined' && (window as any).$chatwoot && typeof (window as any).$chatwoot.toggle === 'function') {
+                (window as any).$chatwoot.toggle();
               } else {
                 window.open('https://wa.me/573143400476?text=¡Hola! Quiero hablar con mi coach financiero personal 💬', '_blank');
               }

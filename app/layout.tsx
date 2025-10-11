@@ -1,11 +1,12 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { Toaster } from 'react-hot-toast'
 import Script from 'next/script'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
+const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains' })
 
 /**
  * Configuración de metadata de la aplicación
@@ -23,8 +24,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
+  maximumScale: 5,
+  userScalable: true,
   viewportFit: 'cover',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: '#0ea5e9' },
@@ -42,13 +43,15 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/logo-mony.png" />
         <link rel="apple-touch-icon" href="/logo-mony.png" />
+        <link rel="preconnect" href="https://crm.whitelabel.lat" />
+        <link rel="dns-prefetch" href="https://crm.whitelabel.lat" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="msapplication-tap-highlight" content="no" />
       </head>
-      <body className={`${inter.className} antialiased min-h-screen overflow-x-hidden`}>
+      <body className={`${inter.className} ${inter.variable} ${jetbrains.variable} antialiased min-h-screen overflow-x-hidden`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
