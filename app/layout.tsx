@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { Toaster } from 'react-hot-toast'
+import Script from 'next/script'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -10,8 +11,8 @@ const inter = Inter({ subsets: ['latin'] })
  * Configuración de metadata de la aplicación
  */
 export const metadata: Metadata = {
-  title: 'Mony - Tu Asistente Financiero Personal',
-  description: 'Gestiona tus finanzas de manera inteligente con Mony. Registra gastos, establece metas de ahorro y toma control de tu dinero.',
+  title: 'Mony - Tu Coach Financiero Personal por WhatsApp',
+  description: 'Transforma tus finanzas conversando por WhatsApp. Tu coach personal te ayuda a ahorrar, controlar gastos y alcanzar tus metas financieras de forma automática.',
   keywords: 'finanzas, dinero, gastos, ahorro, presupuesto, fintech',
   authors: [{ name: 'Mony Team' }],
 }
@@ -83,6 +84,29 @@ export default function RootLayout({
             }}
           />
         </ThemeProvider>
+        
+        {/* Chatwoot Widget */}
+        <Script
+          id="chatwoot-widget"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(d,t) { 
+                var BASE_URL="https://crm.whitelabel.lat"; 
+                var g=d.createElement(t),s=d.getElementsByTagName(t)[0]; 
+                g.src=BASE_URL+"/packs/js/sdk.js"; 
+                g.async = true; 
+                s.parentNode.insertBefore(g,s); 
+                g.onload=function(){ 
+                  window.chatwootSDK.run({ 
+                    websiteToken: 'PdqXYKMHJKZJKdDagUvd7vbg', 
+                    baseUrl: BASE_URL 
+                  }) 
+                } 
+              })(document,"script");
+            `,
+          }}
+        />
       </body>
     </html>
   )

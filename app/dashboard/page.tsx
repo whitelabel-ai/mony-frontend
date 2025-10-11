@@ -11,6 +11,7 @@ import {
   Plus,
   ArrowUpRight,
   ArrowDownRight,
+  MessageCircle,
 } from 'lucide-react'
 import { useUserProfile } from '@/hooks'
 import { useRecentTransactions } from '@/hooks/use-recent-transactions'
@@ -80,13 +81,24 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col space-y-2">
-        <h1 className="text-3xl font-bold text-foreground">
-          Dashboard
-        </h1>
-        <p className="text-muted-foreground">
-          Aquí tienes un resumen de tus finanzas personales
-        </p>
+      <div className="flex flex-col space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">
+              Dashboard
+            </h1>
+            <p className="text-muted-foreground">
+              Aquí tienes un resumen de tus finanzas personales
+            </p>
+          </div>
+          <Button 
+            onClick={() => window.open('https://wa.me/573143400476?text=¡Hola%20Mony!%20Soy%20usuario%20registrado%20y%20necesito%20ayuda%20con%20mis%20finanzas', '_blank')}
+            className="bg-green-600 hover:bg-green-700 text-white flex items-center gap-2 w-fit"
+          >
+            <MessageCircle className="h-4 w-4" />
+            Hablar con Mony
+          </Button>
+        </div>
       </div>
 
       {/* Estadísticas principales */}
