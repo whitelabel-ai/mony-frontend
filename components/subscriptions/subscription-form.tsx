@@ -19,6 +19,7 @@ import { Switch } from '@/components/ui/switch'
 import { DatePicker } from '@/components/ui/date-picker'
 import { Loader2 } from 'lucide-react'
 import { UserSubscription, CreateUserSubscriptionDto, UpdateUserSubscriptionDto, Categoria } from '@/types'
+import { useUserProfile } from '@/hooks/use-auth'
 import { transactionsApi } from '@/lib/transactions-api'
 import { toast } from 'react-hot-toast'
 
@@ -59,6 +60,7 @@ export function SubscriptionForm({
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [categories, setCategories] = useState<Categoria[]>([])
   const [loadingCategories, setLoadingCategories] = useState(false)
+  const { profile } = useUserProfile()
 
   const isEditing = !!subscription
 
@@ -126,6 +128,7 @@ export function SubscriptionForm({
         nombre: data.nombre,
         descripcion: data.descripcion || undefined,
         monto: data.monto,
+        moneda: profile?.moneda,
         frecuencia: data.frecuencia,
         fechaInicio: data.fechaInicio.toISOString(),
         activa: data.activa,

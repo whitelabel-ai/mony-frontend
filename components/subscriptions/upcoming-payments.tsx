@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { 
   Calendar, 
-  DollarSign, 
   CheckCircle, 
   AlertTriangle,
   Clock
@@ -205,9 +204,8 @@ export function UpcomingPayments({
                   
                   <div className="flex items-center gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
-                      <DollarSign className="h-3 w-3" />
                       <span className="font-medium">
-                        {formatCurrency(payment.monto)}
+                        {formatCurrency(payment.monto, payment.moneda)}
                       </span>
                     </div>
                     
@@ -241,7 +239,8 @@ export function UpcomingPayments({
               <span className="text-muted-foreground">Total próximos pagos:</span>
               <span className="font-semibold">
                 {formatCurrency(
-                  payments.reduce((total, payment) => total + payment.monto, 0)
+                  payments.reduce((total, payment) => total + payment.monto, 0),
+                  payments[0]?.moneda || 'COP'
                 )}
               </span>
             </div>

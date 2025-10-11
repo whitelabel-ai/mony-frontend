@@ -19,7 +19,6 @@ import {
   Pause, 
   CheckCircle,
   Calendar,
-  DollarSign,
   Building
 } from 'lucide-react'
 import { UserSubscription } from '@/types'
@@ -205,9 +204,8 @@ export function SubscriptionCard({
           {/* Información principal */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
               <span className="font-semibold text-lg">
-                {formatCurrency(subscription.monto)}
+                {formatCurrency(subscription.monto, subscription.moneda)}
               </span>
             </div>
             

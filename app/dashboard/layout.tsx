@@ -288,7 +288,7 @@ function SidebarContent({
         <div className="border-t border-border mb-4"></div>
         
         <NavigationSection
-          title="Configuración"
+          title="Panel de Control"
           items={configNavigationItems}
           pathname={pathname}
           onClose={onClose}

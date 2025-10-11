@@ -588,6 +588,7 @@ export interface CreateUserSubscriptionDto {
   nombre: string
   descripcion?: string
   monto: number
+  moneda?: string
   frecuencia: 'diario' | 'semanal' | 'mensual' | 'trimestral' | 'anual' | 'nunca'
   fechaInicio: string
   fechaProximoPago?: string
@@ -601,6 +602,7 @@ export interface UpdateUserSubscriptionDto {
   nombre?: string
   descripcion?: string
   monto?: number
+  moneda?: string
   frecuencia?: 'diario' | 'semanal' | 'mensual' | 'trimestral' | 'anual' | 'nunca'
   fechaInicio?: string
   fechaProximoPago?: string
