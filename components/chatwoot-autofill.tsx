@@ -26,6 +26,34 @@ function normalizeWhatsapp(input?: string): string | null {
   return normalized || null
 }
 
+function getUserIdFromToken(): string | undefined {
+  try {
+    if (typeof window === 'undefined') return undefined
+    const token = localStorage.getItem('token')
+    if (!token) return undefined
+    const parts = token.split('.')
+    if (parts.length !== 3) return undefined
+    const payload = JSON.parse(atob(parts[1]))
+    const sub = payload?.sub || payload?.userId || payload?.id
+    return sub ? String(sub) : undefined
+  } catch {
+    return undefined
+  }
+}
+
+function digitsOnly(input?: string | null): string | null {
+  if (!input) return null
+  const only = input.replace(/[^0-9]/g, '')
+  return only || null
+}
+
+function sameNumber(a?: string | null, b?: string | null): boolean {
+  const da = digitsOnly(a)
+  const db = digitsOnly(b)
+  if (!da || !db) return false
+  return da === db
+}
+
 function getCountryInfo(code?: string): { code: string; name: string } | null {
   if (!code) return null
   const up = code.toUpperCase()
@@ -152,7 +180,7 @@ export default function ChatwootAutofill() {
     const whatsappRaw = profile?.numeroWhatsapp?.trim()
     const whatsapp = normalizeWhatsapp(whatsappRaw)
     const email = profile?.email?.trim()
-    const id = profile?.id?.toString()
+    const id = profile?.id?.toString() || getUserIdFromToken()
     const countryInfo = getCountryInfo(profile?.pais)
     const companyName = detectCompanyFromEmail(email)
     const moneda = profile?.moneda?.toUpperCase()
@@ -162,10 +190,13 @@ export default function ChatwootAutofill() {
     // Nota: no salimos temprano. Aun si falta WhatsApp o el perfil llega tarde,
     // dejamos listo el manejo de eventos para identificar en cuanto sea posible.
 
-    // Si el número cambió respecto al que tengamos guardado (aún vencido), borrar nuestro cache
-    if (cachedAny && normalizeWhatsapp(cachedAny.whatsapp) !== whatsapp) {
-      try { localStorage.removeItem(LS_KEY) } catch {}
-      // Reset para evitar que el widget asocie con conversación anterior
+    // Si tenemos número actual válido y difiere del previo, marcar reset
+    // Evita resets prematuros cuando el perfil aún no cargó en producción
+    const prevWhatsapp = cachedAny?.whatsapp ? normalizeWhatsapp(cachedAny.whatsapp) : null
+    const hasCurrentWhatsapp = !!whatsapp && isValidWhatsApp(whatsapp)
+    // Solo reset si realmente cambió el número (comparación por dígitos)
+    if (prevWhatsapp && hasCurrentWhatsapp && !sameNumber(prevWhatsapp, whatsapp)) {
+      // No borrar nuestro cache de inmediato; reescribiremos tras identificar
       shouldResetRef.current = true
     }
 
@@ -180,10 +211,30 @@ export default function ChatwootAutofill() {
           shouldResetRef.current = false
         }
 
-        // Validar datos mínimos para identificar: id, WhatsApp válido y al menos nombre o email
-        const validWhatsapp = !!whatsapp && isValidWhatsApp(whatsapp)
-        const canIdentify = !!id && validWhatsapp && (!!name || !!email)
-        if (!canIdentify) return false
+        // Validar datos de perfil
+        const profileValidPhone = !!whatsapp && isValidWhatsApp(whatsapp)
+        const hasProfileIdentity = !!id && profileValidPhone
+
+        // Fallback: si el perfil tarda en cargar, usar cache válido para identificar
+        let finalId: string | undefined = id
+        let finalName: string | undefined = name || undefined
+        let finalEmail: string | undefined = email || undefined
+        let finalPhone: string | null | undefined = whatsapp
+
+        if (!hasProfileIdentity && cached) {
+          const cachedPhone = normalizeWhatsapp(cached.whatsapp)
+          const cachedValidPhone = !!cachedPhone && isValidWhatsApp(cachedPhone)
+          const hasCachedIdentity = !!cached.id && cachedValidPhone
+          if (hasCachedIdentity) {
+            finalId = cached.id
+            finalName = cached.name
+            finalEmail = cached.email
+            finalPhone = cachedPhone
+          }
+        }
+
+        const canIdentifyFinal = !!finalId && !!finalPhone && isValidWhatsApp(finalPhone as string)
+        if (!canIdentifyFinal) return false
 
         // Construir atributos personalizados a enviar
         const customAttrs = filterUndefined({
@@ -194,15 +245,15 @@ export default function ChatwootAutofill() {
 
         // setUser: id único y datos estándar + atributos personalizados
         const userPayload = filterUndefined({
-          name,
-          email,
-          phone_number: whatsapp,
+          name: finalName,
+          email: finalEmail,
+          phone_number: finalPhone as string,
           country_code: countryInfo?.code,
           country: countryInfo?.name,
           company_name: companyName,
           custom_attributes: customAttrs,
         })
-        cw.setUser(id, userPayload)
+        cw.setUser(finalId as string, userPayload)
 
         // Refuerza atributos en contacto
         if (typeof cw.setCustomAttributes === 'function') {
@@ -212,10 +263,13 @@ export default function ChatwootAutofill() {
         }
 
         // Persistir cache para futuras visitas (solo si tenemos valores requeridos)
-        if (id && typeof name === 'string' && typeof whatsapp === 'string') {
-          const cachePayload = email
-            ? { id, name, whatsapp, email }
-            : { id, name, whatsapp }
+        if (typeof finalId === 'string' && typeof finalPhone === 'string') {
+          const cacheName = typeof finalName === 'string'
+            ? finalName
+            : (typeof finalEmail === 'string' ? (finalEmail.split('@')[0] || 'Usuario') : 'Usuario')
+          const cachePayload = finalEmail
+            ? { id: finalId, name: cacheName, whatsapp: finalPhone, email: finalEmail }
+            : { id: finalId, name: cacheName, whatsapp: finalPhone }
           writeCache(cachePayload)
         }
 
