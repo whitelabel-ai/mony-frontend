@@ -97,10 +97,28 @@ export function CurrentSubscriptionCard({
   const daysUntilExpiry = getDaysUntilExpiry()
 
   // Función para obtener el siguiente plan disponible
-  const getNextAvailablePlan = (): SubscriptionPlan => {
+  const getNextAvailablePlan = (): SubscriptionPlan | null => {
     const currentIndex = SUBSCRIPTION_PLANS.findIndex(plan => plan.id === currentPlan.id)
     const nextPlan = SUBSCRIPTION_PLANS[currentIndex + 1]
-    return nextPlan || SUBSCRIPTION_PLANS.find(plan => plan.id === 'premium') || SUBSCRIPTION_PLANS[1]
+    return nextPlan || null
+  }
+
+  // Verificar si hay un plan superior disponible
+  const hasUpgradeAvailable = (): boolean => {
+    return getNextAvailablePlan() !== null
+  }
+
+  // Obtener el texto del botón de upgrade
+  const getUpgradeButtonText = (): string => {
+    const nextPlan = getNextAvailablePlan()
+    if (!nextPlan) return 'Plan Máximo'
+    
+    if (currentPlan.id === 'free') {
+      return 'Actualizar a Premium'
+    } else if (currentPlan.id === 'premium') {
+      return 'Actualizar a Pro'
+    }
+    return 'Actualizar Plan'
   }
 
   return (
@@ -197,23 +215,51 @@ export function CurrentSubscriptionCard({
         {/* Acciones */}
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
           {isFreePlan ? (
-            <Button 
-              onClick={() => onUpgrade(getNextAvailablePlan())} 
-              className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-            >
-              <ArrowUpCircle className="h-4 w-4 mr-2" />
-              Actualizar a Premium
-            </Button>
-          ) : (
+            // Plan gratuito - mostrar ambas opciones de upgrade
             <>
               <Button 
-                onClick={() => onUpgrade(getNextAvailablePlan())} 
-                variant="default"
-                className="flex-1"
+                onClick={() => {
+                  const premiumPlan = SUBSCRIPTION_PLANS.find(plan => plan.id === 'premium')
+                  if (premiumPlan) onUpgrade(premiumPlan)
+                }} 
+                className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
               >
                 <ArrowUpCircle className="h-4 w-4 mr-2" />
-                {isCancelled ? 'Reactivar' : 'Actualizar Plan'}
+                Actualizar a Premium
               </Button>
+              <Button 
+                onClick={() => {
+                  const proPlan = SUBSCRIPTION_PLANS.find(plan => plan.id === 'pro')
+                  if (proPlan) onUpgrade(proPlan)
+                }} 
+                className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+              >
+                <Crown className="h-4 w-4 mr-2" />
+                Actualizar a Pro
+              </Button>
+            </>
+          ) : (
+            <>
+              {/* Botón de upgrade solo si hay un plan superior disponible */}
+              {hasUpgradeAvailable() ? (
+                <Button 
+                  onClick={() => {
+                    const nextPlan = getNextAvailablePlan()
+                    if (nextPlan) onUpgrade(nextPlan)
+                  }} 
+                  variant="default"
+                  className="flex-1"
+                >
+                  <ArrowUpCircle className="h-4 w-4 mr-2" />
+                  {isCancelled ? 'Reactivar' : getUpgradeButtonText()}
+                </Button>
+              ) : (
+                // Plan Pro - mostrar badge de plan máximo
+                <div className="flex-1 flex items-center justify-center p-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
+                  <Crown className="h-4 w-4 mr-2 text-green-600" />
+                  <span className="text-green-700 font-medium">Plan Máximo Alcanzado</span>
+                </div>
+              )}
               
               {isActive && (
                 <Button 

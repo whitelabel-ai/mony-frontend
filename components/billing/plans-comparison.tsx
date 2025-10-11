@@ -67,7 +67,7 @@ export function PlansComparison({ currentPlan, onSelectPlan, availableUpgrades }
   const canUpgrade = (plan: SubscriptionPlan) => availableUpgrades.some(upgrade => upgrade.id === plan.id)
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
       {SUBSCRIPTION_PLANS.map((plan) => {
         const isCurrent = isCurrentPlan(plan)
         const isUpgrade = canUpgrade(plan)

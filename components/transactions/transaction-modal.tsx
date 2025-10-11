@@ -138,6 +138,7 @@ export function TransactionModal({
           mode={mode}
           onSuccess={handleSuccess}
           onCancel={handleCancel}
+          showCard={false}
         />
       </DialogContent>
     </Dialog>

@@ -11,18 +11,17 @@ import {
   Target,
   Calendar,
   Settings,
-  User,
   LogOut,
   Menu,
   X,
   Sun,
   Moon,
-  Wallet,
   Receipt,
 } from 'lucide-react'
 import { useAuth, useAuthGuard } from '@/hooks'
 import { Button, Avatar, AvatarFallback, AvatarImage } from '@/components/ui'
-import { cn, getGreeting } from '@/lib/utils'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { cn, getGreeting, getUserInitials } from '@/lib/utils'
 import Image from 'next/image'
 
 // ✅ Tipo para los ítems de navegación
@@ -32,8 +31,8 @@ type NavigationItem = {
   icon: React.ComponentType<{ className?: string }>
 }
 
-// ✅ Lista de navegación
-const navigationItems: NavigationItem[] = [
+// ✅ Lista de navegación principal
+const mainNavigationItems: NavigationItem[] = [
   {
     name: 'Dashboard',
     href: '/dashboard',
@@ -50,14 +49,18 @@ const navigationItems: NavigationItem[] = [
     icon: Target,
   },
   {
-    name: 'Facturación',
-    href: '/dashboard/billing',
-    icon: Receipt,
-  },
-  {
     name: 'Suscripciones',
     href: '/dashboard/subscriptions',
     icon: Calendar,
+  },
+]
+
+// ✅ Lista de navegación de configuración
+const configNavigationItems: NavigationItem[] = [
+  {
+    name: 'Facturación',
+    href: '/dashboard/billing',
+    icon: Receipt,
   },
   {
     name: 'Configuración',
@@ -66,13 +69,56 @@ const navigationItems: NavigationItem[] = [
   },
 ]
 
+// ✅ Componente reutilizable para secciones de navegación
+function NavigationSection({
+  title,
+  items,
+  pathname,
+  onClose,
+}: {
+  title: string
+  items: NavigationItem[]
+  pathname: string
+  onClose?: () => void
+}) {
+  return (
+    <div className="space-y-2">
+      <h3 className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+        {title}
+      </h3>
+      <div className="space-y-1">
+        {items.map((item) => {
+          const isActive = pathname === item.href
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              onClick={onClose}
+              className={cn(
+                'flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
+                isActive
+                  ? 'bg-primary text-primary-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              )}
+            >
+              <item.icon className="h-5 w-5" />
+              <span>{item.name}</span>
+            </Link>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  useAuthGuard()
   const { user, logout } = useAuth()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const { theme, setTheme } = useTheme()
   const { toggleLightDark, isDark } = useThemeConfig()
   const pathname = usePathname()
@@ -103,8 +149,11 @@ export default function DashboardLayout({
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setSidebarOpen(false)} />
           <div className="fixed left-0 top-0 h-full w-64 bg-card border-r border-border shadow-lg">
             <SidebarContent
-              navigationItems={navigationItems}
+              mainNavigationItems={mainNavigationItems}
+              configNavigationItems={configNavigationItems}
               pathname={pathname}
+              user={user}
+              logout={logout}
               onClose={() => setSidebarOpen(false)}
             />
           </div>
@@ -115,8 +164,11 @@ export default function DashboardLayout({
       <div className="hidden lg:fixed lg:inset-y-0 lg:flex lg:w-64 lg:flex-col">
         <div className="flex flex-col flex-grow bg-card border border-border shadow-sm">
           <SidebarContent
-            navigationItems={navigationItems}
+            mainNavigationItems={mainNavigationItems}
+            configNavigationItems={configNavigationItems}
             pathname={pathname}
+            user={user}
+            logout={logout}
           />
         </div>
       </div>
@@ -183,12 +235,18 @@ export default function DashboardLayout({
 }
 
 function SidebarContent({
-  navigationItems,
+  mainNavigationItems,
+  configNavigationItems,
   pathname,
+  user,
+  logout,
   onClose,
 }: {
-  navigationItems: NavigationItem[]
+  mainNavigationItems: NavigationItem[]
+  configNavigationItems: NavigationItem[]
   pathname: string
+  user: any
+  logout: () => void
   onClose?: () => void
 }) {
   return (
@@ -210,40 +268,26 @@ function SidebarContent({
           </Button>
         )}
       </div>
-      <nav className="flex-1 px-4 py-6 space-y-2">
-        {navigationItems.map((item) => {
-          const isActive = pathname === item.href
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              onClick={onClose}
-              className={cn(
-                'flex items-center space-x-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-              )}
-            >
-              <item.icon className="h-5 w-5" />
-              <span>{item.name}</span>
-            </Link>
-          )
-        })}
+      <nav className="flex-1 px-4 py-6 flex flex-col">
+        <NavigationSection
+          title="Principal"
+          items={mainNavigationItems}
+          pathname={pathname}
+          onClose={onClose}
+        />
+        
+        {/* Espaciador para empujar configuraciones al final */}
+        <div className="flex-1"></div>
+        
+        <div className="border-t border-border mb-4"></div>
+        
+        <NavigationSection
+          title="Configuración"
+          items={configNavigationItems}
+          pathname={pathname}
+          onClose={onClose}
+        />
       </nav>
-      <div className="p-4 border-t">
-        <div className="flex items-center space-x-3 px-3 py-2">
-          <User className="h-5 w-5 text-muted-foreground" />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-foreground truncate">
-              Panel de Control
-            </p>
-            <p className="text-xs text-muted-foreground">
-              Gestiona tus finanzas
-            </p>
-          </div>
-        </div>
-      </div>
     </>
   )
 }

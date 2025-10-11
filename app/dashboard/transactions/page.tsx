@@ -246,11 +246,8 @@ export default function TransactionsDashboard() {
       </div>
 
       {/* Filtros */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Filtros</CardTitle>
-        </CardHeader>
-        <CardContent>
+ 
+
           <div className="flex flex-wrap gap-4">
             <div className="flex gap-2">
               <Button 
@@ -296,8 +293,6 @@ export default function TransactionsDashboard() {
               />
             </div>
           </div>
-        </CardContent>
-      </Card>
 
       {/* Métricas principales */}
       {analytics && (

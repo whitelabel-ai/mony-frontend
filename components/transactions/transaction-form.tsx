@@ -38,13 +38,15 @@ interface TransactionFormProps {
   onSuccess?: () => void
   onCancel?: () => void
   mode?: 'create' | 'edit' | 'view'
+  showCard?: boolean // Nueva prop para controlar si mostrar el Card wrapper
 }
 
 export function TransactionForm({ 
   transaction, 
   onSuccess, 
   onCancel, 
-  mode = 'create' 
+  mode = 'create',
+  showCard = true
 }: TransactionFormProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [categories, setCategories] = useState<Categoria[]>([])
@@ -153,15 +155,8 @@ export function TransactionForm({
     onCancel?.()
   }
 
-  return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>
-          {mode === 'edit' ? 'Editar Transacción' : 'Nueva Transacción'}
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+  const formContent = (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Tipo de transacción */}
           <div className="space-y-2">
             <Label htmlFor="tipo">Tipo de Transacción *</Label>
@@ -304,7 +299,22 @@ export function TransactionForm({
             </Button>
           </div>
         </form>
-      </CardContent>
-    </Card>
   )
+
+  if (showCard) {
+    return (
+      <Card className="w-full max-w-2xl mx-auto">
+        <CardHeader>
+          <CardTitle>
+            {mode === 'edit' ? 'Editar Transacción' : 'Nueva Transacción'}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {formContent}
+        </CardContent>
+      </Card>
+    )
+  }
+
+  return formContent
 }
