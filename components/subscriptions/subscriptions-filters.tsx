@@ -40,10 +40,12 @@ interface FilterOptions {
 }
 
 const frequencyOptions = [
-  { value: 'DIARIA', label: 'Diario' },
-  { value: 'SEMANAL', label: 'Semanal' },
-  { value: 'MENSUAL', label: 'Mensual' },
-  { value: 'ANUAL', label: 'Anual' }
+  { value: 'diario', label: 'Diario' },
+  { value: 'semanal', label: 'Semanal' },
+  { value: 'mensual', label: 'Mensual' },
+  { value: 'trimestral', label: 'Trimestral' },
+  { value: 'anual', label: 'Anual' },
+  { value: 'nunca', label: 'Nunca' }
 ]
 
 export function SubscriptionsFilters({

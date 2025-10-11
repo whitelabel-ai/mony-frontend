@@ -21,7 +21,7 @@ class UserSubscriptionsService {
    */
   async getSubscriptions(params?: {
     activa?: boolean
-    frecuencia?: 'DIARIA' | 'SEMANAL' | 'MENSUAL' | 'ANUAL'
+    frecuencia?: 'diario' | 'semanal' | 'mensual' | 'trimestral' | 'anual' | 'nunca'
     categoryId?: string
     moneda?: string
     fechaProximoPagoAntes?: string

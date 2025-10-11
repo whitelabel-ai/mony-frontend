@@ -39,17 +39,21 @@ interface SubscriptionCardProps {
 }
 
 const frequencyLabels = {
-  DIARIA: 'Diario',
-  SEMANAL: 'Semanal', 
-  MENSUAL: 'Mensual',
-  ANUAL: 'Anual'
+  diario: 'Diario',
+  semanal: 'Semanal', 
+  mensual: 'Mensual',
+  trimestral: 'Trimestral',
+  anual: 'Anual',
+  nunca: 'Nunca'
 }
 
 const frequencyColors = {
-  DIARIA: 'bg-red-100 text-red-800',
-  SEMANAL: 'bg-orange-100 text-orange-800',
-  MENSUAL: 'bg-blue-100 text-blue-800',
-  ANUAL: 'bg-green-100 text-green-800'
+  diario: 'bg-red-100 text-red-800',
+  semanal: 'bg-orange-100 text-orange-800',
+  mensual: 'bg-blue-100 text-blue-800',
+  trimestral: 'bg-purple-100 text-purple-800',
+  anual: 'bg-green-100 text-green-800',
+  nunca: 'bg-gray-100 text-gray-800'
 }
 
 export function SubscriptionCard({

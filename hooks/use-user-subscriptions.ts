@@ -21,11 +21,23 @@ interface UseUserSubscriptionsState {
 
 interface UseUserSubscriptionsFilters {
   activa?: boolean
-  frecuencia?: 'DIARIA' | 'SEMANAL' | 'MENSUAL' | 'ANUAL'
+  frecuencia?: 'diario' | 'semanal' | 'mensual' | 'trimestral' | 'anual' | 'nunca'
   categoryId?: string
   moneda?: string
   fechaProximoPagoAntes?: string
   fechaProximoPagoDespues?: string
+  page?: number
+  limit?: number
+  search?: string
+}
+
+interface PaginationState {
+  currentPage: number
+  totalPages: number
+  totalItems: number
+  itemsPerPage: number
+  hasNext: boolean
+  hasPrevious: boolean
 }
 
 export function useUserSubscriptions(initialFilters?: UseUserSubscriptionsFilters) {
@@ -35,6 +47,15 @@ export function useUserSubscriptions(initialFilters?: UseUserSubscriptionsFilter
     upcomingPayments: [],
     loading: true,
     error: null
+  })
+
+  const [pagination, setPagination] = useState<PaginationState>({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10,
+    hasNext: false,
+    hasPrevious: false
   })
 
   const [filters, setFilters] = useState<UseUserSubscriptionsFilters>(initialFilters || {})
@@ -259,6 +280,7 @@ export function useUserSubscriptions(initialFilters?: UseUserSubscriptionsFilter
     loading: state.loading,
     error: state.error,
     filters,
+    pagination,
 
     // Acciones CRUD
     createSubscription,

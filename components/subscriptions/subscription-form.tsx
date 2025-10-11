@@ -24,9 +24,8 @@ const subscriptionSchema = z.object({
   nombre: z.string().min(1, 'El nombre es requerido').max(100, 'Máximo 100 caracteres'),
   descripcion: z.string().optional(),
   monto: z.number().min(0, 'El monto debe ser mayor a 0'),
-  frecuencia: z.enum(['DIARIA', 'SEMANAL', 'MENSUAL', 'ANUAL']),
+  frecuencia: z.enum(['diario', 'semanal', 'mensual', 'trimestral', 'anual', 'nunca']),
   fechaInicio: z.date(),
-  fechaProximoPago: z.date().optional(),
   activa: z.boolean().default(true),
   sitioWeb: z.string().url('URL inválida').optional().or(z.literal('')),
   notas: z.string().optional(),
@@ -44,10 +43,12 @@ interface SubscriptionFormProps {
 }
 
 const frequencyOptions = [
-  { value: 'DIARIA', label: 'Diario' },
-  { value: 'SEMANAL', label: 'Semanal' },
-  { value: 'MENSUAL', label: 'Mensual' },
-  { value: 'ANUAL', label: 'Anual' }
+  { value: 'diario', label: 'Diario' },
+  { value: 'semanal', label: 'Semanal' },
+  { value: 'mensual', label: 'Mensual' },
+  { value: 'trimestral', label: 'Trimestral' },
+  { value: 'anual', label: 'Anual' },
+  { value: 'nunca', label: 'Nunca' }
 ]
 
 export function SubscriptionForm({
@@ -74,7 +75,7 @@ export function SubscriptionForm({
       nombre: '',
       descripcion: '',
       monto: 0,
-      frecuencia: 'MENSUAL',
+      frecuencia: 'mensual',
       fechaInicio: new Date(),
       activa: true,
       sitioWeb: '',
@@ -94,7 +95,6 @@ export function SubscriptionForm({
         monto: subscription.monto,
         frecuencia: subscription.frecuencia,
         fechaInicio: new Date(subscription.fechaInicio),
-        fechaProximoPago: subscription.fechaProximoPago ? new Date(subscription.fechaProximoPago) : undefined,
         activa: subscription.activa,
         sitioWeb: subscription.sitioWeb || '',
         notas: subscription.notas || '',
@@ -107,12 +107,12 @@ export function SubscriptionForm({
     setIsSubmitting(true)
     try {
       const submitData = {
-        ...data,
-        fechaInicio: data.fechaInicio.toISOString(),
-        fechaProximoPago: data.fechaProximoPago?.toISOString() || undefined,
-        sitioWeb: data.sitioWeb || undefined,
+        nombre: data.nombre,
         descripcion: data.descripcion || undefined,
-        notas: data.notas || undefined,
+        monto: data.monto,
+        frecuencia: data.frecuencia,
+        fechaInicio: data.fechaInicio.toISOString(),
+        activa: data.activa,
         categoryId: data.categoryId || undefined
       }
 
@@ -189,26 +189,17 @@ export function SubscriptionForm({
         </div>
 
         {/* Fechas */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label>Fecha de inicio *</Label>
-            <DatePicker
-              date={watchedValues.fechaInicio}
-              onDateChange={(date) => setValue('fechaInicio', date || new Date())}
-              placeholder="Seleccionar fecha de inicio"
-              variant="default"
-            />
-          </div>
-
-          <div>
-            <Label>Próximo pago</Label>
-            <DatePicker
-              date={watchedValues.fechaProximoPago}
-              onDateChange={(date) => setValue('fechaProximoPago', date)}
-              placeholder="Seleccionar fecha de próximo pago (opcional)"
-              variant="default"
-            />
-          </div>
+        <div>
+          <Label>Fecha de inicio *</Label>
+          <DatePicker
+            date={watchedValues.fechaInicio}
+            onDateChange={(date) => setValue('fechaInicio', date || new Date())}
+            placeholder="Seleccionar fecha de inicio"
+            variant="default"
+          />
+          <p className="text-sm text-gray-500 mt-1">
+            El próximo pago se calculará automáticamente basado en la frecuencia seleccionada
+          </p>
         </div>
 
         {/* Categoría */}

@@ -189,8 +189,8 @@ export interface Suscripcion {
   nombre: string
   descripcion?: string
   monto: number
-  frecuencia: 'DIARIA' | 'SEMANAL' | 'MENSUAL' | 'ANUAL'
-  proximoPago: string
+  frecuencia: 'diario' | 'semanal' | 'mensual' | 'trimestral' | 'anual' | 'nunca'
+  fechaProximoPago: string
   activa: boolean
   categoriaId: string
   categoria: Categoria
@@ -567,7 +567,7 @@ export interface UserSubscription {
   descripcion?: string
   monto: number
   moneda: string
-  frecuencia: 'DIARIA' | 'SEMANAL' | 'MENSUAL' | 'ANUAL'
+  frecuencia: 'diario' | 'semanal' | 'mensual' | 'trimestral' | 'anual' | 'nunca'
   fechaInicio: string
   fechaProximoPago: string
   activa: boolean
@@ -588,28 +588,26 @@ export interface CreateUserSubscriptionDto {
   nombre: string
   descripcion?: string
   monto: number
-  moneda?: string
-  frecuencia: 'DIARIA' | 'SEMANAL' | 'MENSUAL' | 'ANUAL'
+  frecuencia: 'diario' | 'semanal' | 'mensual' | 'trimestral' | 'anual' | 'nunca'
   fechaInicio: string
-  fechaProximoPago: string
+  fechaProximoPago?: string
   activa?: boolean
   sitioWeb?: string
   notas?: string
-  categoryId?: string
+  categoriaId: string
 }
 
 export interface UpdateUserSubscriptionDto {
   nombre?: string
   descripcion?: string
   monto?: number
-  moneda?: string
-  frecuencia?: 'DIARIA' | 'SEMANAL' | 'MENSUAL' | 'ANUAL'
+  frecuencia?: 'diario' | 'semanal' | 'mensual' | 'trimestral' | 'anual' | 'nunca'
   fechaInicio?: string
   fechaProximoPago?: string
   activa?: boolean
   sitioWeb?: string
   notas?: string
-  categoryId?: string
+  categoriaId?: string
 }
 
 export interface UserSubscriptionsResponse {
