@@ -139,16 +139,17 @@ export default function SubscriptionsPage() {
         </div>
         
         <div className="flex gap-2">
-          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog} modal={false}>
             <DialogTrigger asChild>
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
                 Nueva Suscripción
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-w-2xl max-h-[90dvh] overflow-y-auto" onInteractOutside={(e) => e.preventDefault()}>
               <DialogHeader>
                 <DialogTitle>Crear Nueva Suscripción</DialogTitle>
+
               </DialogHeader>
               <SubscriptionForm
                 onSubmit={handleCreateSubscription as (data: CreateUserSubscriptionDto | UpdateUserSubscriptionDto) => Promise<void>}
@@ -205,10 +206,11 @@ export default function SubscriptionsPage() {
       </div>
 
       {/* Dialog para editar */}
-      <Dialog open={!!editingSubscription} onOpenChange={() => setEditingSubscription(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <Dialog open={!!editingSubscription} onOpenChange={(open) => { if (!open) setEditingSubscription(null) }} modal={false}>
+        <DialogContent className="max-w-2xl max-h-[90dvh] overflow-y-auto" onInteractOutside={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>Editar Suscripción</DialogTitle>
+
           </DialogHeader>
           {editingSubscription && (
             <SubscriptionForm

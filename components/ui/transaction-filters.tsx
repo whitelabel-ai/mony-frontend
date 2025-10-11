@@ -140,7 +140,7 @@ export function TransactionFilters({
         </Select>
 
         {/* Advanced Filters Sheet */}
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <Sheet open={isOpen} onOpenChange={setIsOpen} modal={false}>
           <SheetTrigger asChild>
             <Button variant="outline" className="relative">
               <Filter className="h-4 w-4 mr-2" />
