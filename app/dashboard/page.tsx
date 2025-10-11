@@ -82,7 +82,7 @@ export default function DashboardPage() {
       {/* Header */}
       <div className="flex flex-col space-y-2">
         <h1 className="text-3xl font-bold text-foreground">
-          {greeting}, {user.nombreCompleto.split(' ')[0]}
+          Dashboard
         </h1>
         <p className="text-muted-foreground">
           Aquí tienes un resumen de tus finanzas personales
