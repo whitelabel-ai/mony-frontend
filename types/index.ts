@@ -383,7 +383,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       'Sin gestión de suscripciones',
       'Sin acceso al Mony Coach (IA)',
       'Sin reportes avanzados',
-      'Sin exportación PDF/Excel',
+      'Sin exportación PDF',
       'Incluye mensajes promocionales ocasionales'
     ],
     registrosMensuales: 20,
@@ -415,7 +415,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     ],
     limitaciones: [
       'Solo un perfil financiero',
-      'Sin exportación avanzada PDF/Excel',
+      'Sin exportación avanzada PDF',
       'Sin múltiples perfiles financieros',
       'Sin soporte prioritario'
     ],
@@ -437,7 +437,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
     caracteristicas: [
       '✅ Incluye todas las características del Plan Premium',
       '📁 Gestión de múltiples perfiles (hasta 3) - Separa finanzas personales, emprendimiento y proyectos',
-      '📤 Exportación avanzada de reportes en PDF y Excel',
+      '📤 Exportación avanzada de reportes en PDF',
       '🔍 Filtros y búsqueda avanzada en el Dashboard',
       '✉️ Envío directo de reportes a tu contador (próximamente)',
       '⭐ Soporte Prioritario por WhatsApp'

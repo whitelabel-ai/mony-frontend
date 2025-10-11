@@ -146,7 +146,7 @@ export class TransactionsApiService {
   }
 
   /**
-   * Generar reporte PDF
+   * Genera un reporte PDF de las transacciones
    */
   async generatePdfReport(filters?: {
     fechaInicio?: string
@@ -157,9 +157,11 @@ export class TransactionsApiService {
     incluirDetalles?: boolean
     agrupacion?: 'dia' | 'semana' | 'mes'
     titulo?: string
-    formato?: 'pdf' | 'excel'
   }): Promise<Blob> {
     const params = new URLSearchParams()
+    
+    // Siempre establecer formato como PDF
+    params.append('formato', 'pdf')
     
     if (filters) {
       Object.entries(filters).forEach(([key, value]) => {

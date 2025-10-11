@@ -158,27 +158,25 @@ export default function TransactionsDashboard() {
     setFilters(prev => ({ ...prev, fechaInicio, fechaFin }))
   }
 
-  const handleDownloadReport = async (formato: 'pdf' | 'excel') => {
+  const handleDownloadReport = async () => {
     try {
       const blob = await transactionsApi.generatePdfReport({
         fechaInicio: filters.fechaInicio,
         fechaFin: filters.fechaFin,
         incluirGraficos: true,
-        incluirDetalles: true,
-        formato: formato
+        incluirDetalles: true
       })
       
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      const extension = formato === 'pdf' ? 'pdf' : 'xlsx'
-      a.download = `reporte-transacciones-${format(new Date(), 'yyyy-MM-dd')}.${extension}`
+      a.download = `reporte-transacciones-${format(new Date(), 'yyyy-MM-dd')}.pdf`
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
       
-      toast.success(`Reporte ${formato.toUpperCase()} descargado exitosamente`)
+      toast.success('Reporte PDF descargado exitosamente')
     } catch (error) {
       console.error('Error al descargar reporte:', error)
       toast.error('Error al generar el reporte')
@@ -213,25 +211,10 @@ export default function TransactionsDashboard() {
           </p>
         </div>
         <div className="flex gap-2">
-           <DropdownMenu>
-             <DropdownMenuTrigger asChild>
-               <Button variant="outline">
-                 <Download className="h-4 w-4 mr-2" />
-                 Descargar Reporte
-                 <ChevronDown className="h-4 w-4 ml-2" />
-               </Button>
-             </DropdownMenuTrigger>
-             <DropdownMenuContent align="end">
-               <DropdownMenuItem onClick={() => handleDownloadReport('pdf')}>
-                 <Download className="h-4 w-4 mr-2" />
-                 Reporte PDF
-               </DropdownMenuItem>
-               <DropdownMenuItem onClick={() => handleDownloadReport('excel')}>
-                 <Download className="h-4 w-4 mr-2" />
-                 Reporte Excel
-               </DropdownMenuItem>
-             </DropdownMenuContent>
-           </DropdownMenu>
+           <Button variant="outline" onClick={handleDownloadReport}>
+             <Download className="h-4 w-4 mr-2" />
+             Descargar Reporte
+           </Button>
            <Link href="/dashboard/transactions/list">
              <Button variant="outline">
                <CreditCard className="h-4 w-4 mr-2" />
