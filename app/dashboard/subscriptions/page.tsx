@@ -19,26 +19,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Plus, RefreshCw } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { toast } from 'react-hot-toast'
 import { useUserSubscriptions } from '@/hooks/use-user-subscriptions'
 import {
   SubscriptionCard,
   SubscriptionForm,
   SubscriptionsSummary,
-  SubscriptionsFilters,
   UpcomingPayments
 } from '@/components/subscriptions'
 import { UserSubscription, CreateUserSubscriptionDto, UpdateUserSubscriptionDto } from '@/types'
-import { 
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-  PaginationEllipsis
-} from '@/components/ui/pagination'
 
 export default function SubscriptionsPage() {
   const [showCreateDialog, setShowCreateDialog] = useState(false)
@@ -51,17 +41,12 @@ export default function SubscriptionsPage() {
     upcomingPayments,
     loading,
     error,
-    pagination,
     createSubscription,
     updateSubscription,
     deleteSubscription,
     toggleSubscription,
     markAsPaid,
-    duplicateSubscription,
-    updateFilters,
-    changePage,
-    search,
-    refresh
+    duplicateSubscription
   } = useUserSubscriptions()
 
   const handleCreateSubscription = async (data: CreateUserSubscriptionDto) => {
@@ -84,6 +69,33 @@ export default function SubscriptionsPage() {
     }
   }
 
+  const handleToggleSubscription = async (id: string, activa: boolean) => {
+    try {
+      await toggleSubscription(id, activa)
+    } catch (error) {
+      // Error ya manejado en el hook
+    }
+  }
+
+  const handleMarkAsPaid = async (subscriptionId: string) => {
+    try {
+      await markAsPaid(subscriptionId, new Date())
+    } catch (error) {
+      // Error ya manejado en el hook
+    }
+  }
+
+  const handleDuplicateSubscription = async (subscriptionId: string) => {
+    try {
+      const subscription = subscriptions.find(s => s.id === subscriptionId)
+      if (subscription) {
+        await duplicateSubscription(subscription)
+      }
+    } catch (error) {
+      // Error ya manejado en el hook
+    }
+  }
+
   const handleDeleteSubscription = async () => {
     if (!deletingSubscription) return
     
@@ -95,64 +107,38 @@ export default function SubscriptionsPage() {
     }
   }
 
-  const handleToggleSubscription = async (id: string, activa: boolean) => {
-    try {
-      await toggleSubscription(id, activa)
-    } catch (error) {
-      // Error ya manejado en el hook
-    }
-  }
-
-  const handleMarkAsPaid = async (id: string) => {
-    try {
-      await markAsPaid(id)
-    } catch (error) {
-      // Error ya manejado en el hook
-    }
-  }
-
-  const handleDuplicateSubscription = async (id: string) => {
-    try {
-      await duplicateSubscription(id)
-    } catch (error) {
-      // Error ya manejado en el hook
-    }
-  }
-
-  // Funciones wrapper para el SubscriptionCard
-  const handleEditClick = (subscription: UserSubscription) => {
-    setEditingSubscription(subscription)
-  }
-
-  const handleDeleteClick = (id: string) => {
-    const subscription = subscriptions.find(s => s.id === id)
+  const handleDeleteClick = (subscriptionId: string) => {
+    const subscription = subscriptions.find(s => s.id === subscriptionId)
     if (subscription) {
       setDeletingSubscription(subscription)
     }
   }
 
+  if (error) {
+    return (
+      <div className="container mx-auto p-6">
+        <div className="text-center py-8">
+          <p className="text-red-600 mb-4">Error al cargar las suscripciones: {error}</p>
+          <Button onClick={() => window.location.reload()}>
+            Intentar de nuevo
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Gestión de Suscripciones</h1>
+          <h1 className="text-3xl font-bold tracking-tight">Suscripciones</h1>
           <p className="text-muted-foreground">
-            Controla todos tus servicios recurrentes. Nunca más olvides una suscripción y optimiza tus gastos mensuales.
+            Gestiona tus suscripciones y pagos recurrentes
           </p>
         </div>
         
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={refresh}
-            disabled={loading}
-          >
-            <RefreshCw className={`mr-2 h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            Actualizar
-          </Button>
-          
+        <div className="flex gap-2">
           <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
             <DialogTrigger asChild>
               <Button>
@@ -186,98 +172,35 @@ export default function SubscriptionsPage() {
         />
       )}
 
-      {/* Filtros */}
-      <SubscriptionsFilters
-        onSearch={search}
-        onFilterChange={updateFilters}
-        onClearFilters={() => updateFilters({})}
-        loading={loading}
-      />
-
       {/* Lista de suscripciones */}
       <div className="space-y-4">
         {loading && subscriptions.length === 0 ? (
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
+            {[...Array(6)].map((_, i) => (
               <div key={i} className="h-48 bg-muted animate-pulse rounded-lg" />
             ))}
           </div>
         ) : subscriptions.length === 0 ? (
           <div className="text-center py-12">
-            <div className="mx-auto w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-4">
-              <Plus className="h-8 w-8 text-muted-foreground" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">No hay suscripciones</h3>
-            <p className="text-muted-foreground mb-4">
-              Comienza agregando tu primera suscripción para llevar control de tus gastos recurrentes.
-            </p>
+            <p className="text-muted-foreground mb-4">No tienes suscripciones registradas</p>
             <Button onClick={() => setShowCreateDialog(true)}>
               <Plus className="mr-2 h-4 w-4" />
-              Crear Primera Suscripción
+              Crear tu primera suscripción
             </Button>
           </div>
         ) : (
-          <>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {subscriptions.map((subscription) => (
-                <SubscriptionCard
-                  key={subscription.id}
-                  subscription={subscription}
-                  onEdit={handleEditClick}
-                  onDelete={handleDeleteClick}
-                  onToggle={handleToggleSubscription}
-                  onDuplicate={handleDuplicateSubscription}
-                  onMarkAsPaid={handleMarkAsPaid}
-                />
-              ))}
-            </div>
-
-            {/* Paginación */}
-            {pagination.totalPages > 1 && (
-              <div className="flex justify-center">
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious 
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          if (pagination.page > 1) changePage(pagination.page - 1)
-                        }}
-                        className={pagination.page <= 1 ? 'pointer-events-none opacity-50' : ''}
-                      />
-                    </PaginationItem>
-                    
-                    {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
-                      <PaginationItem key={page}>
-                        <PaginationLink
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault()
-                            changePage(page)
-                          }}
-                          isActive={page === pagination.page}
-                        >
-                          {page}
-                        </PaginationLink>
-                      </PaginationItem>
-                    ))}
-                    
-                    <PaginationItem>
-                      <PaginationNext 
-                        href="#"
-                        onClick={(e) => {
-                          e.preventDefault()
-                          if (pagination.page < pagination.totalPages) changePage(pagination.page + 1)
-                        }}
-                        className={pagination.page >= pagination.totalPages ? 'pointer-events-none opacity-50' : ''}
-                      />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
-              </div>
-            )}
-          </>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {subscriptions.map((subscription) => (
+              <SubscriptionCard
+                key={subscription.id}
+                subscription={subscription}
+                onEdit={setEditingSubscription}
+                onDelete={handleDeleteClick}
+                onToggle={handleToggleSubscription}
+                onDuplicate={handleDuplicateSubscription}
+              />
+            ))}
+          </div>
         )}
       </div>
 

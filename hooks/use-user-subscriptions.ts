@@ -19,28 +19,7 @@ interface UseUserSubscriptionsState {
   error: string | null
 }
 
-interface UseUserSubscriptionsFilters {
-  activa?: boolean
-  frecuencia?: 'diario' | 'semanal' | 'mensual' | 'trimestral' | 'anual' | 'nunca'
-  categoryId?: string
-  moneda?: string
-  fechaProximoPagoAntes?: string
-  fechaProximoPagoDespues?: string
-  page?: number
-  limit?: number
-  search?: string
-}
-
-interface PaginationState {
-  currentPage: number
-  totalPages: number
-  totalItems: number
-  itemsPerPage: number
-  hasNext: boolean
-  hasPrevious: boolean
-}
-
-export function useUserSubscriptions(initialFilters?: UseUserSubscriptionsFilters) {
+export function useUserSubscriptions() {
   const [state, setState] = useState<UseUserSubscriptionsState>({
     subscriptions: [],
     summary: null,
@@ -49,228 +28,165 @@ export function useUserSubscriptions(initialFilters?: UseUserSubscriptionsFilter
     error: null
   })
 
-  const [pagination, setPagination] = useState<PaginationState>({
-    currentPage: 1,
-    totalPages: 1,
-    totalItems: 0,
-    itemsPerPage: 10,
-    hasNext: false,
-    hasPrevious: false
-  })
-
-  const [filters, setFilters] = useState<UseUserSubscriptionsFilters>(initialFilters || {})
-
-  /**
-   * Cargar suscripciones con filtros actuales
-   */
-  const loadSubscriptions = useCallback(async (newFilters?: UseUserSubscriptionsFilters) => {
+  // Cargar todas las suscripciones sin filtros
+  const loadSubscriptions = useCallback(async () => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }))
       
-      const currentFilters = newFilters || filters
-      const response = await userSubscriptionsService.getSubscriptions(currentFilters)
+      const response = await userSubscriptionsService.getSubscriptions()
       
       setState(prev => ({
         ...prev,
-        subscriptions: response.subscriptions,
-        summary: response.summary,
+        subscriptions: response.subscriptions || [],
+        summary: response.summary || null,
         loading: false
       }))
-    } catch (error: any) {
+    } catch (error) {
+      console.error('Error loading subscriptions:', error)
       setState(prev => ({
         ...prev,
-        loading: false,
-        error: error.message
+        error: error instanceof Error ? error.message : 'Error desconocido',
+        loading: false
       }))
-      toast.error(error.message)
-    }
-  }, [filters])
-
-
-
-  /**
-   * Cargar próximos pagos
-   */
-  const loadUpcomingPayments = useCallback(async (days: number = 7) => {
-    try {
-      const upcomingPayments = await userSubscriptionsService.getUpcomingPayments(days)
-      setState(prev => ({ ...prev, upcomingPayments }))
-    } catch (error: any) {
-      console.error('Error loading upcoming payments:', error.message)
     }
   }, [])
 
-  /**
-   * Crear nueva suscripción
-   */
-  const createSubscription = async (data: CreateUserSubscriptionDto): Promise<UserSubscription> => {
+  // Cargar próximos pagos
+  const loadUpcomingPayments = useCallback(async () => {
     try {
-      const newSubscription = await userSubscriptionsService.createSubscription(data)
+      const upcomingPayments = await userSubscriptionsService.getUpcomingPayments()
+      setState(prev => ({
+        ...prev,
+        upcomingPayments: upcomingPayments || []
+      }))
+    } catch (error) {
+      console.error('Error loading upcoming payments:', error)
+    }
+  }, [])
+
+  // Crear suscripción
+  const createSubscription = useCallback(async (data: CreateUserSubscriptionDto) => {
+    try {
+      setState(prev => ({ ...prev, loading: true }))
+      
+      await userSubscriptionsService.createSubscription(data)
+      
+      // Recargar datos después de crear
+      await Promise.all([loadSubscriptions(), loadUpcomingPayments()])
+      
       toast.success('Suscripción creada exitosamente')
-      
-      // Recargar datos
-      await Promise.all([
-        loadSubscriptions(),
-        loadUpcomingPayments()
-      ])
-      
-      return newSubscription
-    } catch (error: any) {
-      toast.error(error.message)
+    } catch (error) {
+      console.error('Error creating subscription:', error)
+      const message = error instanceof Error ? error.message : 'Error al crear la suscripción'
+      toast.error(message)
+      setState(prev => ({ ...prev, loading: false }))
       throw error
     }
-  }
+  }, [loadSubscriptions, loadUpcomingPayments])
 
-  /**
-   * Actualizar suscripción existente
-   */
-  const updateSubscription = async (id: string, data: UpdateUserSubscriptionDto): Promise<UserSubscription> => {
+  // Actualizar suscripción
+  const updateSubscription = useCallback(async (id: string, data: UpdateUserSubscriptionDto) => {
     try {
-      const updatedSubscription = await userSubscriptionsService.updateSubscription(id, data)
+      setState(prev => ({ ...prev, loading: true }))
+      
+      await userSubscriptionsService.updateSubscription(id, data)
+      
+      // Recargar datos después de actualizar
+      await Promise.all([loadSubscriptions(), loadUpcomingPayments()])
+      
       toast.success('Suscripción actualizada exitosamente')
-      
-      // Recargar datos
-      await Promise.all([
-        loadSubscriptions(),
-        loadUpcomingPayments()
-      ])
-      
-      return updatedSubscription
-    } catch (error: any) {
-      toast.error(error.message)
+    } catch (error) {
+      console.error('Error updating subscription:', error)
+      const message = error instanceof Error ? error.message : 'Error al actualizar la suscripción'
+      toast.error(message)
+      setState(prev => ({ ...prev, loading: false }))
       throw error
     }
-  }
+  }, [loadSubscriptions, loadUpcomingPayments])
 
-  /**
-   * Eliminar suscripción
-   */
-  const deleteSubscription = async (id: string): Promise<void> => {
+  // Eliminar suscripción
+  const deleteSubscription = useCallback(async (id: string) => {
     try {
-      await userSubscriptionsService.deleteSubscription(id)
-      toast.success('Suscripción eliminada exitosamente')
+      setState(prev => ({ ...prev, loading: true }))
       
-      // Recargar datos
-      await Promise.all([
-        loadSubscriptions(),
-        loadUpcomingPayments()
-      ])
-    } catch (error: any) {
-      toast.error(error.message)
+      await userSubscriptionsService.deleteSubscription(id)
+      
+      // Recargar datos después de eliminar
+      await Promise.all([loadSubscriptions(), loadUpcomingPayments()])
+      
+      toast.success('Suscripción eliminada exitosamente')
+    } catch (error) {
+      console.error('Error deleting subscription:', error)
+      const message = error instanceof Error ? error.message : 'Error al eliminar la suscripción'
+      toast.error(message)
+      setState(prev => ({ ...prev, loading: false }))
       throw error
     }
-  }
+  }, [loadSubscriptions, loadUpcomingPayments])
 
-  /**
-   * Activar/Desactivar suscripción
-   */
-  const toggleSubscription = async (id: string, activa: boolean): Promise<void> => {
+  // Activar/desactivar suscripción
+  const toggleSubscription = useCallback(async (id: string, activa: boolean) => {
     try {
       await userSubscriptionsService.toggleSubscription(id, activa)
+      
+      // Recargar datos después del toggle
+      await Promise.all([loadSubscriptions(), loadUpcomingPayments()])
+      
       toast.success(`Suscripción ${activa ? 'activada' : 'desactivada'} exitosamente`)
-      
-      // Recargar datos
-      await Promise.all([
-        loadSubscriptions(),
-        loadUpcomingPayments()
-      ])
-    } catch (error: any) {
-      toast.error(error.message)
+    } catch (error) {
+      console.error('Error toggling subscription:', error)
+      const message = error instanceof Error ? error.message : 'Error al cambiar el estado de la suscripción'
+      toast.error(message)
       throw error
     }
-  }
+  }, [loadSubscriptions, loadUpcomingPayments])
 
-  /**
-   * Marcar suscripción como pagada
-   */
-  const markAsPaid = async (id: string): Promise<void> => {
+  // Marcar como pagado
+  const markAsPaid = useCallback(async (subscriptionId: string, paymentDate: Date) => {
     try {
-      await userSubscriptionsService.markAsPaid(id)
-      toast.success('Suscripción marcada como pagada')
+      await userSubscriptionsService.markAsPaid(subscriptionId)
       
-      // Recargar datos
-      await Promise.all([
-        loadSubscriptions(),
-        loadUpcomingPayments()
-      ])
-    } catch (error: any) {
-      toast.error(error.message)
+      // Recargar datos después de marcar como pagado
+      await Promise.all([loadSubscriptions(), loadUpcomingPayments()])
+      
+      toast.success('Pago registrado exitosamente')
+    } catch (error) {
+      console.error('Error marking as paid:', error)
+      const message = error instanceof Error ? error.message : 'Error al registrar el pago'
+      toast.error(message)
       throw error
     }
-  }
+  }, [loadSubscriptions, loadUpcomingPayments])
 
-  /**
-   * Duplicar suscripción
-   */
-  const duplicateSubscription = async (id: string, newName?: string): Promise<void> => {
+  // Duplicar suscripción
+  const duplicateSubscription = useCallback(async (subscription: UserSubscription) => {
     try {
-      await userSubscriptionsService.duplicateSubscription(id, newName)
+      setState(prev => ({ ...prev, loading: true }))
+      
+      const newName = `${subscription.nombre} (Copia)`
+      await userSubscriptionsService.duplicateSubscription(subscription.id, newName)
+      
+      // Recargar datos después de duplicar
+      await Promise.all([loadSubscriptions(), loadUpcomingPayments()])
+      
       toast.success('Suscripción duplicada exitosamente')
-      
-      // Recargar datos
-      await loadSubscriptions()
-    } catch (error: any) {
-      toast.error(error.message)
+    } catch (error) {
+      console.error('Error duplicating subscription:', error)
+      const message = error instanceof Error ? error.message : 'Error al duplicar la suscripción'
+      toast.error(message)
+      setState(prev => ({ ...prev, loading: false }))
       throw error
     }
-  }
-
-  /**
-   * Actualizar filtros y recargar
-   */
-  const updateFilters = (newFilters: Partial<UseUserSubscriptionsFilters>) => {
-    const updatedFilters = { ...filters, ...newFilters }
-    setFilters(updatedFilters)
-    loadSubscriptions(updatedFilters)
-  }
-
-  /**
-   * Cambiar página
-   */
-  const changePage = (page: number) => {
-    updateFilters({ page })
-  }
-
-  /**
-   * Cambiar límite por página
-   */
-  const changeLimit = (limit: number) => {
-    updateFilters({ limit, page: 1 })
-  }
-
-  /**
-   * Buscar suscripciones
-   */
-  const search = (searchTerm: string) => {
-    updateFilters({ search: searchTerm, page: 1 })
-  }
-
-  /**
-   * Limpiar filtros
-   */
-  const clearFilters = () => {
-    const defaultFilters = { page: 1, limit: 10 }
-    setFilters(defaultFilters)
-    loadSubscriptions(defaultFilters)
-  }
-
-  /**
-   * Refrescar todos los datos
-   */
-  const refresh = async () => {
-    await Promise.all([
-      loadSubscriptions(),
-      loadUpcomingPayments()
-    ])
-  }
+  }, [loadSubscriptions, loadUpcomingPayments])
 
   // Cargar datos iniciales
   useEffect(() => {
-    Promise.all([
-      loadSubscriptions(),
-      loadUpcomingPayments()
-    ])
-  }, [])
+    const loadInitialData = async () => {
+      await Promise.all([loadSubscriptions(), loadUpcomingPayments()])
+    }
+    
+    loadInitialData()
+  }, [loadSubscriptions, loadUpcomingPayments])
 
   return {
     // Estado
@@ -279,27 +195,13 @@ export function useUserSubscriptions(initialFilters?: UseUserSubscriptionsFilter
     upcomingPayments: state.upcomingPayments,
     loading: state.loading,
     error: state.error,
-    filters,
-    pagination,
-
-    // Acciones CRUD
+    
+    // Acciones
     createSubscription,
     updateSubscription,
     deleteSubscription,
     toggleSubscription,
     markAsPaid,
-    duplicateSubscription,
-
-    // Navegación y filtros
-    updateFilters,
-    changePage,
-    changeLimit,
-    search,
-    clearFilters,
-
-    // Utilidades
-    refresh,
-    loadSubscriptions,
-    loadUpcomingPayments
+    duplicateSubscription
   }
 }

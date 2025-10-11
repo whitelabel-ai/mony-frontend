@@ -74,7 +74,7 @@ class UserSubscriptionsService {
    */
   async updateSubscription(id: string, data: UpdateUserSubscriptionDto): Promise<UserSubscription> {
     try {
-      const response = await apiService.put<UserSubscription>(`${this.baseUrl}/${id}`, data)
+      const response = await apiService.patch<UserSubscription>(`${this.baseUrl}/${id}`, data)
       return response
     } catch (error: any) {
       throw new Error(error.response?.data?.message || 'Error al actualizar la suscripción')

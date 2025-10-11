@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { 
@@ -35,7 +35,7 @@ interface SubscriptionsFiltersProps {
 
 interface FilterOptions {
   activa?: boolean
-  frecuencia?: 'DIARIA' | 'SEMANAL' | 'MENSUAL' | 'ANUAL'
+  frecuencia?: 'diario' | 'semanal' | 'mensual' | 'trimestral' | 'anual' | 'nunca'
   categoryId?: string
 }
 
@@ -59,9 +59,21 @@ export function SubscriptionsFilters({
   const [filters, setFilters] = useState<FilterOptions>({})
   const [showFilters, setShowFilters] = useState(false)
 
+  // Debounce search to prevent interference with typing
+  const debouncedSearch = useCallback((term: string) => {
+    onSearch(term)
+  }, [onSearch])
+
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      debouncedSearch(searchTerm)
+    }, 300)
+
+    return () => clearTimeout(timeoutId)
+  }, [searchTerm, debouncedSearch])
+
   const handleSearchChange = (value: string) => {
     setSearchTerm(value)
-    onSearch(value)
   }
 
   const handleFilterChange = (key: keyof FilterOptions, value: any) => {
@@ -142,16 +154,16 @@ export function SubscriptionsFilters({
               <div className="space-y-2">
                 <Label>Estado</Label>
                 <Select
-                  value={filters.activa?.toString() || ''}
+                  value={filters.activa?.toString() || 'all'}
                   onValueChange={(value) => 
-                    handleFilterChange('activa', value === '' ? undefined : value === 'true')
+                    handleFilterChange('activa', value === 'all' ? undefined : value === 'true')
                   }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Todos los estados" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todos los estados</SelectItem>
+                    <SelectItem value="all">Todos los estados</SelectItem>
                     <SelectItem value="true">Solo activas</SelectItem>
                     <SelectItem value="false">Solo pausadas</SelectItem>
                   </SelectContent>
@@ -162,16 +174,16 @@ export function SubscriptionsFilters({
               <div className="space-y-2">
                 <Label>Frecuencia</Label>
                 <Select
-                  value={filters.frecuencia || ''}
+                  value={filters.frecuencia || 'all'}
                   onValueChange={(value) => 
-                    handleFilterChange('frecuencia', value === '' ? undefined : value)
+                    handleFilterChange('frecuencia', value === 'all' ? undefined : value)
                   }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Todas las frecuencias" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas las frecuencias</SelectItem>
+                    <SelectItem value="all">Todas las frecuencias</SelectItem>
                     {frequencyOptions.map((option) => (
                       <SelectItem key={option.value} value={option.value}>
                         {option.label}
@@ -186,16 +198,16 @@ export function SubscriptionsFilters({
                 <div className="space-y-2">
                   <Label>Categoría</Label>
                   <Select
-                    value={filters.categoryId || ''}
+                    value={filters.categoryId || 'all'}
                     onValueChange={(value) => 
-                      handleFilterChange('categoryId', value === '' ? undefined : value)
+                      handleFilterChange('categoryId', value === 'all' ? undefined : value)
                     }
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Todas las categorías" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">Todas las categorías</SelectItem>
+                      <SelectItem value="all">Todas las categorías</SelectItem>
                       {categories.map((category) => (
                         <SelectItem key={category.id} value={category.id}>
                           {category.nombre}
