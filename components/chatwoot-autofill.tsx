@@ -157,8 +157,8 @@ export default function ChatwootAutofill() {
     const estadoSuscripcion = profile?.estadoSuscripcion
     const fechaRegistro = profile?.fechaRegistro
 
-    if (!id || !name || !whatsapp) return
-    if (!isValidWhatsApp(whatsapp)) return
+    // Nota: no salimos temprano. Aun si falta WhatsApp o el perfil llega tarde,
+    // dejamos listo el manejo de eventos para identificar en cuanto sea posible.
 
     // Si el número cambió respecto al que tengamos guardado (aún vencido), borrar nuestro cache
     if (cachedAny && normalizeWhatsapp(cachedAny.whatsapp) !== whatsapp) {
@@ -178,6 +178,11 @@ export default function ChatwootAutofill() {
           shouldResetRef.current = false
         }
 
+        // Validar datos mínimos para identificar: id, WhatsApp válido y al menos nombre o email
+        const validWhatsapp = !!whatsapp && isValidWhatsApp(whatsapp)
+        const canIdentify = !!id && validWhatsapp && (!!name || !!email)
+        if (!canIdentify) return false
+
         // Construir atributos personalizados a enviar
         const customAttrs = filterUndefined({
           moneda,
@@ -186,7 +191,7 @@ export default function ChatwootAutofill() {
         })
 
         // setUser: id único y datos estándar + atributos personalizados
-        cw.setUser(id, {
+        const userPayload = filterUndefined({
           name,
           email,
           phone_number: whatsapp,
@@ -195,6 +200,7 @@ export default function ChatwootAutofill() {
           company_name: companyName,
           custom_attributes: customAttrs,
         })
+        cw.setUser(id, userPayload)
 
         // Refuerza atributos en contacto
         if (typeof cw.setCustomAttributes === 'function') {
@@ -203,8 +209,13 @@ export default function ChatwootAutofill() {
           } catch {}
         }
 
-        // Persistir cache para futuras visitas
-        writeCache({ id, name, whatsapp, email })
+        // Persistir cache para futuras visitas (solo si tenemos valores requeridos)
+        if (id && typeof name === 'string' && typeof whatsapp === 'string') {
+          const cachePayload = email
+            ? { id, name, whatsapp, email }
+            : { id, name, whatsapp }
+          writeCache(cachePayload)
+        }
 
         // Intentar prefijar un mensaje inicial si el widget muestra pre-chat message
         // Nota: Chatwoot no expone API pública para setear "Message" del pre-chat.
@@ -212,19 +223,22 @@ export default function ChatwootAutofill() {
         if (typeof cw.toggle === 'function') {
           cw.toggle('open')
         }
+        return true
       } catch (e) {
         // Silencio errores para no romper la app
+        return false
       }
     }
 
     if (typeof window !== 'undefined') {
-      // Si ya está listo, ejecutar; de lo contrario, escuchar el evento y quitarlo después
+      // Si ya está listo, ejecutar inmediatamente; si no, escuchar el evento
       if ((window as any).$chatwoot) {
         onReady()
       } else {
         const handler = () => {
-          onReady()
-          window.removeEventListener('chatwoot:ready', handler)
+          const ok = onReady()
+          // Sólo removemos el listener si logramos identificar
+          if (ok) window.removeEventListener('chatwoot:ready', handler)
         }
         window.addEventListener('chatwoot:ready', handler)
       }
