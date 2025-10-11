@@ -4,6 +4,7 @@ import './globals.css'
 import { ThemeProvider } from '@/components/providers/theme-provider'
 import { Toaster } from 'react-hot-toast'
 import Script from 'next/script'
+import ChatwootAutofill from '@/components/chatwoot-autofill'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const jetbrains = JetBrains_Mono({ subsets: ['latin'], variable: '--font-jetbrains' })
@@ -90,6 +91,8 @@ export default function RootLayout({
             }}
           />
         </ThemeProvider>
+        {/* Cliente: intenta auto-completar el pre-chat de Chatwoot */}
+        <ChatwootAutofill />
         
         {/* Chatwoot: carga diferida para mejorar LCP/TBT */}
         <Script id="chatwoot-sdk" src="https://crm.whitelabel.lat/packs/js/sdk.js" strategy="lazyOnload" />
