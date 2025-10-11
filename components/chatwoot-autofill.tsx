@@ -141,6 +141,8 @@ function clearAllChatwootData() {
 export default function ChatwootAutofill() {
   const { profile } = useUserProfile()
   const shouldResetRef = useRef(false)
+  const retryTimerRef = useRef<number | null>(null)
+  const readyHandlerRef = useRef<((...args: any[]) => void) | null>(null)
 
   useEffect(() => {
     const cached = readCache()
@@ -217,12 +219,7 @@ export default function ChatwootAutofill() {
           writeCache(cachePayload)
         }
 
-        // Intentar prefijar un mensaje inicial si el widget muestra pre-chat message
-        // Nota: Chatwoot no expone API pública para setear "Message" del pre-chat.
-        // Como fallback, podemos abrir el widget para que el usuario vea los campos ya rellenados.
-        if (typeof cw.toggle === 'function') {
-          cw.toggle('open')
-        }
+        // No abrir automáticamente el widget para evitar interferencias con solicitudes en vuelo
         return true
       } catch (e) {
         // Silencio errores para no romper la app
@@ -231,17 +228,46 @@ export default function ChatwootAutofill() {
     }
 
     if (typeof window !== 'undefined') {
-      // Si ya está listo, ejecutar inmediatamente; si no, escuchar el evento
-      if ((window as any).$chatwoot) {
-        onReady()
-      } else {
-        const handler = () => {
+      // Si ya está listo, ejecutar; si no, añadir reintentos controlados
+      const runOrListen = () => {
+        if ((window as any).$chatwoot) {
           const ok = onReady()
-          // Sólo removemos el listener si logramos identificar
-          if (ok) window.removeEventListener('chatwoot:ready', handler)
+          if (!ok) {
+            // Programar reintento controlado
+            retryTimerRef.current = window.setTimeout(runOrListen, 300)
+          }
+        } else {
+          const handler = () => {
+            const ok = onReady()
+            if (ok) {
+              window.removeEventListener('chatwoot:ready', handler)
+              readyHandlerRef.current = null
+            } else {
+              // Si aún no pudimos identificar, reintentar pronto
+              retryTimerRef.current = window.setTimeout(runOrListen, 300)
+            }
+          }
+          // Registrar listener una sola vez
+          if (!readyHandlerRef.current) {
+            window.addEventListener('chatwoot:ready', handler)
+            readyHandlerRef.current = handler
+          }
         }
-        window.addEventListener('chatwoot:ready', handler)
       }
+      runOrListen()
+    }
+    // Cleanup para evitar duplicados y abortos por navegación
+    return () => {
+      try {
+        if (retryTimerRef.current) {
+          clearTimeout(retryTimerRef.current)
+          retryTimerRef.current = null
+        }
+        if (readyHandlerRef.current) {
+          window.removeEventListener('chatwoot:ready', readyHandlerRef.current)
+          readyHandlerRef.current = null
+        }
+      } catch {}
     }
   }, [profile])
 

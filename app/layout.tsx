@@ -94,11 +94,11 @@ export default function RootLayout({
         {/* Cliente: intenta auto-completar el pre-chat de Chatwoot */}
         <ChatwootAutofill />
         
-        {/* Chatwoot: carga diferida para mejorar LCP/TBT */}
-        <Script id="chatwoot-sdk" src="https://crm.whitelabel.lat/packs/js/sdk.js" strategy="lazyOnload" />
+        {/* Chatwoot: carga tras la hidratación para evitar carreras */}
+        <Script id="chatwoot-sdk" src="https://crm.whitelabel.lat/packs/js/sdk.js" strategy="afterInteractive" />
         <Script
           id="chatwoot-init"
-          strategy="lazyOnload"
+          strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function(){
@@ -111,15 +111,11 @@ export default function RootLayout({
                         baseUrl: BASE_URL
                       });
                     } else {
-                      setTimeout(init, 1000);
+                      setTimeout(init, 300);
                     }
-                  } catch(e) {}
+                  } catch(e) { setTimeout(init, 500); }
                 }
-                if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-                  window.requestIdleCallback(init);
-                } else {
-                  setTimeout(init, 1200);
-                }
+                init();
               })();
             `,
           }}
