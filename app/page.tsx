@@ -162,7 +162,14 @@ export default function HomePage() {
               size="lg"
               onClick={() => {
                 const element = document.getElementById('como-funciona');
-                element?.scrollIntoView({ behavior: 'smooth' });
+                // Usar scroll suave sin bloquear hilo principal
+                if (element) {
+                  try {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                  } catch (_) {
+                    window.scrollTo({ top: element.offsetTop, behavior: 'smooth' })
+                  }
+                }
               }}
               className="text-base sm:text-lg lg:text-xl px-8 sm:px-12 py-4 sm:py-5 w-full sm:w-auto border-2 border-green-500/20 hover:border-green-500/40 hover:bg-green-500/5 transition-all duration-300"
             >

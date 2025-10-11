@@ -16,6 +16,8 @@ export const metadata: Metadata = {
   description: 'Transforma tus finanzas conversando por WhatsApp. Tu coach personal te ayuda a ahorrar, controlar gastos y alcanzar tus metas financieras de forma automática.',
   keywords: 'finanzas, dinero, gastos, ahorro, presupuesto, fintech',
   authors: [{ name: 'Mony Team' }],
+  robots: { index: true, follow: true },
+  alternates: { canonical: 'https://mony.whitelabel.lat/' },
 }
 
 /**
@@ -43,6 +45,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/logo-mony.png" />
         <link rel="apple-touch-icon" href="/logo-mony.png" />
+        <link rel="canonical" href="https://mony.whitelabel.lat/" />
         <link rel="preconnect" href="https://crm.whitelabel.lat" />
         <link rel="dns-prefetch" href="https://crm.whitelabel.lat" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -88,25 +91,33 @@ export default function RootLayout({
           />
         </ThemeProvider>
         
-        {/* Chatwoot Widget */}
+        {/* Chatwoot: carga diferida para mejorar LCP/TBT */}
+        <Script id="chatwoot-sdk" src="https://crm.whitelabel.lat/packs/js/sdk.js" strategy="lazyOnload" />
         <Script
-          id="chatwoot-widget"
-          strategy="afterInteractive"
+          id="chatwoot-init"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `
-              (function(d,t) { 
-                var BASE_URL="https://crm.whitelabel.lat"; 
-                var g=d.createElement(t),s=d.getElementsByTagName(t)[0]; 
-                g.src=BASE_URL+"/packs/js/sdk.js"; 
-                g.async = true; 
-                s.parentNode.insertBefore(g,s); 
-                g.onload=function(){ 
-                  window.chatwootSDK.run({ 
-                    websiteToken: 'PdqXYKMHJKZJKdDagUvd7vbg', 
-                    baseUrl: BASE_URL 
-                  }) 
-                } 
-              })(document,"script");
+              (function(){
+                var BASE_URL = 'https://crm.whitelabel.lat';
+                function init(){
+                  try {
+                    if (typeof window !== 'undefined' && window.chatwootSDK) {
+                      window.chatwootSDK.run({
+                        websiteToken: 'PdqXYKMHJKZJKdDagUvd7vbg',
+                        baseUrl: BASE_URL
+                      });
+                    } else {
+                      setTimeout(init, 1000);
+                    }
+                  } catch(e) {}
+                }
+                if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+                  window.requestIdleCallback(init);
+                } else {
+                  setTimeout(init, 1200);
+                }
+              })();
             `,
           }}
         />
