@@ -57,7 +57,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-secondary/10 overflow-hidden">
       {/* Header */}
       <header className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 relative z-50">
-        <nav className="flex items-center justify-between backdrop-blur-sm bg-background/80 rounded-2xl px-4 py-3 border shadow-lg">
+        <nav className="flex items-center justify-between backdrop-blur-md bg-white/95 rounded-2xl px-4 py-3 border border-white/20 shadow-xl">
           <div className="flex items-center space-x-1 sm:space-x-2">
             <Image
               src="/logo-mony.png"
@@ -66,7 +66,7 @@ export default function HomePage() {
               height={40}
               className="h-8 sm:h-10 w-auto"
             />
-            <span className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+            <span className="text-lg sm:text-2xl font-bold text-primary">
               Mony
             </span>
           </div>
@@ -74,13 +74,13 @@ export default function HomePage() {
             <Button
               variant="ghost"
               onClick={() => router.push('/auth/login')}
-              className="text-xs sm:text-sm px-3 sm:px-4 py-2 hover:bg-primary/10 transition-all duration-300"
+              className="text-xs sm:text-sm px-3 sm:px-4 py-2 text-gray-700 hover:text-primary hover:bg-primary/10 transition-all duration-300 font-medium"
             >
               Iniciar Sesión
             </Button>
             <Button 
               onClick={() => router.push('/auth/register')}
-              className="text-xs sm:text-sm px-3 sm:px-6 py-2 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              className="text-xs sm:text-sm px-3 sm:px-6 py-2 bg-primary hover:secondary text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 font-medium"
             >
               Comenzar Gratis
             </Button>
