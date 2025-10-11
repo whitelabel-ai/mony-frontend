@@ -50,11 +50,19 @@ interface CreateGoalDialogProps {
 export function CreateGoalDialog({ open, onOpenChange, onGoalCreated }: CreateGoalDialogProps) {
   const [loading, setLoading] = useState(false);
 
+  // Fecha por defecto: 3 meses a partir de hoy (razonable para metas)
+  const defaultFechaObjetivo = (() => {
+    const d = new Date();
+    d.setMonth(d.getMonth() + 3);
+    return d;
+  })();
+
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       nombre: '',
       montoObjetivo: 0,
+      fechaObjetivo: defaultFechaObjetivo,
     },
   });
 
@@ -182,7 +190,8 @@ export function CreateGoalDialog({ open, onOpenChange, onGoalCreated }: CreateGo
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="Selecciona una fecha"
-                      disabled={false} // Simplificado por ahora
+                      disabled={false}
+                      mode="future"
                     />
                   </FormControl>
                   <FormDescription>

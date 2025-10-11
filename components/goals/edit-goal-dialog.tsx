@@ -205,6 +205,7 @@ export function EditGoalDialog({ goal, open, onOpenChange, onGoalUpdated }: Edit
                       value={field.value}
                       onChange={field.onChange}
                       placeholder="Selecciona una fecha"
+                      mode="future"
                     />
                   </FormControl>
                   <FormMessage />

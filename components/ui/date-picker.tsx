@@ -13,6 +13,7 @@ interface DatePickerProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  mode?: "past" | "future";
 }
 
 export function DatePicker({
@@ -21,6 +22,7 @@ export function DatePicker({
   placeholder = "Seleccionar fecha",
   className,
   disabled = false,
+  mode = "past",
 }: DatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState<number | "">(value?.getDate() || "");
@@ -89,21 +91,45 @@ export function DatePicker({
 
   const getQuickSelectOptions = () => {
     const today = new Date();
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-    
-    const lastWeek = new Date(today);
-    lastWeek.setDate(today.getDate() - 7);
-    
-    const lastMonth = new Date(today);
-    lastMonth.setMonth(today.getMonth() - 1);
+    if (mode === "future") {
+      const inOneMonth = new Date(today);
+      inOneMonth.setMonth(today.getMonth() + 1);
 
-    return [
-      { label: "Hoy", date: today },
-      { label: "Ayer", date: yesterday },
-      { label: "Hace una semana", date: lastWeek },
-      { label: "Hace un mes", date: lastMonth },
-    ];
+      const inThreeMonths = new Date(today);
+      inThreeMonths.setMonth(today.getMonth() + 3);
+
+      const inSixMonths = new Date(today);
+      inSixMonths.setMonth(today.getMonth() + 6);
+
+      const endOfYear = new Date(today.getFullYear(), 11, 31);
+
+      const inOneYear = new Date(today);
+      inOneYear.setFullYear(today.getFullYear() + 1);
+
+      return [
+        { label: "En un mes", date: inOneMonth },
+        { label: "En 3 meses", date: inThreeMonths },
+        { label: "En 6 meses", date: inSixMonths },
+        { label: "Fin de año", date: endOfYear },
+        { label: "En 1 año", date: inOneYear },
+      ];
+    } else {
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      
+      const lastWeek = new Date(today);
+      lastWeek.setDate(today.getDate() - 7);
+      
+      const lastMonth = new Date(today);
+      lastMonth.setMonth(today.getMonth() - 1);
+
+      return [
+        { label: "Hoy", date: today },
+        { label: "Ayer", date: yesterday },
+        { label: "Hace una semana", date: lastWeek },
+        { label: "Hace un mes", date: lastMonth },
+      ];
+    }
   };
 
   // Generar opciones para días, meses y años
