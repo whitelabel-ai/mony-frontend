@@ -95,6 +95,13 @@ class ApiService {
   }
 
   /**
+   * Obtener token público para uso en hooks
+   */
+  public getAuthToken(): string | null {
+    return this.getToken()
+  }
+
+  /**
    * Registrar nuevo usuario
    */
   public async register(data: RegisterData): Promise<AuthResponse> {

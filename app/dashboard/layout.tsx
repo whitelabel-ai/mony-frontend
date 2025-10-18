@@ -23,6 +23,7 @@ import { useAuth, useAuthGuard } from '@/hooks'
 import { Button, Avatar, AvatarFallback, AvatarImage } from '@/components/ui'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { cn, getGreeting, getUserInitials } from '@/lib/utils'
+import { TransactionEventsProvider } from '@/components/transactions/TransactionEventsProvider'
 import Image from 'next/image'
 
 // ✅ Tipo para los ítems de navegación
@@ -238,7 +239,9 @@ export default function DashboardLayout({
         </header>
         <main className="flex-1">
           <div className="p-4 sm:p-6 lg:p-8">
-            {children}
+            <TransactionEventsProvider>
+              {children}
+            </TransactionEventsProvider>
           </div>
         </main>
       </div>

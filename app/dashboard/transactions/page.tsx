@@ -186,7 +186,7 @@ export default function TransactionsDashboard() {
   const handleModalSuccess = () => {
     loadAnalytics()
     setModalOpen(false)
-    toast.success('Transacción creada exitosamente')
+    // No mostrar toast aquí - se maneja por SSE events
   }
 
   if (loading) {
