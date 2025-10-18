@@ -26,17 +26,43 @@ export function PaymentReturnHandler({ onComplete }: PaymentReturnHandlerProps) 
   useEffect(() => {
     const checkPaymentStatus = async () => {
       try {
+        // Verificar si venimos de dLocal con parámetro status
+        const urlStatus = searchParams.get('status')
+        
         // Verificar si venimos de un pago
         const { wasPaymentInProgress, shouldCheckStatus } = paymentService.checkReturnFromPayment()
         
-        if (!wasPaymentInProgress && !searchParams.get('payment_id')) {
+        if (!wasPaymentInProgress && !searchParams.get('payment_id') && !urlStatus) {
           // No hay pago para verificar
           onComplete?.()
           return
         }
 
+        // Si tenemos status de dLocal, manejarlo directamente
+        if (urlStatus) {
+          switch (urlStatus) {
+            case 'success':
+              setStatus('success')
+              showSuccessNotification('upgrade', 'plan')
+              await loadSubscription()
+              break
+            case 'failed':
+            case 'cancelled':
+              setStatus('failed')
+              setError('El pago no pudo ser completado')
+              showErrorNotification('El pago no pudo ser completado. Inténtalo de nuevo.')
+              break
+            default:
+              setStatus('pending')
+              break
+          }
+          return
+        }
+
         // Obtener el ID del pago desde los parámetros de la URL o localStorage
-        const paymentId = searchParams.get('payment_id') || 
+        // dLocal envía el external_id como parámetro en la URL de retorno
+        const paymentId = searchParams.get('external_id') || 
+                          searchParams.get('payment_id') || 
                           searchParams.get('id') || 
                           localStorage.getItem('current_payment_id')
 
@@ -59,6 +85,8 @@ export function PaymentReturnHandler({ onComplete }: PaymentReturnHandlerProps) 
 
         switch (paymentStatus.status) {
           case 'completed':
+          case 'payment_confirmed':
+          case 'subscription_confirmed':
             setStatus('success')
             showSuccessNotification('upgrade', paymentStatus.planId)
             // Recargar la suscripción para reflejar los cambios
@@ -68,7 +96,7 @@ export function PaymentReturnHandler({ onComplete }: PaymentReturnHandlerProps) 
           case 'failed':
           case 'cancelled':
             setStatus('failed')
-            setError(paymentStatus.failureReason || 'El pago no pudo ser procesado')
+            setError(paymentStatus.errorMessage || 'El pago no pudo ser procesado')
             showErrorNotification('El pago no pudo ser completado. Inténtalo de nuevo.')
             break
             
@@ -96,6 +124,11 @@ export function PaymentReturnHandler({ onComplete }: PaymentReturnHandlerProps) 
 
     checkPaymentStatus()
   }, [searchParams, loadSubscription, showSuccessNotification, showErrorNotification, onComplete])
+
+  const handleReturnToDashboard = () => {
+    router.push('/dashboard')
+    onComplete?.()
+  }
 
   const handleReturnToBilling = () => {
     router.push('/dashboard/billing')
@@ -143,8 +176,8 @@ export function PaymentReturnHandler({ onComplete }: PaymentReturnHandlerProps) 
               <p>Fecha: {new Date(paymentDetails.completedAt || paymentDetails.createdAt).toLocaleDateString('es-ES')}</p>
             </div>
           )}
-          <Button onClick={handleReturnToBilling} className="w-full">
-            Ir a Facturación
+          <Button onClick={handleReturnToDashboard} className="w-full">
+            Ir al Dashboard
           </Button>
         </CardContent>
       </Card>

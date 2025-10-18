@@ -23,6 +23,8 @@ export function PaymentHistory({ limit = 5 }: PaymentHistoryProps) {
   const [payments, setPayments] = useState<PaymentStatus[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [showingAll, setShowingAll] = useState(false)
+  const [loadingMore, setLoadingMore] = useState(false)
 
   useEffect(() => {
     loadPaymentHistory()
@@ -34,6 +36,7 @@ export function PaymentHistory({ limit = 5 }: PaymentHistoryProps) {
       setError(null)
       const history = await paymentService.getPaymentHistory(limit)
       setPayments(history)
+      setShowingAll(false)
     } catch (error: any) {
       setError('Error al cargar el historial de pagos')
       console.error('Error loading payment history:', error)
@@ -42,9 +45,28 @@ export function PaymentHistory({ limit = 5 }: PaymentHistoryProps) {
     }
   }
 
+  const loadFullHistory = async () => {
+    try {
+      setLoadingMore(true)
+      setError(null)
+      // Cargar hasta 50 pagos para el historial completo
+      const fullHistory = await paymentService.getPaymentHistory(50)
+      setPayments(fullHistory)
+      setShowingAll(true)
+    } catch (error: any) {
+      setError('Error al cargar el historial completo')
+      console.error('Error loading full payment history:', error)
+    } finally {
+      setLoadingMore(false)
+    }
+  }
+
   const getStatusIcon = (status: PaymentStatus['status']) => {
-    switch (status) {
+    const normalizedStatus = status.toLowerCase()
+    switch (normalizedStatus) {
       case 'completed':
+      case 'payment_confirmed':
+      case 'subscription_confirmed':
         return <CheckCircle className="h-4 w-4 text-green-600" />
       case 'failed':
       case 'cancelled':
@@ -58,28 +80,33 @@ export function PaymentHistory({ limit = 5 }: PaymentHistoryProps) {
   }
 
   const getStatusBadge = (status: PaymentStatus['status']) => {
-    const variants = {
+    const normalizedStatus = status.toLowerCase()
+    const variants: Record<string, string> = {
       completed: 'bg-green-100 text-green-800 border-green-200',
       failed: 'bg-red-100 text-red-800 border-red-200',
       cancelled: 'bg-gray-100 text-gray-800 border-gray-200',
       pending: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      processing: 'bg-blue-100 text-blue-800 border-blue-200'
+      processing: 'bg-blue-100 text-blue-800 border-blue-200',
+      payment_confirmed: 'bg-green-100 text-green-800 border-green-200',
+      subscription_confirmed: 'bg-green-100 text-green-800 border-green-200'
     }
 
-    const labels = {
+    const labels: Record<string, string> = {
       completed: 'Completado',
       failed: 'Fallido',
       cancelled: 'Cancelado',
       pending: 'Pendiente',
-      processing: 'Procesando'
+      processing: 'Procesando',
+      payment_confirmed: 'Pago Confirmado',
+      subscription_confirmed: 'Suscripción Confirmada'
     }
 
     return (
       <Badge 
         variant="outline" 
-        className={variants[status] || variants.pending}
+        className={variants[normalizedStatus] || variants.pending}
       >
-        {labels[status] || status}
+        {labels[normalizedStatus] || status}
       </Badge>
     )
   }
@@ -200,18 +227,18 @@ export function PaymentHistory({ limit = 5 }: PaymentHistoryProps) {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-medium">
-                      {paymentService.formatPrice(payment.amount, payment.currency)}
+                      {paymentService.formatPrice(typeof payment.amount === 'string' ? parseFloat(payment.amount) : payment.amount, payment.currency)}
                     </span>
                     <span className="text-sm text-gray-600">
                       - Plan {payment.planId}
                     </span>
                   </div>
                   <div className="text-xs text-gray-500">
-                    {formatDate(payment.createdAt)}
+                    {payment.processedAt ? formatDate(payment.processedAt) : 'Pendiente'}
                   </div>
-                  {payment.failureReason && (
+                  {payment.errorMessage && (
                     <div className="text-xs text-red-600 mt-1">
-                      {payment.failureReason}
+                      {payment.errorMessage}
                     </div>
                   )}
                 </div>
@@ -235,10 +262,27 @@ export function PaymentHistory({ limit = 5 }: PaymentHistoryProps) {
           ))}
         </div>
         
-        {payments.length >= limit && (
+        {!showingAll && payments.length >= limit && (
           <div className="mt-4 text-center">
-            <Button variant="outline" size="sm">
-              Ver historial completo
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={loadFullHistory}
+              disabled={loadingMore}
+            >
+              {loadingMore ? 'Cargando...' : 'Ver historial completo'}
+            </Button>
+          </div>
+        )}
+        
+        {showingAll && (
+          <div className="mt-4 text-center">
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={loadPaymentHistory}
+            >
+              Mostrar menos
             </Button>
           </div>
         )}

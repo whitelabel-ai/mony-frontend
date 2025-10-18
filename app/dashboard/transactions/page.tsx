@@ -314,49 +314,78 @@ export default function TransactionsDashboard() {
         />
 
         {/* Distribución por categorías - Ingresos */}
-        {categoryData.ingresos && categoryData.ingresos.labels.length > 0 && (
-          <PieChart
-            title="Distribución de Ingresos"
-            description="Ingresos por categoría"
-            data={categoryData.ingresos}
-            variant="doughnut"
-          />
-        )}
+        <PieChart
+          title="Distribución de Ingresos"
+          description={
+            categoryData.ingresos && categoryData.ingresos.labels.length > 0
+              ? "Ingresos por categoría"
+              : "No hay datos de ingresos para mostrar"
+          }
+          data={
+            categoryData.ingresos && categoryData.ingresos.labels.length > 0
+              ? categoryData.ingresos
+              : {
+                  labels: ['Sin datos'],
+                  datasets: [{
+                    data: [1],
+                    backgroundColor: ['#e5e7eb'],
+                    borderColor: ['#d1d5db'],
+                  }]
+                }
+          }
+          variant="doughnut"
+        />
 
         {/* Distribución por categorías - Gastos */}
-        {categoryData.gastos && categoryData.gastos.labels.length > 0 && (
-          <PieChart
-            title="Distribución de Gastos"
-            description="Gastos por categoría"
-            data={categoryData.gastos}
-            variant="doughnut"
-          />
-        )}
+        <PieChart
+          title="Distribución de Gastos"
+          description={
+            categoryData.gastos && categoryData.gastos.labels.length > 0
+              ? "Gastos por categoría"
+              : "No hay datos de gastos para mostrar"
+          }
+          data={
+            categoryData.gastos && categoryData.gastos.labels.length > 0
+              ? categoryData.gastos
+              : {
+                  labels: ['Sin datos'],
+                  datasets: [{
+                    data: [1],
+                    backgroundColor: ['#e5e7eb'],
+                    borderColor: ['#d1d5db'],
+                  }]
+                }
+          }
+          variant="doughnut"
+        />
       </div>
 
       {/* Tabla de categorías */}
-      {analytics?.categorias && analytics.categorias.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Resumen por Categorías</CardTitle>
-            <CardDescription>
-              Detalle de transacciones agrupadas por categoría
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left p-2">Categoría</th>
-                    <th className="text-left p-2">Tipo</th>
-                    <th className="text-right p-2">Monto Total</th>
-                    <th className="text-right p-2">Transacciones</th>
-                    <th className="text-right p-2">% del Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {analytics.categorias.map((categoria, index) => (
+      <Card>
+        <CardHeader>
+          <CardTitle>Resumen por Categorías</CardTitle>
+          <CardDescription>
+            {analytics?.categorias && analytics.categorias.length > 0
+              ? "Detalle de transacciones agrupadas por categoría"
+              : "No hay transacciones para mostrar por categorías"
+            }
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left p-2">Categoría</th>
+                  <th className="text-left p-2">Tipo</th>
+                  <th className="text-right p-2">Monto Total</th>
+                  <th className="text-right p-2">Transacciones</th>
+                  <th className="text-right p-2">% del Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {analytics?.categorias && analytics.categorias.length > 0 ? (
+                  analytics.categorias.map((categoria, index) => (
                     <tr key={index} className="border-b hover:bg-muted/50">
                       <td className="p-2 font-medium">{categoria.nombre}</td>
                       <td className="p-2">
@@ -378,13 +407,23 @@ export default function TransactionsDashboard() {
                         {categoria.porcentaje?.toFixed(1) || '0.0'}%
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                      <div className="flex flex-col items-center space-y-2">
+                        <CreditCard className="h-12 w-12 text-muted-foreground/50" />
+                        <p className="text-sm">No hay transacciones registradas</p>
+                        <p className="text-xs">Las categorías aparecerán aquí cuando agregues transacciones</p>
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Modal de transacción */}
        <TransactionModal
