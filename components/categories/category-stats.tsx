@@ -33,12 +33,12 @@ export function CategoryStatsComponent({ stats, topCategories, loading = false }
     )
   }
 
-  const totalBudget = stats.reduce((sum, stat) => sum + (stat.presupuestoMensual || 0), 0)
-  const totalSpent = stats.reduce((sum, stat) => sum + stat.gastosMes, 0)
-  const totalIncome = stats.reduce((sum, stat) => sum + stat.ingresosMes, 0)
-  const categoriesWithBudget = stats.filter(stat => stat.presupuestoMensual && stat.presupuestoMensual > 0)
+  const totalBudget = stats.reduce((sum, stat) => sum + (Number(stat.presupuestoMensual) || 0), 0)
+  const totalSpent = stats.reduce((sum, stat) => sum + Number(stat.gastosMes), 0)
+  const totalIncome = stats.reduce((sum, stat) => sum + Number(stat.ingresosMes), 0)
+  const categoriesWithBudget = stats.filter(stat => stat.presupuestoMensual && Number(stat.presupuestoMensual) > 0)
   const overBudgetCategories = categoriesWithBudget.filter(stat => 
-    stat.gastosMes > (stat.presupuestoMensual || 0)
+    Number(stat.gastosMes) > (Number(stat.presupuestoMensual) || 0)
   )
 
   const budgetUsagePercentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0
@@ -141,7 +141,7 @@ export function CategoryStatsComponent({ stats, topCategories, loading = false }
                     <div key={category.id} className="flex justify-between items-center text-sm">
                       <span>{category.nombre}</span>
                       <Badge variant="destructive" className="text-xs">
-                        +{formatCurrency(category.gastosMes - (category.presupuestoMensual || 0))}
+                        +{formatCurrency(Number(category.gastosMes) - (Number(category.presupuestoMensual) || 0))}
                       </Badge>
                     </div>
                   ))}

@@ -38,14 +38,15 @@ export function CategoryCard({
 }: CategoryCardProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const budgetUsagePercentage = category.presupuestoMensual 
-    ? Math.min((spent / category.presupuestoMensual) * 100, 100)
+  const budgetAmount = Number(category.presupuestoMensual) || 0
+  const budgetUsagePercentage = budgetAmount 
+    ? Math.min((spent / budgetAmount) * 100, 100)
     : 0
 
-  const isOverBudget = category.presupuestoMensual && spent > category.presupuestoMensual
+  const isOverBudget = budgetAmount && spent > budgetAmount
 
   const getBudgetColor = () => {
-    if (!category.presupuestoMensual) return 'bg-gray-200'
+    if (!budgetAmount) return 'bg-gray-200'
     if (isOverBudget) return 'bg-red-500'
     if (budgetUsagePercentage > 80) return 'bg-yellow-500'
     return 'bg-green-500'
@@ -127,12 +128,12 @@ export function CategoryCard({
         )}
 
         {/* Solo mostrar presupuesto para categorías de gastos */}
-        {category.tipo === 'Gasto' && category.presupuestoMensual && (
+        {category.tipo === 'Gasto' && budgetAmount > 0 && (
           <div className="space-y-2">
             <div className="flex justify-between items-center text-sm">
               <span className="text-muted-foreground">Presupuesto mensual</span>
               <span className="font-medium">
-                {formatCurrency(category.presupuestoMensual)}
+                {formatCurrency(budgetAmount)}
               </span>
             </div>
             
@@ -150,7 +151,7 @@ export function CategoryCard({
               />
               {isOverBudget && (
                 <p className="text-xs text-red-600">
-                  Excedido por {formatCurrency(spent - category.presupuestoMensual)}
+                  Excedido por {formatCurrency(spent - budgetAmount)}
                 </p>
               )}
             </div>

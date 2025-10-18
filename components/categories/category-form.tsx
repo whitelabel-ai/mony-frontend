@@ -38,22 +38,27 @@ const categorySchema = z.object({
   }),
   icono: z.string().min(1, 'El ícono es requerido'),
   color: z.string().min(1, 'El color es requerido'),
-  presupuestoMensual: z.number()
-    .min(0, 'El presupuesto debe ser mayor o igual a 0')
-    .optional(),
+  presupuestoMensual: z.union([
+    z.number().min(0, 'El presupuesto debe ser mayor o igual a 0'),
+    z.null(),
+    z.undefined()
+  ]).optional().transform((val) => {
+    if (val === null || val === undefined) return 0
+    return Number(val)
+  }),
   descripcion: z.string()
     .max(200, 'La descripción no puede exceder 200 caracteres')
     .optional(),
   activa: z.boolean().default(true)
 }).refine((data) => {
-  // Si es tipo Ingreso, el presupuesto mensual no es requerido
+  // Si es tipo Ingreso, el presupuesto mensual debe ser 0
   if (data.tipo === 'Ingreso') {
-    return true
+    return data.presupuestoMensual === 0
   }
-  // Si es tipo Gasto, el presupuesto mensual es opcional pero si se proporciona debe ser válido
+  // Si es tipo Gasto, el presupuesto mensual es opcional pero debe ser válido
   return true
 }, {
-  message: 'Datos de categoría inválidos'
+  message: 'Para categorías de Ingreso, el presupuesto debe ser 0'
 })
 
 type CategoryFormData = z.infer<typeof categorySchema>
@@ -81,11 +86,28 @@ export function CategoryForm({
       tipo: category?.tipo || 'Gasto',
       icono: category?.icono || CATEGORY_ICONS[0],
       color: category?.color || CATEGORY_COLORS[0],
-      presupuestoMensual: category?.presupuestoMensual || undefined,
+      presupuestoMensual: category?.presupuestoMensual ? Number(category.presupuestoMensual) : 0,
       descripcion: category?.descripcion || '',
       activa: category?.activa ?? true
     }
   })
+
+  // Resetear formulario cuando cambia la categoría
+  useEffect(() => {
+    const defaultValues = {
+      nombre: category?.nombre || '',
+      tipo: category?.tipo || 'Gasto',
+      icono: category?.icono || CATEGORY_ICONS[0],
+      color: category?.color || CATEGORY_COLORS[0],
+      presupuestoMensual: category?.presupuestoMensual ? Number(category.presupuestoMensual) : 0,
+      descripcion: category?.descripcion || '',
+      activa: category?.activa ?? true
+    }
+    
+    form.reset(defaultValues)
+    setSelectedIcon(category?.icono || CATEGORY_ICONS[0])
+    setSelectedColor(category?.color || CATEGORY_COLORS[0])
+  }, [category, form])
 
   useEffect(() => {
     form.setValue('icono', selectedIcon)
@@ -95,11 +117,11 @@ export function CategoryForm({
     form.setValue('color', selectedColor)
   }, [selectedColor, form])
 
-  // Limpiar presupuesto mensual cuando se cambia a tipo Ingreso
+  // Establecer presupuesto mensual en 0 cuando se cambia a tipo Ingreso
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
       if (name === 'tipo' && value.tipo === 'Ingreso') {
-        form.setValue('presupuestoMensual', undefined)
+        form.setValue('presupuestoMensual', 0)
       }
     })
     return () => subscription.unsubscribe()
@@ -107,10 +129,10 @@ export function CategoryForm({
 
   const handleSubmit = async (data: CategoryFormData) => {
     try {
-      // Convertir null a undefined para compatibilidad con DTOs
+      // Para categorías de Ingreso, siempre enviar presupuestoMensual como 0
       const submitData = {
         ...data,
-        presupuestoMensual: data.presupuestoMensual === null ? undefined : data.presupuestoMensual
+        presupuestoMensual: data.tipo === 'Ingreso' ? 0 : (data.presupuestoMensual || 0)
       }
       await onSubmit(submitData)
     } catch (error) {

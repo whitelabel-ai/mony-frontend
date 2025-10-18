@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Plus, TrendingUp, TrendingDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -67,6 +67,35 @@ export default function CategoriesPage() {
   const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<Categoria | undefined>()
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Limpiar estado cuando se cierran los modales
+  useEffect(() => {
+    if (!formDialogOpen) {
+      // Usar setTimeout para asegurar que el modal se cierre completamente antes de limpiar el estado
+      const timer = setTimeout(() => {
+        setSelectedCategory(undefined)
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [formDialogOpen])
+
+  useEffect(() => {
+    if (!deleteDialogOpen) {
+      const timer = setTimeout(() => {
+        setSelectedCategory(undefined)
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [deleteDialogOpen])
+
+  useEffect(() => {
+    if (!duplicateDialogOpen) {
+      const timer = setTimeout(() => {
+        setSelectedCategory(undefined)
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [duplicateDialogOpen])
 
   // Handlers para el formulario
   const handleCreateCategory = () => {

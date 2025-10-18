@@ -98,9 +98,9 @@ export function DeleteCategoryDialog({
           <AlertDialogTitle>¿Eliminar categoría?</AlertDialogTitle>
           <AlertDialogDescription>
             Esta acción eliminará permanentemente la categoría "{category?.nombre}".
-            {category?.tipo === 'Gasto' && category?.presupuestoMensual && (
+            {category?.tipo === 'Gasto' && Number(category?.presupuestoMensual) > 0 && (
               <span className="block mt-2 text-amber-600">
-                Esta categoría tiene un presupuesto mensual de {category.presupuestoMensual}. 
+                Esta categoría tiene un presupuesto mensual de {Number(category.presupuestoMensual).toLocaleString('es-CO', { style: 'currency', currency: 'COP' })}. 
                 Al eliminarla, se perderá esta configuración.
               </span>
             )}
