@@ -299,7 +299,7 @@ export function TransactionsTable({ onEdit, onView, refreshTrigger }: Transactio
               <SelectContent>
                 <SelectItem value="all">Todas las categorías</SelectItem>
                 {categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id}>
+                  <SelectItem key={category.id} value={category.id.toString()}>
                     {category.nombre}
                   </SelectItem>
                 ))}

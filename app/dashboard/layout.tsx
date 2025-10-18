@@ -17,6 +17,7 @@ import {
   Sun,
   Moon,
   Receipt,
+  FolderOpen,
 } from 'lucide-react'
 import { useAuth, useAuthGuard } from '@/hooks'
 import { Button, Avatar, AvatarFallback, AvatarImage } from '@/components/ui'
@@ -42,6 +43,11 @@ const mainNavigationItems: NavigationItem[] = [
     name: 'Transacciones',
     href: '/dashboard/transactions',
     icon: CreditCard,
+  },
+  {
+    name: 'Categorías',
+    href: '/dashboard/categories',
+    icon: FolderOpen,
   },
   {
     name: 'Metas de Ahorro',

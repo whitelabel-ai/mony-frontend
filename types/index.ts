@@ -37,21 +37,66 @@ export interface RegisterData {
 
 // Tipos de categorías
 export interface Categoria {
-  id: string
+  id: number
   nombre: string
   icono: string
   color: string
   tipo: 'Ingreso' | 'Gasto'
-  esGlobal?: boolean
-  usuarioId?: string
-  fechaCreacion?: string
-  activo?: boolean
-  // Campos adicionales del backend
   presupuestoMensual?: number | null
   descripcion?: string | null
+  activa: boolean
+  createdAt: string
+  updatedAt: string
   _count?: {
     transacciones: number
   }
+}
+
+// DTOs para categorías
+export interface CreateCategoryDto {
+  nombre: string
+  tipo: 'Ingreso' | 'Gasto'
+  icono?: string
+  color?: string
+  presupuestoMensual?: number
+  descripcion?: string
+  activa?: boolean
+}
+
+export interface UpdateCategoryDto {
+  nombre?: string
+  tipo?: 'Ingreso' | 'Gasto'
+  icono?: string
+  color?: string
+  presupuestoMensual?: number
+  descripcion?: string
+  activa?: boolean
+}
+
+// Estadísticas de categorías
+export interface CategoryStats {
+  id: number
+  nombre: string
+  tipo: 'Ingreso' | 'Gasto'
+  icono: string
+  color: string
+  presupuestoMensual?: number
+  gastosMes: number
+  ingresosMes: number
+  presupuestoUtilizado: number
+  totalTransacciones: number
+  transaccionesMes: number
+  estado: 'NORMAL' | 'ALERTA' | 'EXCEDIDO'
+}
+
+// Categorías top por gastos
+export interface TopCategory {
+  id: number
+  nombre: string
+  icono: string
+  color: string
+  totalGastos: number
+  cantidadTransacciones: number
 }
 
 // Tipos de transacciones
